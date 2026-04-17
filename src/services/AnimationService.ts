@@ -1,5 +1,4 @@
-import * as animeLib from 'animejs';
-const anime = ('default' in animeLib ? animeLib.default : animeLib) as unknown as typeof animeLib;
+import anime from 'animejs';
 import { getCoordinatesFromCell, getPlayerOffset } from '../core/Pathfinding';
 
 const CELL_SIZE_PCT = 10;

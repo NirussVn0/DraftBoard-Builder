@@ -1,4 +1,4 @@
-import type { GameState, Player } from './GameState';
+import type { GameState, Player, GamePhase } from './GameState';
 import { calculatePath, TOTAL_CELLS } from './Pathfinding';
 
 export type GameStateObserver = (state: GameState) => void;
@@ -18,7 +18,6 @@ class GameEngine {
       activePlayerIndex: 0,
       winner: null,
       diceValue: 1,
-      isAnimating: false,
     };
   }
 
@@ -31,14 +30,13 @@ class GameEngine {
   }
 
   private notify() {
-    // Return a new object reference to ensure React triggers re-render
-    this.observers.forEach((observer) => observer({...this.state}));
+    this.observers.forEach((observer) => observer({ ...this.state }));
   }
 
   public startGame(players: Omit<Player, 'position' | 'id'>[]) {
     this.state = {
       ...this.getInitialState(),
-      phase: 'PLAYING',
+      phase: 'IDLE_TURN',
       players: players.map((p, index) => ({
         ...p,
         id: `player-${index + 1}`,
@@ -48,34 +46,52 @@ class GameEngine {
     this.notify();
   }
 
-  public rollDice(): { diceRoll: number, path: number[] } | null {
-    if (this.state.phase !== 'PLAYING' || this.state.isAnimating) return null;
+  public rollDice(): void {
+    if (this.state.phase !== 'IDLE_TURN') return;
 
     const diceRoll = Math.floor(Math.random() * 6) + 1;
-    const activePlayer = this.state.players[this.state.activePlayerIndex];
     
-    this.state.diceValue = diceRoll;
-    this.state.isAnimating = true;
+    this.state = {
+      ...this.state,
+      diceValue: diceRoll,
+      phase: 'ROLLING_DICE',
+    };
+    
     this.notify();
-
-    const path = calculatePath(activePlayer.position, diceRoll);
-    return { diceRoll, path };
   }
 
-  public finishTurn(finalPosition: number) {
-    if (this.state.phase !== 'PLAYING') return;
+  public concludeDiceRoll(): number[] | null {
+    if (this.state.phase !== 'ROLLING_DICE') return null;
+    
+    const activePlayer = this.state.players[this.state.activePlayerIndex];
+    const path = calculatePath(activePlayer.position, this.state.diceValue);
+
+    this.state = {
+      ...this.state,
+      phase: 'MOVING_TOKEN',
+    };
+    this.notify();
+
+    return path;
+  }
+
+  public finishTokenMove(finalPosition: number) {
+    if (this.state.phase !== 'MOVING_TOKEN') return;
 
     const activeIndex = this.state.activePlayerIndex;
-    
-    // Immutable update logic
     const newPlayers = [...this.state.players];
-    newPlayers[activeIndex] = { ...newPlayers[activeIndex], position: finalPosition };
     
-    let nextPhase = this.state.phase;
+    newPlayers[activeIndex] = { 
+      ...newPlayers[activeIndex], 
+      position: finalPosition 
+    };
+    
+    let nextPhase: GamePhase = 'IDLE_TURN';
     let nextWinner = this.state.winner;
     let nextActiveIndex = activeIndex;
 
     if (finalPosition >= TOTAL_CELLS) {
+      newPlayers[activeIndex].position = TOTAL_CELLS;
       nextPhase = 'VICTORY';
       nextWinner = newPlayers[activeIndex];
     } else {
@@ -88,7 +104,6 @@ class GameEngine {
       phase: nextPhase,
       winner: nextWinner,
       activePlayerIndex: nextActiveIndex,
-      isAnimating: false,
     };
     
     this.notify();

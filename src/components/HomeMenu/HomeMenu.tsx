@@ -28,50 +28,61 @@ export const HomeMenu: React.FC<HomeMenuProps> = ({ onStart }) => {
   };
 
   return (
-    <div className="flex flex-col items-center h-full space-y-8 glass p-10 rounded-2xl max-w-md w-full mx-auto mt-[10vh] shadow-2xl">
-      <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">DraftBoard</h1>
-      
-      <div className="w-full space-y-4 text-left">
-        <label className="block text-sm font-medium text-gray-600 dark:text-gray-400">Number of Players</label>
-        <div className="flex gap-2">
-          {[2, 3, 4].map(n => (
-            <button
-              key={n}
-              onClick={() => handleNumChange(n)}
-              className={`flex-1 py-2 rounded-md font-semibold transition-colors ${numPlayers === n ? 'bg-purple-600 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300'}`}
-            >
-              {n}
-            </button>
-          ))}
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white rounded-[2rem] shadow-2xl p-8 border border-slate-100">
+        <h1 className="text-4xl font-black text-center mb-8 bg-clip-text text-transparent bg-gradient-to-br from-indigo-500 to-purple-600">
+          DraftBoard
+        </h1>
+
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-slate-500 uppercase tracking-wider">Number of Players</label>
+            <div className="flex gap-2">
+              {[2, 3, 4].map(num => (
+                <button
+                  key={num}
+                  onClick={() => handleNumChange(num)}
+                  className={`flex-1 py-3 rounded-xl font-bold transition-all ${
+                    numPlayers === num 
+                      ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200' 
+                      : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  {num}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <label className="text-sm font-bold text-slate-500 uppercase tracking-wider">Player Setup</label>
+            {players.map((player, index) => (
+              <div key={index} className="flex gap-3 items-center bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <input
+                  type="color"
+                  value={player.color}
+                  onChange={(e) => updatePlayer(index, 'color', e.target.value)}
+                  className="w-10 h-10 rounded cursor-pointer border-0 p-0 bg-transparent"
+                />
+                <input
+                  type="text"
+                  value={player.name}
+                  onChange={(e) => updatePlayer(index, 'name', e.target.value)}
+                  className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-slate-700"
+                  placeholder={`Player ${index + 1}`}
+                />
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => onStart(players)}
+            className="w-full py-4 mt-4 bg-slate-900 text-white rounded-xl shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all font-bold text-lg"
+          >
+            Start Game
+          </button>
         </div>
       </div>
-
-      <div className="w-full space-y-4">
-        {players.map((p, i) => (
-          <div key={i} className="flex gap-4 items-center bg-white/50 dark:bg-black/20 p-2 rounded-lg">
-            <input 
-              type="color" 
-              value={p.color} 
-              onChange={(e) => updatePlayer(i, 'color', e.target.value)}
-              className="w-10 h-10 rounded cursor-pointer border-0 p-0 bg-transparent"
-            />
-            <input 
-              type="text" 
-              value={p.name}
-              onChange={(e) => updatePlayer(i, 'name', e.target.value)}
-              className="flex-1 bg-transparent border-0 outline-none px-3 py-2 font-medium"
-              placeholder={`Player ${i + 1}`}
-            />
-          </div>
-        ))}
-      </div>
-
-      <button 
-        onClick={() => onStart(players)}
-        className="w-full py-4 mt-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-lg font-bold text-lg shadow-lg transform transition hover:shadow-xl active:scale-95"
-      >
-        START GAME
-      </button>
     </div>
   );
 };

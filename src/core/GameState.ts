@@ -5,7 +5,7 @@ export interface Player {
   position: number;
 }
 
-export type GamePhase = 'SETUP' | 'PLAYING' | 'VICTORY';
+export type GamePhase = 'SETUP' | 'IDLE_TURN' | 'ROLLING_DICE' | 'MOVING_TOKEN' | 'VICTORY';
 
 export interface GameState {
   phase: GamePhase;
@@ -13,5 +13,4 @@ export interface GameState {
   activePlayerIndex: number;
   winner: Player | null;
   diceValue: number;
-  isAnimating: boolean;
 }
