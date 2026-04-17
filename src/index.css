@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/40 border border-white/40 shadow-xl backdrop-blur-md;
+  }
+}
+
+/* Animations */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-2px) rotate(-2deg); }
+  40%, 80% { transform: translateX(2px) rotate(2deg); }
+}
+
+.animate-dice-shake {
+  animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
+}
