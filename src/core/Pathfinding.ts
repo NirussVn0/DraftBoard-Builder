@@ -37,7 +37,6 @@ export function calculatePath(startCell: number, diceRoll: number, maxCell: numb
     path.push(current);
   }
   
-  console.log("Calculated Bounce-Back Path:", path);
   return path;
 }
 

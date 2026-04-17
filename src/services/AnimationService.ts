@@ -1,19 +1,18 @@
 import anime from 'animejs';
 import { getCoordinatesFromCell, getPlayerOffset } from '../core/Pathfinding';
+import type { Tile } from '../core/MapBuilderState';
 
-
+const LEGACY_CELL_SIZE_PCT = 10;
+const MAP_CELL_SIZE_PCT = 100 / 15;
 
 export class AnimationService {
-  /**
-   * Moves a token along a predefined path sequentially.
-   */
   public static animateTokenMove(
     tokenId: string,
     playerIndex: number,
     path: number[],
     onComplete: (finalCell: number) => void,
     isFast: boolean = false,
-    customMap?: any[] // Tile[]
+    customMap?: Tile[]
   ) {
     if (path.length === 0) {
       onComplete(0);
@@ -22,14 +21,13 @@ export class AnimationService {
 
     const tokenElement = document.getElementById(tokenId);
     if (!tokenElement) {
-      console.warn(`Token element ${tokenId} not found!`);
       onComplete(path[path.length - 1]);
       return;
     }
 
     const { offsetX, offsetY } = getPlayerOffset(playerIndex);
-
     const speedFactor = isFast ? 1.5 : 1;
+
     const timeline = anime.timeline({
       easing: 'easeInOutQuad',
       duration: 300 / speedFactor,
@@ -38,22 +36,25 @@ export class AnimationService {
       }
     });
 
-    path.forEach((cell) => {
-      let x = 0; let y = 0; let CELL_SIZE_PCT = 10;
-      
+    path.forEach((stepIndex) => {
+      let x = 0;
+      let y = 0;
+      let cellSizePct = LEGACY_CELL_SIZE_PCT;
+
       if (customMap && customMap.length > 0) {
-        CELL_SIZE_PCT = 100 / 15; // Built on MAP_SIZE
-        const t = customMap[cell];
-        if (t) { x = t.x; y = t.y; }
+        cellSizePct = MAP_CELL_SIZE_PCT;
+        const tile = customMap[stepIndex];
+        if (tile) { x = tile.x; y = tile.y; }
       } else {
-        const coords = getCoordinatesFromCell(cell);
-        x = coords.x; y = coords.y;
+        const coords = getCoordinatesFromCell(stepIndex);
+        x = coords.x;
+        y = coords.y;
       }
-      
+
       timeline.add({
         targets: tokenElement,
-        left: `${x * CELL_SIZE_PCT + 2 + offsetX}%`,
-        top: `${y * CELL_SIZE_PCT + 2 + offsetY}%`,
+        left: `${x * cellSizePct + 2 + offsetX}%`,
+        top: `${y * cellSizePct + 2 + offsetY}%`,
         translateY: [
           { value: -20, duration: 150 / speedFactor, easing: 'easeOutQuad' },
           { value: 0, duration: 150 / speedFactor, easing: 'easeInQuad' }
@@ -65,7 +66,7 @@ export class AnimationService {
       });
     });
   }
-  
+
   public static animateDiceShake(diceElementId: string) {
     const el = document.getElementById(diceElementId);
     if (!el) return;

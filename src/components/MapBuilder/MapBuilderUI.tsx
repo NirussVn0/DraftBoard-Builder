@@ -89,8 +89,6 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
 
   return (
     <div className="min-h-screen bg-slate-900 flex p-4 sm:p-8 gap-8 font-sans items-center justify-center">
-      
-      {/* Sidebar Tools */}
       <div className="w-64 bg-slate-800 text-white rounded-3xl p-6 shadow-2xl flex flex-col gap-6 border border-slate-700">
         <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
           Map Builder
@@ -162,7 +160,6 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
         </div>
       </div>
 
-      {/* Grid Container */}
       <div className="flex-1 max-w-3xl aspect-square bg-slate-800 rounded-[2.5rem] border-8 border-slate-700 shadow-2xl relative overflow-hidden flex items-center justify-center">
         <div 
           className="w-full h-full relative"
@@ -172,22 +169,20 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
             gridTemplateRows: `repeat(${MAP_SIZE}, minmax(0, 1fr))`,
           }}
         >
-          {/* Base Grid Cells */}
           {Array.from({ length: MAP_SIZE * MAP_SIZE }).map((_, i) => {
             const x = i % MAP_SIZE;
             const y = Math.floor(i / MAP_SIZE);
             const isAlternate = (x + y) % 2 === 0;
-            
+
             return (
-              <div 
-                key={`bg-${x}-${y}`} 
+              <div
+                key={`bg-${x}-${y}`}
                 onClick={() => handleCellClick(x, y)}
                 className={`border-[0.5px] border-slate-700/50 cursor-pointer hover:bg-indigo-500/20 transition-colors ${isAlternate ? 'bg-slate-800/80' : 'bg-slate-800'}`}
               />
             );
           })}
 
-          {/* Active Tiles */}
           {path.map((tile) => {
             const { x, y, type, stepIndex } = tile;
             let bgColor = 'bg-slate-200';
@@ -222,11 +217,9 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
             )
           })}
 
-          {/* Render Vector Arrows */}
           {renderArrows()}
         </div>
       </div>
-    
     </div>
   );
 };

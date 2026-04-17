@@ -11,6 +11,22 @@ export interface Tile {
 
 export const MAP_SIZE = 15;
 
+export function generateZigzagMap(): Tile[] {
+  const tiles: Tile[] = [];
+  let step = 0;
+
+  tiles.push({ stepIndex: step++, x: 0, y: 0, type: 'START' });
+
+  for (let x = 1; x <= 5; x++) tiles.push({ stepIndex: step++, x, y: 0, type: 'NORMAL' });
+  for (let y = 1; y <= 5; y++) tiles.push({ stepIndex: step++, x: 5, y, type: 'NORMAL' });
+  for (let x = 4; x >= 0; x--) tiles.push({ stepIndex: step++, x, y: 5, type: 'NORMAL' });
+  for (let y = 6; y <= 10; y++) tiles.push({ stepIndex: step++, x: 0, y, type: 'NORMAL' });
+  for (let x = 1; x <= 4; x++) tiles.push({ stepIndex: step++, x, y: 10, type: 'NORMAL' });
+
+  tiles.push({ stepIndex: step++, x: 5, y: 10, type: 'END' });
+  return tiles;
+}
+
 export function useMapBuilder() {
   const [history, setHistory] = useState<Tile[][]>([[]]);
   const [historyIndex, setHistoryIndex] = useState<number>(0);
@@ -28,22 +44,20 @@ export function useMapBuilder() {
 
   const addNode = useCallback((x: number, y: number) => {
     const currentPath = path;
-    // First node
+
     if (currentPath.length === 0) {
       pushState([{ stepIndex: 0, x, y, type: 'START' }]);
       return;
     }
 
     const lastNode = currentPath[currentPath.length - 1];
-    
-    // Prevent diagonal building or same cell building
+
     if (lastNode.x !== x && lastNode.y !== y) return;
     if (lastNode.x === x && lastNode.y === y) return;
 
     const newNodes: Tile[] = [];
     let step = currentPath.length;
 
-    // Fill horizontally
     if (lastNode.y === y) {
       const dx = x > lastNode.x ? 1 : -1;
       let cx = lastNode.x + dx;
@@ -51,9 +65,7 @@ export function useMapBuilder() {
         newNodes.push({ stepIndex: step++, x: cx, y, type: 'NORMAL' });
         cx += dx;
       }
-    } 
-    // Fill vertically
-    else if (lastNode.x === x) {
+    } else if (lastNode.x === x) {
       const dy = y > lastNode.y ? 1 : -1;
       let cy = lastNode.y + dy;
       while (cy !== y + dy) {
@@ -62,8 +74,7 @@ export function useMapBuilder() {
       }
     }
 
-    const newPath = [...currentPath, ...newNodes];
-    pushState(newPath);
+    pushState([...currentPath, ...newNodes]);
   }, [path, pushState]);
 
   const eraseFrom = useCallback((stepIndex: number) => {
@@ -71,8 +82,7 @@ export function useMapBuilder() {
       pushState([]);
       return;
     }
-    const current = path;
-    const newPath = current.slice(0, stepIndex + 1);
+    const newPath = path.slice(0, stepIndex + 1);
     newPath[newPath.length - 1] = { ...newPath[newPath.length - 1], type: 'END' };
     pushState(newPath);
   }, [path, pushState]);
@@ -99,7 +109,7 @@ export function useMapBuilder() {
     setHistoryIndex((prev) => Math.min(history.length - 1, prev + 1));
   }, [history.length]);
 
-  return { 
+  return {
     path, addNode, eraseFrom, toggleMystery, clearMap,
     undo, redo, canUndo: historyIndex > 0, canRedo: historyIndex < history.length - 1
   };

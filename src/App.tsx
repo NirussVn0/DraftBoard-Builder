@@ -12,6 +12,7 @@ import { MapBuilderUI } from './components/MapBuilder/MapBuilderUI'
 import { Trophy, RefreshCcw } from 'lucide-react'
 
 import type { Tile } from './core/MapBuilderState'
+import { generateZigzagMap } from './core/MapBuilderState'
 
 type AppMode = 'MENU' | 'BUILDER' | 'PLAYING';
 
@@ -20,34 +21,32 @@ function App() {
   const [pendingMap, setPendingMap] = useState<Tile[] | null>(null)
   const [gameState, setGameState] = useState<GameState>(gameEngine.getState())
 
-  // Ensure initial render triggers a re-render if state changes immediately
   useEffect(() => {
     const unsubscribe = gameEngine.subscribe((state) => {
       setGameState(state)
-      
+
       if (state.phase === 'EVENT_MYSTERY_ROLL') {
         const activePlayer = state.players[state.activePlayerIndex];
-        
-        // Slightly bounce as a "buff/debuff" receipt, then move
+
         AnimationService.animateTokenMove(
           activePlayer.id,
           state.activePlayerIndex,
-          [activePlayer.position], // bounce in place
+          [activePlayer.position],
           () => {
             setTimeout(() => {
               const pathData = gameEngine.concludeDiceRoll();
               if (!pathData) return;
               AnimationService.animateTokenMove(
-                activePlayer.id, 
+                activePlayer.id,
                 state.activePlayerIndex,
-                pathData, 
+                pathData,
                 (finalCell) => {
                   gameEngine.finishTokenMove(finalCell);
                 },
-                true, // isFast
+                true,
                 state.map || undefined
               );
-            }, 500); // 0.5s delay
+            }, 500);
           },
           false,
           state.map || undefined
@@ -57,7 +56,7 @@ function App() {
     return unsubscribe
   }, [])
 
-  const handleStartGame = (players: {name: string, color: string}[]) => {
+  const handleStartGame = (players: { name: string, color: string }[]) => {
     gameEngine.startGame(players, pendingMap || undefined)
   }
 
@@ -70,9 +69,9 @@ function App() {
 
       const activePlayer = gameState.players[gameState.activePlayerIndex];
       AnimationService.animateTokenMove(
-        activePlayer.id, 
+        activePlayer.id,
         gameState.activePlayerIndex,
-        pathData, 
+        pathData,
         (finalCell) => {
           gameEngine.finishTokenMove(finalCell);
         },
@@ -88,18 +87,23 @@ function App() {
   };
 
   if (appMode === 'MENU') {
-    return <WelcomeMenu onSelectMode={setAppMode} />;
+    return <WelcomeMenu onSelectMode={(mode) => {
+      setAppMode(mode);
+      if (mode === 'PLAYING') {
+        setPendingMap(generateZigzagMap());
+      }
+    }} />;
   }
 
   if (appMode === 'BUILDER') {
     return (
-      <MapBuilderUI 
+      <MapBuilderUI
         onSave={(path) => {
           setPendingMap(path);
           gameEngine.resetGame();
           setAppMode('PLAYING');
         }}
-        onCancel={() => setAppMode('MENU')} 
+        onCancel={() => setAppMode('MENU')}
       />
     );
   }
@@ -128,7 +132,7 @@ function App() {
                 <div className="text-2xl font-bold rounded-xl px-6 py-2 bg-white shadow-sm border border-slate-100" style={{ color: gameState.winner.color }}>
                   {gameState.winner.name} won!
                 </div>
-                <button 
+                <button
                   onClick={handleRestart}
                   className="mt-4 flex items-center gap-2 px-8 py-4 bg-slate-900 text-white rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-transform font-bold text-lg"
                 >
@@ -140,7 +144,7 @@ function App() {
                 <div className="flex flex-col items-center gap-2">
                   <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Active Player</p>
                   <div className="flex items-center justify-center gap-3 bg-white px-6 py-3 rounded-2xl shadow-sm border border-slate-100">
-                    <div 
+                    <div
                       className="w-5 h-5 rounded-full shadow-inner border border-slate-200"
                       style={{ backgroundColor: activePlayer?.color }}
                     />
@@ -151,10 +155,10 @@ function App() {
                 </div>
 
                 <div className="mt-4">
-                  <DiceUI 
-                    phase={gameState.phase} 
-                    onRoll={handleRollDice} 
-                    currentValue={gameState.diceValue} 
+                  <DiceUI
+                    phase={gameState.phase}
+                    onRoll={handleRollDice}
+                    currentValue={gameState.diceValue}
                     activeColor={activePlayer?.color}
                   />
                 </div>
