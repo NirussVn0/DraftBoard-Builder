@@ -60,7 +60,7 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, children }) => {
       })}
 
       <div className="absolute top-[10%] left-[10%] w-[80%] h-[80%] p-6 flex flex-col items-center justify-center">
-        <div className="w-full h-full bg-white/70 backdrop-blur-xl border border-white rounded-[2rem] shadow-xl flex items-center justify-center overflow-hidden">
+        <div className="w-full h-full bg-white/70 backdrop-blur-xl border border-white rounded-[2rem] shadow-xl flex items-center justify-center">
           {children}
         </div>
       </div>

@@ -20,15 +20,24 @@ export function getCoordinatesFromCell(cell: number): { x: number; y: number } {
   }
 }
 
-export function calculatePath(startCell: number, diceRoll: number): number[] {
+export function calculatePath(startCell: number, diceRoll: number, maxCell: number = TOTAL_CELLS): number[] {
   const path: number[] = [];
-  const endCell = Math.min(startCell + diceRoll, TOTAL_CELLS);
-  
-  if (startCell === endCell) return path;
+  let current = startCell;
+  let forward = true;
 
-  for (let i = startCell + 1; i <= endCell; i++) {
-    path.push(i);
+  for (let i = 0; i < diceRoll; i++) {
+    if (forward) {
+      current++;
+      if (current === maxCell) {
+        forward = false;
+      }
+    } else {
+      current--;
+    }
+    path.push(current);
   }
+  
+  console.log("Calculated Bounce-Back Path:", path);
   return path;
 }
 
