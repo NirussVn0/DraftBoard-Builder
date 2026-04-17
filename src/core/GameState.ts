@@ -1,3 +1,5 @@
+import type { Tile } from './MapBuilderState';
+
 export interface Player {
   id: string;
   name: string;
@@ -5,7 +7,7 @@ export interface Player {
   position: number;
 }
 
-export type GamePhase = 'SETUP' | 'IDLE_TURN' | 'ROLLING_DICE' | 'MOVING_TOKEN' | 'VICTORY';
+export type GamePhase = 'SETUP' | 'IDLE_TURN' | 'ROLLING_DICE' | 'MOVING_TOKEN' | 'EVALUATE_CELL' | 'EVENT_MYSTERY_ROLL' | 'VICTORY';
 
 export interface GameState {
   phase: GamePhase;
@@ -13,4 +15,5 @@ export interface GameState {
   activePlayerIndex: number;
   winner: Player | null;
   diceValue: number;
+  map: Tile[] | null;
 }

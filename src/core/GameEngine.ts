@@ -1,5 +1,6 @@
 import type { GameState, Player, GamePhase } from './GameState';
 import { calculatePath, TOTAL_CELLS } from './Pathfinding';
+import type { Tile } from './MapBuilderState';
 
 export type GameStateObserver = (state: GameState) => void;
 
@@ -18,6 +19,7 @@ class GameEngine {
       activePlayerIndex: 0,
       winner: null,
       diceValue: 1,
+      map: null,
     };
   }
 
@@ -33,14 +35,15 @@ class GameEngine {
     this.observers.forEach((observer) => observer({ ...this.state }));
   }
 
-  public startGame(players: Omit<Player, 'position' | 'id'>[]) {
+  public startGame(players: Omit<Player, 'position' | 'id'>[], customMap?: Tile[]) {
     this.state = {
       ...this.getInitialState(),
       phase: 'IDLE_TURN',
+      map: customMap || null,
       players: players.map((p, index) => ({
         ...p,
         id: `player-${index + 1}`,
-        position: 1,
+        position: 0, // In stepIndex logic, start at 0
       })),
     };
     this.notify();
@@ -61,10 +64,21 @@ class GameEngine {
   }
 
   public concludeDiceRoll(): number[] | null {
-    if (this.state.phase !== 'ROLLING_DICE') return null;
+    if (this.state.phase !== 'ROLLING_DICE' && this.state.phase !== 'EVENT_MYSTERY_ROLL') return null;
     
     const activePlayer = this.state.players[this.state.activePlayerIndex];
-    const path = calculatePath(activePlayer.position, this.state.diceValue);
+    const maxLevel = this.state.map ? this.state.map.length - 1 : TOTAL_CELLS - 1;
+    const path = calculatePath(activePlayer.position, Math.abs(this.state.diceValue), maxLevel);
+    
+    // If rolling backward from a negative mystery, adjust the path (simple reverse track for now)
+    if (this.state.diceValue < 0) {
+      path.length = 0;
+      let curr = activePlayer.position;
+      for(let i=0; i<Math.abs(this.state.diceValue); i++) {
+        curr = Math.max(0, curr - 1);
+        path.push(curr);
+      }
+    }
 
     this.state = {
       ...this.state,
@@ -80,32 +94,58 @@ class GameEngine {
 
     const activeIndex = this.state.activePlayerIndex;
     const newPlayers = [...this.state.players];
+    const maxLevel = this.state.map ? this.state.map.length - 1 : TOTAL_CELLS - 1;
     
     newPlayers[activeIndex] = { 
       ...newPlayers[activeIndex], 
       position: finalPosition 
     };
     
-    let nextPhase: GamePhase = 'IDLE_TURN';
-    let nextWinner = this.state.winner;
-    let nextActiveIndex = activeIndex;
+    this.state = { ...this.state, players: newPlayers };
 
-    if (finalPosition >= TOTAL_CELLS) {
-      newPlayers[activeIndex].position = TOTAL_CELLS;
+    // Default target phase is EVALUATE_CELL to check where we landed
+    this.state.phase = 'EVALUATE_CELL';
+    this.notify();
+
+    setTimeout(() => {
+      this.evaluateCell(finalPosition, maxLevel);
+    }, 50); // slight delay to detach from anime complete call
+  }
+
+  private evaluateCell(finalPosition: number, maxLevel: number) {
+    let nextPhase: GamePhase = 'IDLE_TURN';
+    let nextActiveIndex = this.state.activePlayerIndex;
+    let nextWinner = this.state.winner;
+    let nextDiceValue = this.state.diceValue;
+
+    if (finalPosition >= maxLevel) {
       nextPhase = 'VICTORY';
-      nextWinner = newPlayers[activeIndex];
+      nextWinner = this.state.players[this.state.activePlayerIndex];
     } else {
-      nextActiveIndex = (activeIndex + 1) % newPlayers.length;
+      // Check Map Type
+      if (this.state.map) {
+        const currentTile = this.state.map[finalPosition];
+        if (currentTile && currentTile.type === 'MYSTERY') {
+          // Trigger Mystery Effect!
+          const randomMystery = Math.floor(Math.random() * 13) - 6; // -6 to +6
+          nextDiceValue = randomMystery === 0 ? 3 : randomMystery;
+          nextPhase = 'EVENT_MYSTERY_ROLL';
+          nextActiveIndex = this.state.activePlayerIndex; // Stay on same player
+        } else {
+          nextActiveIndex = (this.state.activePlayerIndex + 1) % this.state.players.length;
+        }
+      } else {
+        nextActiveIndex = (this.state.activePlayerIndex + 1) % this.state.players.length;
+      }
     }
-    
+
     this.state = {
       ...this.state,
-      players: newPlayers,
       phase: nextPhase,
       winner: nextWinner,
       activePlayerIndex: nextActiveIndex,
+      diceValue: nextDiceValue,
     };
-    
     this.notify();
   }
   

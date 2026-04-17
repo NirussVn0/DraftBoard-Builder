@@ -6,22 +6,59 @@ import { AnimationService } from './services/AnimationService'
 import { HomeMenu } from './components/HomeMenu/HomeMenu'
 import { BoardGrid } from './components/Board/BoardGrid'
 import { DiceUI } from './components/PlayMenu/DiceUI'
+import { WelcomeMenu } from './components/WelcomeMenu'
+import { MapBuilderUI } from './components/MapBuilder/MapBuilderUI'
 
 import { Trophy, RefreshCcw } from 'lucide-react'
 
+import type { Tile } from './core/MapBuilderState'
+
+type AppMode = 'MENU' | 'BUILDER' | 'PLAYING';
+
 function App() {
+  const [appMode, setAppMode] = useState<AppMode>('MENU')
+  const [pendingMap, setPendingMap] = useState<Tile[] | null>(null)
   const [gameState, setGameState] = useState<GameState>(gameEngine.getState())
 
   // Ensure initial render triggers a re-render if state changes immediately
   useEffect(() => {
     const unsubscribe = gameEngine.subscribe((state) => {
       setGameState(state)
+      
+      if (state.phase === 'EVENT_MYSTERY_ROLL') {
+        const activePlayer = state.players[state.activePlayerIndex];
+        
+        // Slightly bounce as a "buff/debuff" receipt, then move
+        AnimationService.animateTokenMove(
+          activePlayer.id,
+          state.activePlayerIndex,
+          [activePlayer.position], // bounce in place
+          () => {
+            setTimeout(() => {
+              const pathData = gameEngine.concludeDiceRoll();
+              if (!pathData) return;
+              AnimationService.animateTokenMove(
+                activePlayer.id, 
+                state.activePlayerIndex,
+                pathData, 
+                (finalCell) => {
+                  gameEngine.finishTokenMove(finalCell);
+                },
+                true, // isFast
+                state.map || undefined
+              );
+            }, 500); // 0.5s delay
+          },
+          false,
+          state.map || undefined
+        );
+      }
     })
     return unsubscribe
   }, [])
 
   const handleStartGame = (players: {name: string, color: string}[]) => {
-    gameEngine.startGame(players)
+    gameEngine.startGame(players, pendingMap || undefined)
   }
 
   const handleRollDice = () => {
@@ -38,16 +75,36 @@ function App() {
         pathData, 
         (finalCell) => {
           gameEngine.finishTokenMove(finalCell);
-        }
+        },
+        false,
+        gameState.map || undefined
       );
     }, 700);
   };
 
   const handleRestart = () => {
     gameEngine.resetGame();
+    setAppMode('MENU');
   };
 
-  if (gameState.phase === 'SETUP') {
+  if (appMode === 'MENU') {
+    return <WelcomeMenu onSelectMode={setAppMode} />;
+  }
+
+  if (appMode === 'BUILDER') {
+    return (
+      <MapBuilderUI 
+        onSave={(path) => {
+          setPendingMap(path);
+          gameEngine.resetGame();
+          setAppMode('PLAYING');
+        }}
+        onCancel={() => setAppMode('MENU')} 
+      />
+    );
+  }
+
+  if (appMode === 'PLAYING' && gameState.phase === 'SETUP') {
     return (
       <div className="min-h-screen bg-slate-50 p-4">
         <HomeMenu onStart={handleStartGame} />
@@ -60,7 +117,7 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-50 p-4 sm:p-8 flex items-center justify-center font-sans text-slate-800">
       <div className="w-full max-w-3xl">
-        <BoardGrid players={gameState.players}>
+        <BoardGrid players={gameState.players} map={gameState.map}>
           <div className="flex flex-col items-center justify-center p-8 space-y-8 w-full text-center">
             {gameState.phase === 'VICTORY' && gameState.winner ? (
               <div className="flex flex-col items-center space-y-4 animate-in zoom-in spin-in-12 duration-700">
@@ -98,6 +155,7 @@ function App() {
                     phase={gameState.phase} 
                     onRoll={handleRollDice} 
                     currentValue={gameState.diceValue} 
+                    activeColor={activePlayer?.color}
                   />
                 </div>
               </>
