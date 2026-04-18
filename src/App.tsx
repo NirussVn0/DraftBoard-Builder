@@ -136,9 +136,27 @@ function App() {
   // ── MENU ──
   if (appMode === 'MENU') {
     return <WelcomeMenu onSelectMode={(mode) => {
-      setAppMode(mode);
-      if (mode === 'PLAYING') {
-        setPendingMap(generateZigzagMap());
+      if (mode === 'PLAY_SAVED') {
+        const savedData = localStorage.getItem('draftboard_saved_map');
+        if (savedData) {
+          try {
+            const savedMap: Tile[] = JSON.parse(savedData);
+            setPendingMap(savedMap);
+            setAppMode('PLAYING');
+          } catch {
+            alert('Map đã lưu bị lỗi. Đang dùng map mặc định.');
+            setPendingMap(generateZigzagMap());
+            setAppMode('PLAYING');
+          }
+        } else {
+          setPendingMap(generateZigzagMap());
+          setAppMode('PLAYING');
+        }
+      } else {
+        setAppMode(mode);
+        if (mode === 'PLAYING') {
+          setPendingMap(generateZigzagMap());
+        }
       }
     }} />;
   }

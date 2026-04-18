@@ -1,7 +1,7 @@
 import React from 'react';
 import { MAP_SIZE, useMapBuilder } from '../../core/MapBuilderState';
 import type { Tile } from '../../core/MapBuilderState';
-import { ArrowRight, ArrowDown, ArrowLeft, ArrowUp, Eraser, Sparkles, RefreshCcw, Save, Undo2, Redo2 } from 'lucide-react';
+import { ArrowRight, ArrowDown, ArrowLeft, ArrowUp, Eraser, Sparkles, RefreshCcw, Save, Undo2, Redo2, Download } from 'lucide-react';
 
 interface MapBuilderUIProps {
   onSave: (path: Tile[]) => void;
@@ -149,6 +149,21 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
             className="w-full flex items-center justify-center gap-2 p-4 rounded-xl font-bold bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all"
           >
             <Save size={20} /> Save & Play
+          </button>
+          <button 
+            onClick={() => {
+               if (path.length > 5) {
+                 const finalPath = [...path];
+                 finalPath[finalPath.length - 1] = { ...finalPath[finalPath.length - 1], type: 'END' as const };
+                 localStorage.setItem('draftboard_saved_map', JSON.stringify(finalPath));
+                 alert('Map đã được lưu thành công!');
+               } else {
+                 alert('Map quá ngắn để lưu.');
+               }
+            }}
+            className="w-full flex items-center justify-center gap-2 p-3 font-bold bg-amber-500 hover:bg-amber-400 text-white shadow-lg shadow-amber-500/20 hover:scale-[1.02] active:scale-95 transition-all"
+          >
+            <Download size={18} /> Lưu Map
           </button>
           <button onClick={onCancel} className="w-full text-slate-400 hover:text-slate-700 text-sm font-bold pt-2">
             Cancel
