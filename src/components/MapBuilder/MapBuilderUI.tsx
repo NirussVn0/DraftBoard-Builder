@@ -30,14 +30,12 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
   }, [undo, redo, canUndo, canRedo]);
 
   const handleCellClick = (x: number, y: number) => {
-    // Check if cell is part of path
     const tilesAtCell = path.filter(t => t.x === x && t.y === y);
     const hasTile = tilesAtCell.length > 0;
 
     if (tool === 'DRAW') {
       addNode(x, y);
     } else if (tool === 'ERASE' && hasTile) {
-      // Find the specific step index to cut from (highest/latest is safest)
       const maxStep = Math.max(...tilesAtCell.map(t => t.stepIndex));
       eraseFrom(maxStep);
     } else if (tool === 'MYSTERY' && hasTile) {
@@ -88,9 +86,9 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex p-4 sm:p-8 gap-8 font-sans items-center justify-center">
-      <div className="w-64 bg-slate-800 text-white rounded-3xl p-6 shadow-2xl flex flex-col gap-6 border border-slate-700">
-        <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
+    <div className="min-h-screen bg-slate-50 flex p-4 sm:p-8 gap-8 font-sans items-center justify-center">
+      <div className="w-64 bg-white text-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col gap-6 border border-slate-200">
+        <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600">
           Map Builder
         </h2>
 
@@ -98,19 +96,19 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Tools</p>
           <button 
             onClick={() => setTool('DRAW')}
-            className={`w-full flex items-center gap-3 p-3 rounded-xl font-bold transition-colors ${tool === 'DRAW' ? 'bg-indigo-600' : 'bg-slate-700 hover:bg-slate-600'}`}
+            className={`w-full flex items-center gap-3 p-3 rounded-xl font-bold transition-colors ${tool === 'DRAW' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
           >
             <ArrowRight size={20} /> Draw Path
           </button>
           <button 
             onClick={() => setTool('ERASE')}
-            className={`w-full flex items-center gap-3 p-3 rounded-xl font-bold transition-colors ${tool === 'ERASE' ? 'bg-rose-600' : 'bg-slate-700 hover:bg-slate-600'}`}
+            className={`w-full flex items-center gap-3 p-3 rounded-xl font-bold transition-colors ${tool === 'ERASE' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
           >
             <Eraser size={20} /> Eraser
           </button>
           <button 
             onClick={() => setTool('MYSTERY')}
-            className={`w-full flex items-center gap-3 p-3 rounded-xl font-bold transition-colors ${tool === 'MYSTERY' ? 'bg-purple-600' : 'bg-slate-700 hover:bg-slate-600'}`}
+            className={`w-full flex items-center gap-3 p-3 rounded-xl font-bold transition-colors ${tool === 'MYSTERY' ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
           >
             <Sparkles size={20} /> Mystery Box
           </button>
@@ -119,13 +117,13 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
         <div className="flex gap-2 mt-2">
           <button 
             onClick={undo} disabled={!canUndo}
-            className={`flex-1 flex items-center justify-center gap-2 p-2 rounded-xl font-bold transition-colors ${canUndo ? 'bg-slate-700 hover:bg-slate-600 text-white' : 'bg-slate-800 text-slate-600 border border-slate-700 cursor-not-allowed'}`}
+            className={`flex-1 flex items-center justify-center gap-2 p-2 rounded-xl font-bold transition-colors ${canUndo ? 'bg-slate-100 hover:bg-slate-200 text-slate-700' : 'bg-slate-50 text-slate-300 border border-slate-200 cursor-not-allowed'}`}
           >
             <Undo2 size={16} />
           </button>
           <button 
             onClick={redo} disabled={!canRedo}
-            className={`flex-1 flex items-center justify-center gap-2 p-2 rounded-xl font-bold transition-colors ${canRedo ? 'bg-slate-700 hover:bg-slate-600 text-white' : 'bg-slate-800 text-slate-600 border border-slate-700 cursor-not-allowed'}`}
+            className={`flex-1 flex items-center justify-center gap-2 p-2 rounded-xl font-bold transition-colors ${canRedo ? 'bg-slate-100 hover:bg-slate-200 text-slate-700' : 'bg-slate-50 text-slate-300 border border-slate-200 cursor-not-allowed'}`}
           >
             <Redo2 size={16} />
           </button>
@@ -134,15 +132,13 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
         <div className="space-y-3 mt-auto">
           <button 
             onClick={clearMap}
-            className="w-full flex items-center justify-center gap-2 p-3 rounded-xl font-bold bg-slate-700 hover:bg-slate-600 transition-colors"
+            className="w-full flex items-center justify-center gap-2 p-3 rounded-xl font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
           >
             <RefreshCcw size={18} /> Clear Map
           </button>
           <button 
             onClick={() => {
-               // Must have at least a path
                if (path.length > 5 && path[path.length - 1].type !== 'START') {
-                 // Force last tile to be END if it isn't already (though eraser handles it, direct drawing doesn't)
                  const finalPath = [...path];
                  finalPath[finalPath.length - 1] = { ...finalPath[finalPath.length - 1], type: 'END' };
                  onSave(finalPath);
@@ -150,17 +146,17 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
                  alert("Map is too short or invalid.");
                }
             }}
-            className="w-full flex items-center justify-center gap-2 p-4 rounded-xl font-bold bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all"
+            className="w-full flex items-center justify-center gap-2 p-4 rounded-xl font-bold bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all"
           >
             <Save size={20} /> Save & Play
           </button>
-          <button onClick={onCancel} className="w-full text-slate-400 hover:text-white text-sm font-bold pt-2">
+          <button onClick={onCancel} className="w-full text-slate-400 hover:text-slate-700 text-sm font-bold pt-2">
             Cancel
           </button>
         </div>
       </div>
 
-      <div className="flex-1 max-w-3xl aspect-square bg-slate-800 rounded-[2.5rem] border-8 border-slate-700 shadow-2xl relative overflow-hidden flex items-center justify-center">
+      <div className="flex-1 max-w-3xl aspect-square bg-white rounded-[2.5rem] border-4 border-slate-200 shadow-2xl relative overflow-hidden flex items-center justify-center">
         <div 
           className="w-full h-full relative"
           style={{
@@ -178,7 +174,7 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
               <div
                 key={`bg-${x}-${y}`}
                 onClick={() => handleCellClick(x, y)}
-                className={`border-[0.5px] border-slate-700/50 cursor-pointer hover:bg-indigo-500/20 transition-colors ${isAlternate ? 'bg-slate-800/80' : 'bg-slate-800'}`}
+                className={`border-[0.5px] border-slate-200/80 cursor-pointer hover:bg-indigo-100/60 transition-colors ${isAlternate ? 'bg-slate-50' : 'bg-white'}`}
               />
             );
           })}
@@ -186,7 +182,7 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
           {path.map((tile) => {
             const { x, y, type, stepIndex } = tile;
             let bgColor = 'bg-slate-200';
-            let content = null;
+            let content: React.ReactNode = <span className="text-slate-500 font-bold text-[10px] opacity-70">{stepIndex}</span>;
 
             if (type === 'START') {
               bgColor = 'bg-emerald-400';
@@ -204,7 +200,7 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
                  key={`tile-${stepIndex}`}
                  onClick={() => handleCellClick(x, y)}
                  className={`absolute shadow-lg flex items-center justify-center cursor-pointer transition-transform hover:scale-110 z-10 
-                   ${bgColor} ${tile.stepIndex === path.length - 1 ? 'ring-4 ring-white animate-pulse' : 'border-2 border-slate-800'} rounded-lg`}
+                   ${bgColor} ${tile.stepIndex === path.length - 1 ? 'ring-4 ring-indigo-400 animate-pulse' : 'border-2 border-slate-300'} rounded-lg`}
                  style={{
                     width: `calc(${100 / MAP_SIZE}% - 4px)`,
                     height: `calc(${100 / MAP_SIZE}% - 4px)`,

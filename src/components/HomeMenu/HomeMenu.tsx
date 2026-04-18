@@ -77,7 +77,7 @@ export const HomeMenu: React.FC<HomeMenuProps> = ({ onStart }) => {
 
           <button
             onClick={() => onStart(players)}
-            className="w-full py-4 mt-4 bg-slate-900 text-white rounded-xl shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all font-bold text-lg"
+            className="w-full py-4 mt-4 bg-indigo-600 text-white rounded-xl shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all font-bold text-lg"
           >
             Start Game
           </button>

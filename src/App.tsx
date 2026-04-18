@@ -9,12 +9,33 @@ import { DiceUI } from './components/PlayMenu/DiceUI'
 import { WelcomeMenu } from './components/WelcomeMenu'
 import { MapBuilderUI } from './components/MapBuilder/MapBuilderUI'
 
-import { Trophy, RefreshCcw } from 'lucide-react'
+import { Trophy, RefreshCcw, Home, Settings } from 'lucide-react'
 
 import type { Tile } from './core/MapBuilderState'
 import { generateZigzagMap } from './core/MapBuilderState'
 
 type AppMode = 'MENU' | 'BUILDER' | 'PLAYING';
+
+function AppHeader({ onHome, onSettings }: { onHome: () => void; onSettings: () => void }) {
+  return (
+    <div className="fixed top-0 right-0 z-50 flex items-center gap-2 p-3">
+      <button
+        onClick={onSettings}
+        title="Settings"
+        className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/80 backdrop-blur border border-slate-200 text-slate-500 hover:text-indigo-600 hover:bg-white hover:border-indigo-200 shadow-sm transition-all"
+      >
+        <Settings size={18} />
+      </button>
+      <button
+        onClick={onHome}
+        title="Home"
+        className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/80 backdrop-blur border border-slate-200 text-slate-500 hover:text-rose-600 hover:bg-white hover:border-rose-200 shadow-sm transition-all"
+      >
+        <Home size={18} />
+      </button>
+    </div>
+  );
+}
 
 function App() {
   const [appMode, setAppMode] = useState<AppMode>('MENU')
@@ -86,6 +107,18 @@ function App() {
     setAppMode('MENU');
   };
 
+  const handleGoHome = () => {
+    const confirmed = window.confirm('Bạn có chắc muốn thoát? Dữ liệu chưa lưu sẽ bị mất.');
+    if (confirmed) {
+      gameEngine.resetGame();
+      setAppMode('MENU');
+    }
+  };
+
+  const handleSettings = () => {
+    // Placeholder — Phase 3 will open the dice-count settings panel
+  };
+
   if (appMode === 'MENU') {
     return <WelcomeMenu onSelectMode={(mode) => {
       setAppMode(mode);
@@ -97,20 +130,24 @@ function App() {
 
   if (appMode === 'BUILDER') {
     return (
-      <MapBuilderUI
-        onSave={(path) => {
-          setPendingMap(path);
-          gameEngine.resetGame();
-          setAppMode('PLAYING');
-        }}
-        onCancel={() => setAppMode('MENU')}
-      />
+      <>
+        <AppHeader onHome={handleGoHome} onSettings={handleSettings} />
+        <MapBuilderUI
+          onSave={(path) => {
+            setPendingMap(path);
+            gameEngine.resetGame();
+            setAppMode('PLAYING');
+          }}
+          onCancel={() => setAppMode('MENU')}
+        />
+      </>
     );
   }
 
   if (appMode === 'PLAYING' && gameState.phase === 'SETUP') {
     return (
       <div className="min-h-screen bg-slate-50 p-4">
+        <AppHeader onHome={handleGoHome} onSettings={handleSettings} />
         <HomeMenu onStart={handleStartGame} />
       </div>
     );
@@ -120,6 +157,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 sm:p-8 flex items-center justify-center font-sans text-slate-800">
+      <AppHeader onHome={handleGoHome} onSettings={handleSettings} />
       <div className="w-full max-w-3xl">
         <BoardGrid players={gameState.players} map={gameState.map}>
           <div className="flex flex-col items-center justify-center p-8 space-y-8 w-full text-center">
@@ -134,7 +172,7 @@ function App() {
                 </div>
                 <button
                   onClick={handleRestart}
-                  className="mt-4 flex items-center gap-2 px-8 py-4 bg-slate-900 text-white rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-transform font-bold text-lg"
+                  className="mt-4 flex items-center gap-2 px-8 py-4 bg-indigo-600 text-white rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-transform font-bold text-lg"
                 >
                   <RefreshCcw size={20} /> Play Again
                 </button>

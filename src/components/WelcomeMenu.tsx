@@ -7,12 +7,12 @@ interface WelcomeMenuProps {
 
 export const WelcomeMenu: React.FC<WelcomeMenuProps> = ({ onSelectMode }) => {
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4">
-      <div className="max-w-md w-full bg-slate-800 rounded-[2rem] shadow-2xl p-10 border border-slate-700 text-center">
-        <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 to-purple-400 mb-2">
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white rounded-[2rem] shadow-2xl p-10 border border-slate-200 text-center">
+        <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-500 to-purple-600 mb-2">
           DraftBoard
         </h1>
-        <p className="text-slate-400 font-medium mb-12">Select your game mode</p>
+        <p className="text-slate-500 font-medium mb-12">Select your game mode</p>
 
         <div className="space-y-4">
           <button
@@ -24,7 +24,7 @@ export const WelcomeMenu: React.FC<WelcomeMenuProps> = ({ onSelectMode }) => {
 
           <button
             onClick={() => onSelectMode('BUILDER')}
-            className="w-full flex items-center justify-center gap-3 py-5 rounded-2xl font-bold bg-slate-700 hover:bg-slate-600 text-white shadow-lg hover:-translate-y-1 transition-all"
+            className="w-full flex items-center justify-center gap-3 py-5 rounded-2xl font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 shadow-lg hover:-translate-y-1 transition-all"
           >
             <PenTool size={24} /> Create Map Builder
           </button>

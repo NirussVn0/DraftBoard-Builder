@@ -87,7 +87,7 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map, children }) 
             return (
               <div
                 key={`tile-${stepIndex}`}
-                className={`absolute shadow-lg flex items-center justify-center z-10 ${bgColor} border-2 border-slate-800 rounded-lg`}
+                className={`absolute shadow-lg flex items-center justify-center z-10 ${bgColor} border-2 border-slate-300 rounded-lg`}
                 style={{
                   width: `calc(${100 / MAP_SIZE}% - 4px)`,
                   height: `calc(${100 / MAP_SIZE}% - 4px)`,
