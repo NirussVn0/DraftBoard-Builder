@@ -90,6 +90,58 @@
 
 ---
 
+## Epic 3 — Ticket 3.1: Design System & i18n ✅ COMPLETE
+
+**Goal**: Cardboard game aesthetic and localized UI text.
+
+| Feature | Details | Status |
+|---------|---------|--------|
+| Cardboard CSS Tokens | `--card-radius: 2px`, `--card-shadow`, `--card-inset`, `--tile-shadow` in `:root`. | ✅ |
+| `.game-card` / `.game-tile` | Utility classes applied to all panels, buttons, overlays, and tiles. | ✅ |
+| Purge Web-App Rounded | Removed `rounded-xl/2xl/3xl/[2rem]/[2.5rem]` from all 7 components. | ✅ |
+| i18n Types | `LocaleStrings` interface with 10 domains, `LocaleKey` type. | ✅ |
+| Vietnamese Dictionary | `vi.ts` with 45+ strings covering all UI text. | ✅ |
+| `t()` Accessor | Module-level function returning active locale dictionary. | ✅ |
+| Component Integration | All components use `t()` — zero hardcoded strings remaining. | ✅ |
+
+---
+
+## Epic 3 — Ticket 3.3a + 3.1c: Settings State & Panel ✅ COMPLETE
+
+**Goal**: Persistent settings and functional Settings UI.
+
+| Feature | Details | Status |
+|---------|---------|--------|
+| `GlobalSettings` Type | locale, enableSoundEffects, enableAnimations, cameraAutoTrack. | ✅ |
+| `MapSettings` Type | diceCount, kickDistance, exactLanding (per-game session). | ✅ |
+| localStorage Persistence | `loadGlobalSettings()` / `saveGlobalSettings()` helpers. | ✅ |
+| Settings Panel Drawer | Slide-in from right with anime.js. Language switcher + toggle rows. | ✅ |
+| Settings Button Wired | `handleSettings()` in App.tsx opens drawer (no longer a no-op). | ✅ |
+
+---
+
+## Epic 3 — Ticket 3.3b-d: Kick Collision 🔲 PENDING CEO APPROVAL
+
+| Feature | Details | Status |
+|---------|---------|--------|
+| `EVENT_KICK` Phase | New GamePhase for collision events. | 🔲 |
+| Collision Detection | `evaluateCell()` checks if another player occupies same tile. | 🔲 |
+| `resolveKick()` | Kicks player back by `kickDistance`, chains to mystery check. | 🔲 |
+| KickOverlay | Impact animation + text banner. | 🔲 |
+
+---
+
+## Epic 3 — Ticket 3.2: Camera Engine & Dice UX 🔲 PENDING CEO APPROVAL
+
+| Feature | Details | Status |
+|---------|---------|--------|
+| CameraService | Parabolic tracking: zoom-out → pan → zoom-in via anime.js timeline. | 🔲 |
+| CameraWrapper | Viewport container with CSS transform for scale/translate. | 🔲 |
+| Skip Turn | `skipTurn()` method + secondary button in UI. | 🔲 |
+| Dice Separation | PhysicalDice (animation) + DiceResultBanner (number) as separate entities. | 🔲 |
+
+---
+
 ## Phase 6 — Polish & Extras (Stretch) 🔲 BACKLOG
 
 | Feature | Details | Status |
@@ -97,3 +149,4 @@
 | Sound Effects | Dice roll, token hop, victory fanfare. | 🔲 |
 | Responsive Layout | Mobile-friendly board scaling. | 🔲 |
 | Map Export / Import | Base64-encode map → shareable URL. | 🔲 |
+

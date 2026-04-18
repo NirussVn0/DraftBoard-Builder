@@ -15,11 +15,14 @@
 
 ## Directory Structure
 
-```
 src/
 ├── App.tsx                         # Root controller — AppMode routing & game event orchestration
 ├── main.tsx                        # React DOM entry point
-├── index.css                       # Tailwind import, base styles, custom animations
+├── index.css                       # Tailwind import, cardboard design tokens, custom animations
+├── locales/                        # i18n dictionary system
+│   ├── types.ts                    # LocaleStrings interface — all UI text keys
+│   ├── vi.ts                       # Vietnamese dictionary (default)
+│   └── index.ts                    # t() accessor, setLocale(), getLocale()
 ├── components/
 │   ├── WelcomeMenu.tsx             # Mode selection entry screen (MENU)
 │   ├── Board/
@@ -29,14 +32,18 @@ src/
 │   │   └── HomeMenu.tsx            # Player count + name + color configuration (SETUP phase)
 │   ├── MapBuilder/
 │   │   └── MapBuilderUI.tsx        # Editor grid, tool palette, undo/redo controls
-│   └── PlayMenu/
-│       ├── DiceOverlay.tsx         # Sky-drop dice animation overlay (replaces old DiceUI)
-│       └── DiceUI.tsx              # [DEPRECATED] Old static center dice
+│   ├── PlayMenu/
+│   │   ├── DiceOverlay.tsx         # Sky-drop dice animation overlay (replaces old DiceUI)
+│   │   ├── MysteryCardOverlay.tsx  # 3D card flip animation for mystery tiles
+│   │   └── DiceUI.tsx              # [DEPRECATED] Old static center dice
+│   └── Settings/
+│       └── SettingsPanel.tsx       # Slide-in drawer for global settings (locale, sound, etc.)
 ├── core/
 │   ├── GameEngine.ts               # Singleton state machine; all business logic
 │   ├── GameState.ts                # Type definitions: Player, GamePhase, GameState
 │   ├── MapBuilderState.ts          # Tile types, useMapBuilder() hook, generateZigzagMap()
-│   └── Pathfinding.ts             # Coordinate formulas, path calculator, token metrics
+│   ├── Pathfinding.ts             # Coordinate formulas, path calculator, token metrics
+│   └── SettingsState.ts           # GlobalSettings, MapSettings types, localStorage helpers
 └── services/
     └── AnimationService.ts         # anime.js bridge; token movement + sky-drop dice
 ```
@@ -165,3 +172,23 @@ Final position:
 - **Save**: "Lưu Map" button in `MapBuilderUI` sidebar serializes `Tile[]` to `localStorage` key `draftboard_saved_map`.
 - **Load**: `WelcomeMenu` checks `localStorage` on render. If saved data exists, shows amber "Chơi Map Đã Lưu" button.
 - **App routing**: `PLAY_SAVED` mode in `App.tsx` parses JSON from localStorage into `Tile[]`, with try/catch fallback to default map.
+
+### ✅ Cardboard Design System (Epic 3 — Ticket 3.1a)
+
+- **CSS Tokens** in `index.css`: `--card-radius: 2px`, `--card-shadow`, `--card-inset`, `--tile-shadow`.
+- **Utility classes**: `.game-card` (panels, buttons, overlays) and `.game-tile` (board tiles).
+- **Purged**: All `rounded-xl`, `rounded-2xl`, `rounded-3xl`, `rounded-[2rem]`, `rounded-[2.5rem]` from every component.
+- **Result**: Sharp, rectangular "cardboard" aesthetic across the entire UI.
+
+### ✅ i18n Dictionary System (Epic 3 — Ticket 3.1b)
+
+- **Architecture**: `src/locales/types.ts` defines `LocaleStrings` interface with 10 domains (welcome, home, board, stats, dice, mystery, victory, kick, builder, settings, common).
+- **Vietnamese dict**: `src/locales/vi.ts` — default locale with all 45+ strings.
+- **Accessor**: `t()` function returns active dictionary. `setLocale(key)` switches language.
+- **Integration**: All 7 components updated to consume `t()` instead of hardcoded strings.
+
+### ✅ Settings Panel & State (Epic 3 — Ticket 3.3a + 3.1c)
+
+- **SettingsState.ts**: `GlobalSettings` (locale, sound, animations, cameraTrack) persisted to localStorage. `MapSettings` (diceCount, kickDistance, exactLanding) for per-game config.
+- **SettingsPanel.tsx**: Slide-in drawer from right edge with anime.js `translateX` animation. Contains language switcher (vi/en) and toggle rows.
+- **App integration**: Settings button in `AppHeader` now opens the drawer (no longer a no-op).
