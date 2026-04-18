@@ -1,6 +1,5 @@
 import type { Tile } from './MapBuilderState';
 import type { MapSettings } from './SettingsState';
-import { DEFAULT_MAP } from './SettingsState';
 
 export interface Player {
   id: string;

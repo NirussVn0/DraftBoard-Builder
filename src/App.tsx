@@ -2,10 +2,12 @@ import { useEffect, useState, useCallback } from 'react'
 import { gameEngine } from './core/GameEngine'
 import type { GameState } from './core/GameState'
 import { AnimationService } from './services/AnimationService'
-import { TOTAL_CELLS } from './core/Pathfinding'
+import { TOTAL_CELLS, getCoordinatesFromCell, MAP_SIZE, getTokenMetrics, getPlayerOffset } from './core/Pathfinding'
+import { cameraService } from './services/CameraService'
 
 import { HomeMenu } from './components/HomeMenu/HomeMenu'
 import { BoardGrid } from './components/Board/BoardGrid'
+import { CameraWrapper } from './components/Board/CameraWrapper'
 import { PlayerStatsPanel } from './components/Board/PlayerStatsPanel'
 import { DiceOverlay } from './components/PlayMenu/DiceOverlay'
 import { MysteryCardOverlay } from './components/PlayMenu/MysteryCardOverlay'
@@ -20,6 +22,7 @@ import { t } from './locales'
 
 import type { Tile } from './core/MapBuilderState'
 import { generateZigzagMap } from './core/MapBuilderState'
+import { BOARD_SIZE } from './core/Pathfinding'
 
 type AppMode = 'MENU' | 'BUILDER' | 'PLAYING';
 
@@ -70,6 +73,55 @@ function App() {
     })
     return unsubscribe
   }, [])
+
+  useEffect(() => {
+    if (appMode !== 'PLAYING' || gameState.phase === 'SETUP') {
+      cameraService.resetCamera('camera-viewport');
+      return;
+    }
+
+    // Delay camera focus slightly to let UI render
+    const timeout = setTimeout(() => {
+      const activePlayer = gameState.players[gameState.activePlayerIndex];
+      if (!activePlayer) return;
+
+      const containerEl = document.getElementById('board-container');
+      if (!containerEl) return;
+      
+      const width = containerEl.clientWidth;
+      const height = containerEl.clientHeight;
+
+      const cellSizePct = gameState.map ? (100 / MAP_SIZE) : (100 / BOARD_SIZE);
+      const { tokenSizePct, centerOffset } = getTokenMetrics(cellSizePct);
+
+      let gridX = 0, gridY = 0;
+      if (gameState.map && gameState.map.length > 0) {
+        const tile = gameState.map[activePlayer.position];
+        if (tile) { gridX = tile.x; gridY = tile.y; }
+      } else {
+        const coords = getCoordinatesFromCell(activePlayer.position);
+        gridX = coords.x; gridY = coords.y;
+      }
+
+      const { offsetX, offsetY } = getPlayerOffset(gameState.activePlayerIndex, cellSizePct);
+
+      // Convert percentage coordinates to pixels based on container size
+      // The BoardGrid aspect-square means width == height
+      const targetX = (gridX * cellSizePct + centerOffset + offsetX + (tokenSizePct / 2)) * (width / 100);
+      const targetY = (gridY * cellSizePct + centerOffset + offsetY + (tokenSizePct / 2)) * (width / 100);
+
+      // Parabolic animation
+      cameraService.animateParabolic(
+        'camera-viewport',
+        width,
+        height,
+        targetX,
+        targetY
+      );
+    }, 100);
+
+    return () => clearTimeout(timeout);
+  }, [appMode, gameState.phase, gameState.activePlayerIndex, gameState.players, gameState.map]);
 
   const handleStartGame = (players: { name: string, color: string }[]) => {
     gameEngine.startGame(players, pendingMap || undefined)
@@ -215,8 +267,10 @@ function App() {
       {/* Board + Stats Panel layout */}
       <div className="flex gap-6 items-start w-full max-w-5xl">
         {/* Board */}
-        <div className="flex-1 max-w-3xl">
-          <BoardGrid players={gameState.players} map={gameState.map} />
+        <div className="flex-1 max-w-3xl flex justify-center" id="board-container">
+          <CameraWrapper>
+            <BoardGrid players={gameState.players} map={gameState.map} />
+          </CameraWrapper>
         </div>
 
         {/* Stats Panel */}

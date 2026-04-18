@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import anime from 'animejs';
 import { X } from 'lucide-react';
 import { t } from '../../locales';
-import { setLocale, getLocale } from '../../locales';
+import { setLocale } from '../../locales';
 import type { GlobalSettings } from '../../core/SettingsState';
 import { loadGlobalSettings, saveGlobalSettings } from '../../core/SettingsState';
 

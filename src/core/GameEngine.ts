@@ -1,4 +1,4 @@
-import type { GameState, Player, GamePhase, KickEvent } from './GameState';
+import type { GameState, Player, KickEvent } from './GameState';
 import { calculatePath, TOTAL_CELLS } from './Pathfinding';
 import type { Tile } from './MapBuilderState';
 import type { MapSettings } from './SettingsState';
