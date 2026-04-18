@@ -34,4 +34,5 @@ export interface GameState {
   map: Tile[] | null;
   mapSettings: MapSettings;
   kickEvent: KickEvent | null;
+  canUndo: boolean;
 }

@@ -27,6 +27,7 @@ export const vi: LocaleStrings = {
   dice: {
     rollButton: 'Tung Xúc Xắc',
     skipButton: 'Bỏ Lượt',
+    undoButton: 'Lùi Lại',
   },
   mystery: {
     title: 'Thẻ Bí Ẩn',

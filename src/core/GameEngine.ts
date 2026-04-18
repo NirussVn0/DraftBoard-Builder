@@ -9,6 +9,8 @@ export type GameStateObserver = (state: GameState) => void;
 class GameEngine {
   private state: GameState;
   private observers: GameStateObserver[] = [];
+  private history: Omit<GameState, 'canUndo'>[] = [];
+  private static MAX_HISTORY = 20;
 
   constructor() {
     this.state = this.getInitialState();
@@ -24,6 +26,7 @@ class GameEngine {
       map: null,
       mapSettings: { ...DEFAULT_MAP },
       kickEvent: null,
+      canUndo: false,
     };
   }
 
@@ -54,8 +57,28 @@ class GameEngine {
     this.notify();
   }
 
+  private pushSnapshot(): void {
+    const snapshot = structuredClone({
+      ...this.state,
+    }) as any;
+    delete snapshot.canUndo;
+
+    this.history.push(snapshot);
+    if (this.history.length > GameEngine.MAX_HISTORY) {
+      this.history.shift();
+    }
+    
+    // Update current state to reflect it can be undone
+    this.state = {
+      ...this.state,
+      canUndo: true
+    };
+  }
+
   public rollDice(): void {
     if (this.state.phase !== 'IDLE_TURN') return;
+
+    this.pushSnapshot();
 
     const diceRoll = Math.floor(Math.random() * 6) + 1;
 
@@ -233,7 +256,19 @@ class GameEngine {
     this.notify();
   }
 
+  public undo(): void {
+    if (this.history.length === 0) return;
+
+    const snapshot = this.history.pop()!;
+    this.state = {
+      ...snapshot,
+      canUndo: this.history.length > 0,
+    };
+    this.notify();
+  }
+
   public resetGame() {
+    this.history = [];
     this.state = this.getInitialState();
     this.notify();
   }

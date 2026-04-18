@@ -17,7 +17,7 @@ import { MapBuilderUI } from './components/MapBuilder/MapBuilderUI'
 import { SettingsPanel } from './components/Settings/SettingsPanel'
 import { KickOverlay } from './components/PlayMenu/KickOverlay'
 
-import { Trophy, RefreshCcw, Home, Settings, Dices, SkipForward } from 'lucide-react'
+import { Trophy, RefreshCcw, Home, Settings, Dices, SkipForward, Undo2 } from 'lucide-react'
 
 import { t } from './locales'
 
@@ -281,6 +281,14 @@ function App() {
       {/* Bottom-center action buttons */}
       {gameState.phase === 'IDLE_TURN' && (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3">
+          {gameState.canUndo && (
+            <button
+              onClick={() => gameEngine.undo()}
+              className="flex items-center gap-2 px-6 py-5 bg-amber-100 text-amber-700 font-bold text-sm game-card hover:bg-amber-200 hover:scale-105 active:scale-95 transition-all uppercase tracking-wider border border-amber-200"
+            >
+              <Undo2 size={18} /> {t().dice.undoButton}
+            </button>
+          )}
           <button
             onClick={() => gameEngine.skipTurn()}
             className="flex items-center gap-2 px-6 py-5 bg-slate-200 text-slate-600 font-bold text-sm game-card hover:bg-slate-300 hover:scale-105 active:scale-95 transition-all uppercase tracking-wider"

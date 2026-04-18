@@ -25,6 +25,7 @@ export interface LocaleStrings {
   dice: {
     rollButton: string;
     skipButton: string;
+    undoButton: string;
   };
   mystery: {
     title: string;
