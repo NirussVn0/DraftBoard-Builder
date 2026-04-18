@@ -87,7 +87,7 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
 
   return (
     <div className="min-h-screen bg-slate-50 flex p-4 sm:p-8 gap-8 font-sans items-center justify-center">
-      <div className="w-64 bg-white text-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col gap-6 border border-slate-200">
+      <div className="w-64 bg-white text-slate-800 game-card p-6 flex flex-col gap-6">
         <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600">
           Map Builder
         </h2>
@@ -96,19 +96,19 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Tools</p>
           <button 
             onClick={() => setTool('DRAW')}
-            className={`w-full flex items-center gap-3 p-3 rounded-xl font-bold transition-colors ${tool === 'DRAW' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+            className={`w-full flex items-center gap-3 p-3 game-card font-bold transition-colors ${tool === 'DRAW' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
           >
             <ArrowRight size={20} /> Draw Path
           </button>
           <button 
             onClick={() => setTool('ERASE')}
-            className={`w-full flex items-center gap-3 p-3 rounded-xl font-bold transition-colors ${tool === 'ERASE' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+            className={`w-full flex items-center gap-3 p-3 game-card font-bold transition-colors ${tool === 'ERASE' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
           >
             <Eraser size={20} /> Eraser
           </button>
           <button 
             onClick={() => setTool('MYSTERY')}
-            className={`w-full flex items-center gap-3 p-3 rounded-xl font-bold transition-colors ${tool === 'MYSTERY' ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+            className={`w-full flex items-center gap-3 p-3 game-card font-bold transition-colors ${tool === 'MYSTERY' ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
           >
             <Sparkles size={20} /> Mystery Card
           </button>
@@ -117,13 +117,13 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
         <div className="flex gap-2 mt-2">
           <button 
             onClick={undo} disabled={!canUndo}
-            className={`flex-1 flex items-center justify-center gap-2 p-2 rounded-xl font-bold transition-colors ${canUndo ? 'bg-slate-100 hover:bg-slate-200 text-slate-700' : 'bg-slate-50 text-slate-300 border border-slate-200 cursor-not-allowed'}`}
+            className={`flex-1 flex items-center justify-center gap-2 p-2 game-card font-bold transition-colors ${canUndo ? 'bg-slate-100 hover:bg-slate-200 text-slate-700' : 'bg-slate-50 text-slate-300 cursor-not-allowed'}`}
           >
             <Undo2 size={16} />
           </button>
           <button 
             onClick={redo} disabled={!canRedo}
-            className={`flex-1 flex items-center justify-center gap-2 p-2 rounded-xl font-bold transition-colors ${canRedo ? 'bg-slate-100 hover:bg-slate-200 text-slate-700' : 'bg-slate-50 text-slate-300 border border-slate-200 cursor-not-allowed'}`}
+            className={`flex-1 flex items-center justify-center gap-2 p-2 game-card font-bold transition-colors ${canRedo ? 'bg-slate-100 hover:bg-slate-200 text-slate-700' : 'bg-slate-50 text-slate-300 cursor-not-allowed'}`}
           >
             <Redo2 size={16} />
           </button>
@@ -132,7 +132,7 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
         <div className="space-y-3 mt-auto">
           <button 
             onClick={clearMap}
-            className="w-full flex items-center justify-center gap-2 p-3 rounded-xl font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+            className="w-full flex items-center justify-center gap-2 p-3 game-card font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
           >
             <RefreshCcw size={18} /> Clear Map
           </button>
@@ -146,7 +146,7 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
                  alert("Map is too short or invalid.");
                }
             }}
-            className="w-full flex items-center justify-center gap-2 p-4 rounded-xl font-bold bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all"
+            className="w-full flex items-center justify-center gap-2 p-4 game-card font-bold bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:scale-[1.02] active:scale-95 transition-all"
           >
             <Save size={20} /> Save & Play
           </button>
@@ -171,7 +171,7 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
         </div>
       </div>
 
-      <div className="flex-1 max-w-3xl aspect-square bg-white rounded-[2.5rem] border-4 border-slate-200 shadow-2xl relative overflow-hidden flex items-center justify-center">
+      <div className="flex-1 max-w-3xl aspect-square bg-white game-card border-4 border-slate-200 relative overflow-hidden flex items-center justify-center">
         <div 
           className="w-full h-full relative"
           style={{
@@ -217,7 +217,7 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
                  key={`tile-${stepIndex}`}
                  onClick={() => handleCellClick(x, y)}
                  className={`absolute shadow-lg flex items-center justify-center cursor-pointer transition-transform hover:scale-110 z-10 
-                   ${bgColor} ${tile.stepIndex === path.length - 1 ? 'ring-4 ring-indigo-400 animate-pulse' : 'border-2 border-slate-300'} rounded-lg`}
+                   ${bgColor} ${tile.stepIndex === path.length - 1 ? 'ring-4 ring-indigo-400 animate-pulse' : 'border-2 border-slate-300'} game-tile`}
                  style={{
                     width: `calc(${100 / MAP_SIZE}% - 4px)`,
                     height: `calc(${100 / MAP_SIZE}% - 4px)`,

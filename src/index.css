@@ -1,5 +1,19 @@
 @import "tailwindcss";
 
+:root {
+  /* ── Cardboard Design Tokens ── */
+  --card-radius: 2px;
+  --card-border: 1px solid rgba(0, 0, 0, 0.12);
+  --card-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.12),
+    0 4px 8px rgba(0, 0, 0, 0.06);
+  --card-inset: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+
+  --tile-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 @layer base {
   body {
     @apply bg-gray-50 text-gray-900;
@@ -11,6 +25,19 @@
   .glass {
     @apply bg-white/40 border border-white/40 shadow-xl backdrop-blur-md;
   }
+}
+
+/* ── Cardboard Design System ── */
+.game-card {
+  border-radius: var(--card-radius);
+  border: var(--card-border);
+  box-shadow: var(--card-shadow), var(--card-inset);
+}
+
+.game-tile {
+  border-radius: var(--card-radius);
+  box-shadow: var(--tile-shadow);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* Animations */

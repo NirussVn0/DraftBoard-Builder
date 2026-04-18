@@ -51,7 +51,7 @@ export const DiceOverlay: React.FC<DiceOverlayProps> = ({
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/20 backdrop-blur-sm">
       <div
         id="sky-drop-dice"
-        className="bg-white p-8 shadow-2xl border-2 flex flex-col items-center gap-4"
+        className="bg-white p-8 game-card border-2 flex flex-col items-center gap-4"
         style={{ borderColor: activeColor }}
       >
         <Icon size={120} style={{ color: activeColor }} />

@@ -216,7 +216,7 @@ function App() {
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-30">
           <button
             onClick={handleRollDice}
-            className="flex items-center gap-3 px-10 py-5 bg-indigo-600 text-white font-black text-xl shadow-2xl hover:bg-indigo-500 hover:scale-105 active:scale-95 transition-all uppercase tracking-wider"
+            className="flex items-center gap-3 px-10 py-5 bg-indigo-600 text-white font-black text-xl game-card hover:bg-indigo-500 hover:scale-105 active:scale-95 transition-all uppercase tracking-wider"
             style={{ borderColor: activePlayer?.color }}
           >
             <Dices size={28} /> Roll Dice
@@ -244,7 +244,7 @@ function App() {
       {/* Victory Overlay */}
       {gameState.phase === 'VICTORY' && gameState.winner && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/20 backdrop-blur-sm">
-          <div className="bg-white p-12 shadow-2xl border border-slate-200 flex flex-col items-center gap-6 text-center">
+          <div className="bg-white p-12 game-card flex flex-col items-center gap-6 text-center">
             <Trophy size={80} className="text-yellow-400 drop-shadow-xl" />
             <h2 className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-br from-yellow-400 to-orange-600">
               VICTORY!

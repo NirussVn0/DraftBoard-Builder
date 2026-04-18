@@ -54,7 +54,7 @@ export const MysteryCardOverlay: React.FC<MysteryCardOverlayProps> = ({
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/20 backdrop-blur-sm">
       <div
         ref={cardRef}
-        className="mystery-card-container w-64 h-80 flex items-center justify-center shadow-2xl border-2 border-slate-300"
+        className="mystery-card-container w-64 h-80 flex items-center justify-center game-card border-2 border-slate-300"
         style={{ perspective: '1000px', transformStyle: 'preserve-3d' }}
       >
         {showFront ? (
