@@ -227,9 +227,15 @@ function App() {
         />
       </div>
 
-      {/* Bottom-center ROLL DICE button */}
+      {/* Bottom-center action buttons */}
       {gameState.phase === 'IDLE_TURN' && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-30">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3">
+          <button
+            onClick={() => gameEngine.skipTurn()}
+            className="flex items-center gap-2 px-6 py-5 bg-slate-200 text-slate-600 font-bold text-sm game-card hover:bg-slate-300 hover:scale-105 active:scale-95 transition-all uppercase tracking-wider"
+          >
+            <SkipForward size={18} /> {t().dice.skipButton}
+          </button>
           <button
             onClick={handleRollDice}
             className="flex items-center gap-3 px-10 py-5 bg-indigo-600 text-white font-black text-xl game-card hover:bg-indigo-500 hover:scale-105 active:scale-95 transition-all uppercase tracking-wider"

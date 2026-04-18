@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { AnimationService } from '../../services/AnimationService';
-import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6 } from 'lucide-react';
+import React, { useState, useCallback } from 'react';
+import { PhysicalDice } from './PhysicalDice';
+import { DiceResultBanner } from './DiceResultBanner';
 
 interface DiceOverlayProps {
   diceValue: number;
@@ -8,59 +8,40 @@ interface DiceOverlayProps {
   onComplete: () => void;
 }
 
-const DICE_ICONS = [Dice1, Dice1, Dice2, Dice3, Dice4, Dice5, Dice6];
-
+/**
+ * DiceOverlay — orchestrates PhysicalDice (sky-drop) and DiceResultBanner (number).
+ * Timing: Dice drops (1000ms) → pause (200ms) → Banner slides in (300ms) → hold (800ms) → close.
+ */
 export const DiceOverlay: React.FC<DiceOverlayProps> = ({
   diceValue, activeColor, onComplete
 }) => {
-  const hasAnimated = useRef(false);
-  const intervalRef = useRef<number | null>(null);
-  const [displayValue, setDisplayValue] = useState(1);
-  const [showResult, setShowResult] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
 
-  useEffect(() => {
-    if (hasAnimated.current) return;
-    hasAnimated.current = true;
+  const handleDiceLanded = useCallback(() => {
+    // Dice has landed — wait 200ms pause, then show banner
+    setTimeout(() => {
+      setShowBanner(true);
 
-    // Rapid cycling of dice faces during drop
-    intervalRef.current = window.setInterval(() => {
-      setDisplayValue(Math.floor(Math.random() * 6) + 1);
-    }, 80);
-
-    // Sky-drop animation using exact CEO-mandated anime.js config
-    AnimationService.animateSkyDropDice('sky-drop-dice', () => {
-      // Animation complete — stop cycling, show final value
-      if (intervalRef.current) window.clearInterval(intervalRef.current);
-      setDisplayValue(diceValue);
-      setShowResult(true);
-
-      // Wait 1s before removing overlay
+      // Hold banner for 800ms, then close everything
       setTimeout(() => {
         onComplete();
-      }, 1000);
-    });
-
-    return () => {
-      if (intervalRef.current) window.clearInterval(intervalRef.current);
-    };
-  }, [diceValue, onComplete]);
-
-  const Icon = DICE_ICONS[displayValue] || Dice1;
+      }, 800);
+    }, 200);
+  }, [onComplete]);
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/20 backdrop-blur-sm">
-      <div
-        id="sky-drop-dice"
-        className="bg-white p-8 game-card border-2 flex flex-col items-center gap-4"
-        style={{ borderColor: activeColor }}
-      >
-        <Icon size={120} style={{ color: activeColor }} />
-        {showResult && (
-          <div className="text-center">
-            <span className="text-5xl font-black" style={{ color: activeColor }}>
-              {diceValue}
-            </span>
-          </div>
+      <div className="flex flex-col items-center gap-4">
+        {/* Physical dice — sky-drop animation */}
+        <PhysicalDice
+          diceValue={diceValue}
+          activeColor={activeColor}
+          onLanded={handleDiceLanded}
+        />
+
+        {/* Result banner — appears after dice lands */}
+        {showBanner && (
+          <DiceResultBanner value={diceValue} activeColor={activeColor} />
         )}
       </div>
     </div>
