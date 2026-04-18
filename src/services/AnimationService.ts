@@ -3,8 +3,8 @@ import { getCoordinatesFromCell, getPlayerOffset, getTokenMetrics } from '../cor
 import type { Tile } from '../core/MapBuilderState';
 import { audioService } from './AudioService';
 
-const LEGACY_CELL_SIZE_PCT = 10;
-const MAP_CELL_SIZE_PCT = 100 / 15;
+/** Must match BoardGrid.TILE_PX */
+const TILE_PX = 64;
 
 export class AnimationService {
   public static animateTokenMove(
@@ -26,9 +26,14 @@ export class AnimationService {
       return;
     }
 
-    const cellSizePct = customMap ? MAP_CELL_SIZE_PCT : LEGACY_CELL_SIZE_PCT;
-    const { centerOffset } = getTokenMetrics(cellSizePct);
+    const gridSize = customMap ? 15 : 10;
+    const cellSizePct = 100 / gridSize;
     const { offsetX, offsetY } = getPlayerOffset(playerIndex, cellSizePct);
+    const boardPx = gridSize * TILE_PX;
+    const tokenPx = TILE_PX * 0.7;
+    const tokenCenter = (TILE_PX - tokenPx) / 2;
+    const pxOffsetX = (offsetX / 100) * boardPx;
+    const pxOffsetY = (offsetY / 100) * boardPx;
     const speedFactor = isFast ? 1.5 : 1;
 
     const timeline = anime.timeline({
@@ -52,10 +57,13 @@ export class AnimationService {
         y = coords.y;
       }
 
+      const targetLeft = x * TILE_PX + tokenCenter + pxOffsetX;
+      const targetTop = y * TILE_PX + tokenCenter + pxOffsetY;
+
       timeline.add({
         targets: tokenElement,
-        left: `${x * cellSizePct + centerOffset + offsetX}%`,
-        top: `${y * cellSizePct + centerOffset + offsetY}%`,
+        left: targetLeft,
+        top: targetTop,
         translateY: [
           { value: -20, duration: 150 / speedFactor, easing: 'easeOutQuad' },
           { value: 0, duration: 150 / speedFactor, easing: 'easeInQuad' }

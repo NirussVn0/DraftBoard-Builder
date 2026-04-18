@@ -6,13 +6,20 @@ import { MAP_SIZE } from '../../core/MapBuilderState';
 import { Sparkles } from 'lucide-react';
 import { t } from '../../locales';
 
+/** Tile size in pixels — upscaled for fullscreen board */
+const TILE_PX = 64;
+
 interface BoardGridProps {
   players: Player[];
   map?: Tile[] | null;
 }
 
 export const BoardGrid: React.FC<BoardGridProps> = ({ players, map }) => {
-  const cellSizePct = map ? (100 / MAP_SIZE) : (100 / BOARD_SIZE);
+  const gridSize = map ? MAP_SIZE : BOARD_SIZE;
+  const boardPx = gridSize * TILE_PX;
+
+  // Still use percentage for token positioning offset logic (relative to board cells)
+  const cellSizePct = 100 / gridSize;
   const { tokenSizePct, centerOffset } = getTokenMetrics(cellSizePct);
 
   const legacyCells = useMemo(() => {
@@ -24,7 +31,10 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map }) => {
   }, []);
 
   return (
-    <div className="relative w-full aspect-square bg-white border-2 border-slate-300 mx-auto overflow-hidden">
+    <div
+      className="relative bg-white mx-auto overflow-hidden"
+      style={{ width: boardPx, height: boardPx, minWidth: boardPx, minHeight: boardPx }}
+    >
 
       {map ? (
         /* Custom map — ONLY render Tile[] path elements, NO background grid */
@@ -32,7 +42,7 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map }) => {
           {map.map((tile) => {
             const { x, y, type, stepIndex } = tile;
             let bgColor = 'bg-slate-200';
-            let content: React.ReactNode = <span className="text-slate-500 font-bold text-[10px]">{stepIndex}</span>;
+            let content: React.ReactNode = <span className="text-slate-500 font-bold text-[11px]">{stepIndex}</span>;
 
             if (type === 'START') {
               bgColor = 'bg-emerald-400';
@@ -42,7 +52,7 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map }) => {
               content = <span className="font-black text-white text-xs">{t().board.tileOut}</span>;
             } else if (type === 'MYSTERY') {
               bgColor = 'bg-purple-500';
-              content = <Sparkles size={14} className="text-white" />;
+              content = <Sparkles size={16} className="text-white" />;
             }
 
             return (
@@ -50,10 +60,10 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map }) => {
                 key={`tile-${stepIndex}`}
                 className={`absolute shadow-sm flex items-center justify-center z-10 ${bgColor} border border-slate-300`}
                 style={{
-                  width: `${cellSizePct}%`,
-                  height: `${cellSizePct}%`,
-                  left: `${x * cellSizePct}%`,
-                  top: `${y * cellSizePct}%`,
+                  width: TILE_PX,
+                  height: TILE_PX,
+                  left: x * TILE_PX,
+                  top: y * TILE_PX,
                 }}
               >
                 {content}
@@ -62,7 +72,7 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map }) => {
           })}
         </div>
       ) : (
-        /* Legacy 36-cell perimeter board — clean, no alternating patterns */
+        /* Legacy 36-cell perimeter board */
         legacyCells.map((cell) => {
           const { x, y } = getCoordinatesFromCell(cell);
           let bgClass = 'bg-slate-50';
@@ -76,13 +86,13 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map }) => {
               key={cell}
               className={`absolute flex items-center justify-center border border-slate-200 ${bgClass}`}
               style={{
-                width: `${cellSizePct}%`,
-                height: `${cellSizePct}%`,
-                left: `${x * cellSizePct}%`,
-                top: `${y * cellSizePct}%`,
+                width: TILE_PX,
+                height: TILE_PX,
+                left: x * TILE_PX,
+                top: y * TILE_PX,
               }}
             >
-              <span className={`${textClass} text-xs pointer-events-none`}>{cell}</span>
+              <span className={`${textClass} text-sm pointer-events-none`}>{cell}</span>
             </div>
           );
         })
@@ -101,17 +111,22 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map }) => {
         }
 
         const { offsetX, offsetY } = getPlayerOffset(index, cellSizePct);
+        const tokenPx = TILE_PX * 0.7;
+        const tokenCenter = (TILE_PX - tokenPx) / 2;
+        // Convert offset percentage back to px offset
+        const pxOffsetX = (offsetX / 100) * boardPx;
+        const pxOffsetY = (offsetY / 100) * boardPx;
 
         return (
           <div
             key={p.id}
             id={p.id}
-            className="absolute z-20 rounded-full shadow-lg flex items-center justify-center font-bold text-[10px] ring-2 ring-white"
+            className="absolute z-20 rounded-full shadow-lg flex items-center justify-center font-bold text-xs ring-2 ring-white"
             style={{
-              width: `${tokenSizePct}%`,
-              height: `${tokenSizePct}%`,
-              left: `${x * cellSizePct + centerOffset + offsetX}%`,
-              top: `${y * cellSizePct + centerOffset + offsetY}%`,
+              width: tokenPx,
+              height: tokenPx,
+              left: x * TILE_PX + tokenCenter + pxOffsetX,
+              top: y * TILE_PX + tokenCenter + pxOffsetY,
               backgroundColor: p.color,
               color: '#fff',
             }}
