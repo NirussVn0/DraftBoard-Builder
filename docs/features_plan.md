@@ -24,34 +24,58 @@
 
 | Feature | Details | Status |
 |---------|---------|--------|
-| Light Theme Enforcement | Purge all `bg-gray-900 / text-white` classes. Force consistent Light Tone (bg-slate-50, bg-white). | ✅ |
-| Header Navigation | Add [Settings] and [Home] icons (lucide-react) at top-right. | ✅ |
-| Home Confirm Popup | "Bạn có chắc muốn thoát? Dữ liệu chưa lưu sẽ bị mất" on Home click. | ✅ |
+| Light Theme Enforcement | Purge all dark classes. Force consistent Light Tone. | ✅ |
+| Header Navigation | [Settings] and [Home] icons at top-right. | ✅ |
+| Home Confirm Popup | "Bạn có chắc muốn thoát?" on Home click. | ✅ |
 
 ---
 
-## Phase 3 — Dice Engine Revamp & Turn Logic 🔲 PLANNED
+## Ticket 2.6 Phase 1 — Board & Stats ✅ COMPLETE
 
-**Goal**: Dramatic dice roll overlay and skip turn capability.
+**Goal**: Sharp board game aesthetic and player tracking.
 
 | Feature | Details | Status |
 |---------|---------|--------|
-| Multi-Dice Support | Choose 1–5 dice in global settings. Sum drives movement. | 🔲 |
-| Overlay Roll UX | Backdrop-blur overlay + 1s anime.js dice animation. | 🔲 |
-| Bottom-Center Buttons | Large "ĐỔ XÚC XẮC" button at bottom center. | 🔲 |
-| Skip Turn Button | "BỎ LƯỢT" button next to Roll button. | 🔲 |
+| Sharp Edges | Remove ALL rounded classes from tiles/grid. 100% rectangular. | ✅ |
+| Pure Background | No checkerboard. White background, only render Tile[] elements. | ✅ |
+| Token Containment | Tokens 70% of cell size, centered via `getTokenMetrics()`. Never overflow. | ✅ |
+| Player Stats Panel | Right-side panel: "Card X / End" per player, active turn indicator. | ✅ |
 
 ---
 
-## Phase 4 — Map Builder UX & Bug Fixes 🔲 PLANNED
+## Ticket 2.6 Phase 2 — Sky-Drop Dice ✅ COMPLETE
 
-**Goal**: Fix editor artifacts and improve usability.
+**Goal**: Physics-based dice drop animation with overlay.
 
 | Feature | Details | Status |
 |---------|---------|--------|
-| Grid Size Fix | Prevent cells from being too small in Editor. | 🔲 |
-| Ghost Cell Cleanup | Ensure background cells don't show through path tiles. | 🔲 |
-| Step Index Display | Render step numbers or pattern inside path tiles in Editor. | 🔲 |
+| Bottom Roll Button | "ROLL DICE" button fixed at bottom-center during IDLE_TURN. | ✅ |
+| Backdrop-Blur Overlay | Full-screen overlay appears during dice roll. | ✅ |
+| Sky-Drop Animation | Dice drops from -800px with `easeOutBounce` + `2turn` rotation. | ✅ |
+| Result Display | Final dice value shown for 1s, then overlay closes. | ✅ |
+
+---
+
+## Ticket 2.6 Phase 3 — Mystery Card Flip 🔲 PLANNED
+
+**Goal**: 3D card flip animation for mystery tile events.
+
+| Feature | Details | Status |
+|---------|---------|--------|
+| Rename to Mystery Card | Replace all "Mystery Box" references. | 🔲 |
+| 3D Card Flip | `rotateY[-180→0]` + `scale[0.5→1.2→1]` via anime.js. | 🔲 |
+| Overlay + Pause | Backdrop-blur, 1.5s display, then resolve at 1.5× speed. | 🔲 |
+
+---
+
+## Ticket 2.6 Phase 4 — Builder UX 🔲 PLANNED
+
+**Goal**: Explicit start/end markers in editor.
+
+| Feature | Details | Status |
+|---------|---------|--------|
+| IN / OUT Labels | First tile shows "IN", last tile shows "OUT" in editor. | 🔲 |
+| Grid Sizing Fix | Prevent tiles from being too small. | 🔲 |
 
 ---
 
@@ -61,8 +85,8 @@
 
 | Feature | Details | Status |
 |---------|---------|--------|
-| Save Map | "LƯU MAP" button serializes `Tile[]` to localStorage. | 🔲 |
-| Load Saved Map | "CHƠI MAP ĐÃ LƯU" button on Home Menu if data exists. | 🔲 |
+| Save Map | "LƯU MAP" serializes `Tile[]` to localStorage. | 🔲 |
+| Load Saved Map | "CHƠI MAP ĐÃ LƯU" on Welcome Menu if data exists. | 🔲 |
 
 ---
 

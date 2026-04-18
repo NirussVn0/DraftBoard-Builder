@@ -23,20 +23,22 @@ src/
 ├── components/
 │   ├── WelcomeMenu.tsx             # Mode selection entry screen (MENU)
 │   ├── Board/
-│   │   └── BoardGrid.tsx           # Renders tiles (legacy or custom), tokens at computed positions
+│   │   ├── BoardGrid.tsx           # Renders tiles (legacy or custom), tokens at computed positions
+│   │   └── PlayerStatsPanel.tsx    # Right-side panel showing player positions & active turn
 │   ├── HomeMenu/
 │   │   └── HomeMenu.tsx            # Player count + name + color configuration (SETUP phase)
 │   ├── MapBuilder/
 │   │   └── MapBuilderUI.tsx        # Editor grid, tool palette, undo/redo controls
 │   └── PlayMenu/
-│       └── DiceUI.tsx              # Visual dice cycling; bound to GamePhase
+│       ├── DiceOverlay.tsx         # Sky-drop dice animation overlay (replaces old DiceUI)
+│       └── DiceUI.tsx              # [DEPRECATED] Old static center dice
 ├── core/
 │   ├── GameEngine.ts               # Singleton state machine; all business logic
 │   ├── GameState.ts                # Type definitions: Player, GamePhase, GameState
 │   ├── MapBuilderState.ts          # Tile types, useMapBuilder() hook, generateZigzagMap()
-│   └── Pathfinding.ts             # Legacy coordinate formulas; bounce-back path calculator
+│   └── Pathfinding.ts             # Coordinate formulas, path calculator, token metrics
 └── services/
-    └── AnimationService.ts         # anime.js bridge; token movement + dice shake
+    └── AnimationService.ts         # anime.js bridge; token movement + sky-drop dice
 ```
 
 ---
@@ -52,9 +54,9 @@ MENU ──► BUILDER ──► PLAYING (SETUP) ──► PLAYING (GAME)
 
 | AppMode | Screen | Transition |
 |---------|--------|-----------|
-| `MENU` | `WelcomeMenu` — choose "Play Default Map", "Create Map Builder", or "Play Saved Map" | User selects mode |
+| `MENU` | `WelcomeMenu` — choose "Play Default Map" or "Create Map Builder" | User selects mode |
 | `BUILDER` | `MapBuilderUI` — draw & save a custom path | Save → PLAYING, Cancel → MENU |
-| `PLAYING` | `HomeMenu` (SETUP phase) → `BoardGrid` + game loop | Game completes → restart → MENU |
+| `PLAYING` | `HomeMenu` (SETUP) → `BoardGrid` + `PlayerStatsPanel` + game loop | Game completes → restart → MENU |
 
 ---
 
@@ -70,19 +72,16 @@ MENU ──► BUILDER ──► PLAYING (SETUP) ──► PLAYING (GAME)
                        │ startGame()
                   ┌────▼────────┐
             ┌────►│  IDLE_TURN  │◄──────────────────────────┐
-            │     └────┬───┬────┘                           │
-            │          │   │                                │
-            │          │   └─ skipTurn() ───────────────────┤
-            │          │                                    │
-            │          │ rollDice()                         │
+            │     └────┬────────┘                           │
+            │          │ rollDice()                          │
             │     ┌────▼──────────┐                        │
-            │     │ ROLLING_DICE  │                        │
+            │     │ ROLLING_DICE  │  (Sky-drop overlay)    │
             │     └────┬──────────┘                        │
-            │          │ concludeDiceRoll()                 │
+            │          │ concludeDiceRoll()                  │
             │     ┌────▼──────────┐                        │
             │     │ MOVING_TOKEN  │                        │
             │     └────┬──────────┘                        │
-            │          │ finishTokenMove()                  │
+            │          │ finishTokenMove()                   │
             │     ┌────▼──────────┐                        │
             │     │ EVALUATE_CELL │                        │
             │     └────┬──────────┘                        │
@@ -98,78 +97,66 @@ MENU ──► BUILDER ──► PLAYING (SETUP) ──► PLAYING (GAME)
             └──────────┘ (same player, isFast=true)
 ```
 
-| Phase | Trigger | Responsibility |
-|-------|---------|---------------|
-| `SETUP` | Initial / `resetGame()` | HomeMenu player configuration screen |
-| `IDLE_TURN` | After turn resolves | Awaiting active player to roll or skip |
-| `ROLLING_DICE` | `rollDice()` | Dice values generated (1–5 dice); Full-screen overlay animation |
-| `MOVING_TOKEN` | `concludeDiceRoll()` | AnimationService traverses path array cell-by-cell |
-| `EVALUATE_CELL` | `finishTokenMove()` | Check if landed cell is END, MYSTERY, or NORMAL |
-| `EVENT_MYSTERY_ROLL` | MYSTERY tile detected | Random ±1–6 bonus movement applied at 1.5× speed |
-| `VICTORY` | `finalPosition >= maxLevel` | Winner resolved; game ends |
-
 ---
 
-## Data Flow — Standard Turn (Dice Revamp)
+## Data Flow — Standard Turn (Sky-Drop Dice)
 
 ```
-User clicks "ĐỔ XÚC XẮC"
+User clicks "ROLL DICE" (bottom-center button)
   → App.handleRollDice()
   → GameEngine.rollDice()         [Phase: IDLE_TURN → ROLLING_DICE]
-  → UI: Show Full-screen Overlay (backdrop-blur)
-  → DiceOverlay renders 1–5 dice, animate rotation/shake via anime.js for 1s
-  → App.setTimeout(1000ms) → GameEngine.concludeDiceRoll()
-      [Phase: ROLLING_DICE → MOVING_TOKEN]
-      → Sum of dice used for movement distance
+  → App shows DiceOverlay (backdrop-blur overlay)
+  → DiceOverlay triggers AnimationService.animateSkyDropDice():
+      anime.js: translateY[-800→0, easeOutBounce] + rotate[2turn, easeInOutSine]
+      Duration: 1000ms
+  → Animation complete → show final dice value → wait 1000ms
+  → DiceOverlay.onComplete() → App.handleDiceAnimationComplete()
+  → GameEngine.concludeDiceRoll()  [Phase: ROLLING_DICE → MOVING_TOKEN]
   → AnimationService.animateTokenMove(...)
-      → On completion: onComplete(finalCell)
+      → Token hops cell-by-cell (300ms/step, easeInOutQuad)
+  → onComplete(finalCell)
   → GameEngine.finishTokenMove(finalCell) [Phase: MOVING_TOKEN → EVALUATE_CELL]
   → setTimeout(50ms) → GameEngine.evaluateCell()
 ```
 
 ---
 
+## Board Layout
+
+- **Sharp Edges**: All tiles and grid elements use strict 0 border-radius (rectangular).
+- **Pure Background**: No checkerboard/alternating patterns. Pure white board background.
+- **Token Containment**: Tokens sized at 70% of cell (`TOKEN_SCALE = 0.7`), centered with `getTokenMetrics()`.
+- **Side Panel**: `PlayerStatsPanel` shows each player's name, color, current card position, and active turn indicator.
+
+---
+
+## Token Positioning (Single Source of Truth)
+
+Both `BoardGrid.tsx` and `AnimationService.ts` use shared functions from `Pathfinding.ts`:
+
+```
+getTokenMetrics(cellSizePct) → { tokenSizePct, centerOffset }
+getPlayerOffset(playerIndex, cellSizePct) → { offsetX, offsetY }
+
+Final position:
+  left = x * cellSizePct + centerOffset + offsetX
+  top  = y * cellSizePct + centerOffset + offsetY
+```
+
+---
+
 ## Planned Architecture Changes
 
-### 🔲 Dice Engine Revamp (Phase 3)
+### 🔲 Mystery Card Flip (Phase 3)
 
-**New State: `diceCount`** — Global setting (1–5). Determines how many dice are rolled per turn.
+- Rename "Mystery Box" → "Mystery Card".
+- 3D card flip animation using `rotateY[-180→0]` + `scale[0.5→1.2→1]`.
+- Backdrop-blur overlay, 1.5s display, then resolve movement at 1.5× speed.
 
-**New Component: `DiceOverlay`** — Replaces current `DiceUI`.
+### 🔲 Builder UX (Phase 4)
 
-```
-IDLE_TURN:
-  → Bottom-center "ĐỔ XÚC XẮC" button (Primary)
-  → "BỎ LƯỢT" button (Secondary)
-
-User presses "ĐỔ XÚC XẮC":
-  → Phase → ROLLING_DICE
-  → Full-screen overlay (backdrop-blur, light theme semi-transparent)
-  → 1–5 dice animate at center (1s duration)
-  → Dice freeze → show individual results → display total sum
-  → 0.5s pause → overlay fades out
-  → concludeDiceRoll() → MOVING_TOKEN
-
-User presses "BỎ LƯỢT":
-  → gameEngine.skipTurn() → advances to next player's IDLE_TURN
-```
-
-### ✅ UI/UX Consistency (Phase 2 - Complete)
-
-**Light Theme Migration:**
-- Purged all `bg-gray-900`, `text-white` classes.
-- Consistent Tone: Minimalist Light Theme (`bg-slate-50`, `bg-white`).
-- Clean UI: High contrast but soft edges.
-
-**Header Navigation:**
-- [Settings] and [Home] icons at top-right in `App.tsx`.
-- Home button: Confirm popup "Bạn có chắc muốn thoát? Dữ liệu chưa lưu sẽ bị mất".
-
-### 🔲 Map Builder UX & Bug Fixes (Phase 4)
-
-- Fix CSS Grid: Prevent cells from being too small.
-- Ghost Cells: Ensure background cells don't show through path tiles.
-- Step Index: Render `stepIndex` or a directional pattern inside drawn tiles in Editor.
+- First tile renders "IN", last tile renders "OUT" explicitly.
+- Fix CSS Grid sizing issues.
 
 ### 🔲 Local Storage Integration (Phase 5)
 
