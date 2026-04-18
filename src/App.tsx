@@ -14,6 +14,8 @@ import { MapBuilderUI } from './components/MapBuilder/MapBuilderUI'
 
 import { Trophy, RefreshCcw, Home, Settings, Dices } from 'lucide-react'
 
+import { t } from './locales'
+
 import type { Tile } from './core/MapBuilderState'
 import { generateZigzagMap } from './core/MapBuilderState'
 
@@ -122,7 +124,7 @@ function App() {
   };
 
   const handleGoHome = () => {
-    const confirmed = window.confirm('Bạn có chắc muốn thoát? Dữ liệu chưa lưu sẽ bị mất.');
+    const confirmed = window.confirm(t().common.confirmExit);
     if (confirmed) {
       gameEngine.resetGame();
       setAppMode('MENU');
@@ -144,7 +146,7 @@ function App() {
             setPendingMap(savedMap);
             setAppMode('PLAYING');
           } catch {
-            alert('Map đã lưu bị lỗi. Đang dùng map mặc định.');
+            alert(t().common.savedMapError);
             setPendingMap(generateZigzagMap());
             setAppMode('PLAYING');
           }
@@ -219,7 +221,7 @@ function App() {
             className="flex items-center gap-3 px-10 py-5 bg-indigo-600 text-white font-black text-xl game-card hover:bg-indigo-500 hover:scale-105 active:scale-95 transition-all uppercase tracking-wider"
             style={{ borderColor: activePlayer?.color }}
           >
-            <Dices size={28} /> Roll Dice
+            <Dices size={28} /> {t().dice.rollButton}
           </button>
         </div>
       )}
@@ -247,16 +249,16 @@ function App() {
           <div className="bg-white p-12 game-card flex flex-col items-center gap-6 text-center">
             <Trophy size={80} className="text-yellow-400 drop-shadow-xl" />
             <h2 className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-br from-yellow-400 to-orange-600">
-              VICTORY!
+              {t().victory.title}
             </h2>
             <div className="text-2xl font-bold px-6 py-2 border border-slate-100" style={{ color: gameState.winner.color }}>
-              {gameState.winner.name} won!
+              {t().victory.winMessage(gameState.winner.name)}
             </div>
             <button
               onClick={handleRestart}
               className="mt-2 flex items-center gap-2 px-8 py-4 bg-indigo-600 text-white shadow-xl hover:scale-105 active:scale-95 transition-transform font-bold text-lg"
             >
-              <RefreshCcw size={20} /> Play Again
+              <RefreshCcw size={20} /> {t().victory.playAgain}
             </button>
           </div>
         </div>

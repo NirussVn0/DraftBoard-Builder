@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import anime from 'animejs';
+import { t } from '../../locales';
 
 interface MysteryCardOverlayProps {
   mysteryValue: number;
@@ -13,7 +14,7 @@ export const MysteryCardOverlay: React.FC<MysteryCardOverlayProps> = ({
   const hasAnimated = useRef(false);
   const [showFront, setShowFront] = useState(false);
 
-  const label = mysteryValue > 0 ? `+${mysteryValue} STEPS` : `${mysteryValue} STEPS`;
+  const label = t().mystery.stepsLabel(mysteryValue);
   const isPositive = mysteryValue > 0;
 
   useEffect(() => {
@@ -64,13 +65,13 @@ export const MysteryCardOverlay: React.FC<MysteryCardOverlayProps> = ({
             <span className={`text-3xl font-black ${isPositive ? 'text-emerald-600' : 'text-rose-600'}`}>
               {label}
             </span>
-            <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Mystery Card</span>
+            <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">{t().mystery.title}</span>
           </div>
         ) : (
           /* Back face — card face-down */
           <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-purple-600">
             <span className="text-5xl">✨</span>
-            <span className="text-white font-black text-xl tracking-wider">MYSTERY</span>
+            <span className="text-white font-black text-xl tracking-wider">{t().mystery.backLabel}</span>
           </div>
         )}
       </div>

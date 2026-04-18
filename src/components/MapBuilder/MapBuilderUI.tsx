@@ -2,6 +2,7 @@ import React from 'react';
 import { MAP_SIZE, useMapBuilder } from '../../core/MapBuilderState';
 import type { Tile } from '../../core/MapBuilderState';
 import { ArrowRight, ArrowDown, ArrowLeft, ArrowUp, Eraser, Sparkles, RefreshCcw, Save, Undo2, Redo2, Download } from 'lucide-react';
+import { t } from '../../locales';
 
 interface MapBuilderUIProps {
   onSave: (path: Tile[]) => void;
@@ -89,28 +90,28 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
     <div className="min-h-screen bg-slate-50 flex p-4 sm:p-8 gap-8 font-sans items-center justify-center">
       <div className="w-64 bg-white text-slate-800 game-card p-6 flex flex-col gap-6">
         <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600">
-          Map Builder
+          {t().builder.title}
         </h2>
 
         <div className="space-y-3">
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Tools</p>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t().builder.tools}</p>
           <button 
             onClick={() => setTool('DRAW')}
             className={`w-full flex items-center gap-3 p-3 game-card font-bold transition-colors ${tool === 'DRAW' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
           >
-            <ArrowRight size={20} /> Draw Path
+            <ArrowRight size={20} /> {t().builder.drawPath}
           </button>
           <button 
             onClick={() => setTool('ERASE')}
             className={`w-full flex items-center gap-3 p-3 game-card font-bold transition-colors ${tool === 'ERASE' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
           >
-            <Eraser size={20} /> Eraser
+            <Eraser size={20} /> {t().builder.eraser}
           </button>
           <button 
             onClick={() => setTool('MYSTERY')}
             className={`w-full flex items-center gap-3 p-3 game-card font-bold transition-colors ${tool === 'MYSTERY' ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
           >
-            <Sparkles size={20} /> Mystery Card
+            <Sparkles size={20} /> {t().builder.mysteryCard}
           </button>
         </div>
 
@@ -134,7 +135,7 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
             onClick={clearMap}
             className="w-full flex items-center justify-center gap-2 p-3 game-card font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
           >
-            <RefreshCcw size={18} /> Clear Map
+            <RefreshCcw size={18} /> {t().builder.clearMap}
           </button>
           <button 
             onClick={() => {
@@ -143,12 +144,12 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
                  finalPath[finalPath.length - 1] = { ...finalPath[finalPath.length - 1], type: 'END' };
                  onSave(finalPath);
                } else {
-                 alert("Map is too short or invalid.");
+                 alert(t().builder.invalidMap);
                }
             }}
             className="w-full flex items-center justify-center gap-2 p-4 game-card font-bold bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:scale-[1.02] active:scale-95 transition-all"
           >
-            <Save size={20} /> Save & Play
+            <Save size={20} /> {t().builder.savePlay}
           </button>
           <button 
             onClick={() => {
@@ -156,17 +157,17 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
                  const finalPath = [...path];
                  finalPath[finalPath.length - 1] = { ...finalPath[finalPath.length - 1], type: 'END' as const };
                  localStorage.setItem('draftboard_saved_map', JSON.stringify(finalPath));
-                 alert('Map đã được lưu thành công!');
+                 alert(t().builder.savedSuccess);
                } else {
-                 alert('Map quá ngắn để lưu.');
+                 alert(t().builder.tooShort);
                }
             }}
             className="w-full flex items-center justify-center gap-2 p-3 font-bold bg-amber-500 hover:bg-amber-400 text-white shadow-lg shadow-amber-500/20 hover:scale-[1.02] active:scale-95 transition-all"
           >
-            <Download size={18} /> Lưu Map
+            <Download size={18} /> {t().builder.saveLocal}
           </button>
           <button onClick={onCancel} className="w-full text-slate-400 hover:text-slate-700 text-sm font-bold pt-2">
-            Cancel
+            {t().builder.cancel}
           </button>
         </div>
       </div>
@@ -203,10 +204,10 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
 
             if (type === 'START') {
               bgColor = 'bg-emerald-400';
-              content = <span className="font-black text-emerald-900 text-[10px]">IN</span>;
+              content = <span className="font-black text-emerald-900 text-[10px]">{t().board.tileIn}</span>;
             } else if (type === 'END' || isLastTile) {
               bgColor = 'bg-rose-500';
-              content = <span className="font-black text-white text-[10px]">OUT</span>;
+              content = <span className="font-black text-white text-[10px]">{t().board.tileOut}</span>;
             } else if (type === 'MYSTERY') {
               bgColor = 'bg-purple-500';
               content = <Sparkles size={16} className="text-white" />;

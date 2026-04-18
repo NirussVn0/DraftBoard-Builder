@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Player } from '../../core/GameState';
+import { t } from '../../locales';
 
 interface PlayerStatsPanelProps {
   players: Player[];
@@ -10,9 +11,11 @@ interface PlayerStatsPanelProps {
 export const PlayerStatsPanel: React.FC<PlayerStatsPanelProps> = ({
   players, activePlayerIndex, maxPosition
 }) => {
+  const s = t().stats;
+
   return (
     <div className="w-56 bg-white border border-slate-200 p-5 flex flex-col gap-3 shrink-0">
-      <h2 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-1">Players</h2>
+      <h2 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-1">{s.heading}</h2>
       {players.map((player, index) => {
         const isActive = index === activePlayerIndex;
         return (
@@ -34,7 +37,7 @@ export const PlayerStatsPanel: React.FC<PlayerStatsPanelProps> = ({
             <div className="flex-1 min-w-0">
               <p className="font-bold text-sm text-slate-800 truncate">{player.name}</p>
               <p className="text-xs text-slate-400 font-medium">
-                Card {player.position} / {maxPosition}
+                {s.cardPosition(player.position, maxPosition)}
               </p>
             </div>
             {isActive && (
@@ -42,7 +45,7 @@ export const PlayerStatsPanel: React.FC<PlayerStatsPanelProps> = ({
                 className="text-[9px] font-black uppercase text-white px-1.5 py-0.5 shrink-0"
                 style={{ backgroundColor: player.color }}
               >
-                Turn
+                {s.turnBadge}
               </span>
             )}
           </div>

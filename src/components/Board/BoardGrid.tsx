@@ -4,6 +4,7 @@ import type { Player } from '../../core/GameState';
 import type { Tile } from '../../core/MapBuilderState';
 import { MAP_SIZE } from '../../core/MapBuilderState';
 import { Sparkles } from 'lucide-react';
+import { t } from '../../locales';
 
 interface BoardGridProps {
   players: Player[];
@@ -35,10 +36,10 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map }) => {
 
             if (type === 'START') {
               bgColor = 'bg-emerald-400';
-              content = <span className="font-black text-emerald-900 text-xs">IN</span>;
+              content = <span className="font-black text-emerald-900 text-xs">{t().board.tileIn}</span>;
             } else if (type === 'END') {
               bgColor = 'bg-rose-500';
-              content = <span className="font-black text-white text-xs">OUT</span>;
+              content = <span className="font-black text-white text-xs">{t().board.tileOut}</span>;
             } else if (type === 'MYSTERY') {
               bgColor = 'bg-purple-500';
               content = <Sparkles size={14} className="text-white" />;
