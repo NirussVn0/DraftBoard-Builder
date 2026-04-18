@@ -160,7 +160,8 @@ Final position:
 - Last tile always renders "OUT" visually in editor (rose background), even before save.
 - Grid sizing consistent with MAP_SIZE=15.
 
-### 🔲 Local Storage Integration (Phase 5)
+### ✅ Local Storage Integration (Phase 5)
 
-- "LƯU MAP" in Map Builder: Serialize `Tile[]` to `localStorage` (key: `draftboard_saved_map`).
-- WelcomeMenu: Show "CHƠI MAP ĐÃ LƯU" if data exists.
+- **Save**: "Lưu Map" button in `MapBuilderUI` sidebar serializes `Tile[]` to `localStorage` key `draftboard_saved_map`.
+- **Load**: `WelcomeMenu` checks `localStorage` on render. If saved data exists, shows amber "Chơi Map Đã Lưu" button.
+- **App routing**: `PLAY_SAVED` mode in `App.tsx` parses JSON from localStorage into `Tile[]`, with try/catch fallback to default map.

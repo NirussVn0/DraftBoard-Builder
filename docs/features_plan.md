@@ -79,14 +79,14 @@
 
 ---
 
-## Phase 5 — Local Storage Integration (Save/Load) 🔲 PLANNED
+## Phase 5 — Local Storage Integration (Save/Load) ✅ COMPLETE
 
 **Goal**: Persist maps between sessions.
 
 | Feature | Details | Status |
 |---------|---------|--------|
-| Save Map | "LƯU MAP" serializes `Tile[]` to localStorage. | 🔲 |
-| Load Saved Map | "CHƠI MAP ĐÃ LƯU" on Welcome Menu if data exists. | 🔲 |
+| Save Map | "LƯU MAP" button in MapBuilder serializes `Tile[]` to localStorage (`draftboard_saved_map`). | ✅ |
+| Load Saved Map | "CHƠI MAP ĐÃ LƯU" amber button on Welcome Menu if localStorage data exists. | ✅ |
 
 ---
 
