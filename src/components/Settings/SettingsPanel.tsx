@@ -5,6 +5,7 @@ import { t } from '../../locales';
 import { setLocale } from '../../locales';
 import type { GlobalSettings } from '../../core/SettingsState';
 import { loadGlobalSettings, saveGlobalSettings } from '../../core/SettingsState';
+import { audioService } from '../../services/AudioService';
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -48,6 +49,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose })
 
     if (key === 'locale') {
       setLocale(value as 'vi' | 'en');
+    }
+
+    if (key === 'enableSoundEffects') {
+      audioService.setMuted(!(value as boolean));
     }
   };
 
