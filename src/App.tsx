@@ -11,6 +11,7 @@ import { DiceOverlay } from './components/PlayMenu/DiceOverlay'
 import { MysteryCardOverlay } from './components/PlayMenu/MysteryCardOverlay'
 import { WelcomeMenu } from './components/WelcomeMenu'
 import { MapBuilderUI } from './components/MapBuilder/MapBuilderUI'
+import { SettingsPanel } from './components/Settings/SettingsPanel'
 
 import { Trophy, RefreshCcw, Home, Settings, Dices } from 'lucide-react'
 
@@ -49,6 +50,7 @@ function App() {
   const [showDiceOverlay, setShowDiceOverlay] = useState(false)
   const [showMysteryOverlay, setShowMysteryOverlay] = useState(false)
   const [mysteryValue, setMysteryValue] = useState(0)
+  const [showSettings, setShowSettings] = useState(false)
 
   useEffect(() => {
     const unsubscribe = gameEngine.subscribe((state) => {
@@ -132,7 +134,7 @@ function App() {
   };
 
   const handleSettings = () => {
-    // Placeholder — future settings panel
+    setShowSettings(true);
   };
 
   // ── MENU ──
@@ -195,6 +197,7 @@ function App() {
   const maxPosition = gameState.map ? gameState.map.length - 1 : TOTAL_CELLS - 1;
 
   return (
+    <>
     <div className="min-h-screen bg-white p-4 sm:p-8 flex flex-col items-center justify-center font-sans text-slate-800">
       <AppHeader onHome={handleGoHome} onSettings={handleSettings} />
 
@@ -264,6 +267,10 @@ function App() {
         </div>
       )}
     </div>
+
+    {/* Settings Drawer */}
+    <SettingsPanel isOpen={showSettings} onClose={() => setShowSettings(false)} />
+    </>
   );
 }
 
