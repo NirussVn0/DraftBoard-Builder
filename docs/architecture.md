@@ -145,18 +145,20 @@ Final position:
 
 ---
 
-## Planned Architecture Changes
+## Completed Architecture Changes
 
-### 🔲 Mystery Card Flip (Phase 3)
+### ✅ Mystery Card Flip (Phase 3)
 
-- Rename "Mystery Box" → "Mystery Card".
-- 3D card flip animation using `rotateY[-180→0]` + `scale[0.5→1.2→1]`.
-- Backdrop-blur overlay, 1.5s display, then resolve movement at 1.5× speed.
+- Renamed "Mystery Box" → "Mystery Card" in all UI references.
+- `MysteryCardOverlay.tsx`: 3D card flip via `rotateY[-180→0]` + `scale[0.5→1.2→1]` + `easeOutElastic(1, .8)`.
+- Card starts face-down (purple), flips at 50% to reveal `+X STEPS` or `-X STEPS`.
+- Backdrop-blur overlay, 1.5s display, then token moves at 1.5× speed.
 
-### 🔲 Builder UX (Phase 4)
+### ✅ Builder UX (Phase 4)
 
-- First tile renders "IN", last tile renders "OUT" explicitly.
-- Fix CSS Grid sizing issues.
+- First tile renders "IN" (START type, emerald background).
+- Last tile always renders "OUT" visually in editor (rose background), even before save.
+- Grid sizing consistent with MAP_SIZE=15.
 
 ### 🔲 Local Storage Integration (Phase 5)
 

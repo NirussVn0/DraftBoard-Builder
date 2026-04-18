@@ -56,26 +56,26 @@
 
 ---
 
-## Ticket 2.6 Phase 3 — Mystery Card Flip 🔲 PLANNED
+## Ticket 2.6 Phase 3 — Mystery Card Flip ✅ COMPLETE
 
 **Goal**: 3D card flip animation for mystery tile events.
 
 | Feature | Details | Status |
 |---------|---------|--------|
-| Rename to Mystery Card | Replace all "Mystery Box" references. | 🔲 |
-| 3D Card Flip | `rotateY[-180→0]` + `scale[0.5→1.2→1]` via anime.js. | 🔲 |
-| Overlay + Pause | Backdrop-blur, 1.5s display, then resolve at 1.5× speed. | 🔲 |
+| Rename to Mystery Card | Replace all "Mystery Box" references. | ✅ |
+| 3D Card Flip | `rotateY[-180→0]` + `scale[0.5→1.2→1]` via anime.js. | ✅ |
+| Overlay + Pause | Backdrop-blur, 1.5s display, then resolve at 1.5× speed. | ✅ |
 
 ---
 
-## Ticket 2.6 Phase 4 — Builder UX 🔲 PLANNED
+## Ticket 2.6 Phase 4 — Builder UX ✅ COMPLETE
 
 **Goal**: Explicit start/end markers in editor.
 
 | Feature | Details | Status |
 |---------|---------|--------|
-| IN / OUT Labels | First tile shows "IN", last tile shows "OUT" in editor. | 🔲 |
-| Grid Sizing Fix | Prevent tiles from being too small. | 🔲 |
+| IN / OUT Labels | First tile shows "IN", last tile shows "OUT" in editor. | ✅ |
+| Grid Sizing Fix | Prevent tiles from being too small. | ✅ |
 
 ---
 
