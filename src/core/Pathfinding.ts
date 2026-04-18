@@ -40,8 +40,17 @@ export function calculatePath(startCell: number, diceRoll: number, maxCell: numb
   return path;
 }
 
-export function getPlayerOffset(playerIndex: number): { offsetX: number, offsetY: number } {
-  const offsetX = (playerIndex % 2 === 0 ? -1 : 1) * 1.5;
-  const offsetY = (playerIndex < 2 ? -1 : 1) * 1.5;
+export function getPlayerOffset(playerIndex: number, cellSizePct: number = 10): { offsetX: number, offsetY: number } {
+  const scale = cellSizePct * 0.08;
+  const offsetX = (playerIndex % 2 === 0 ? -1 : 1) * scale;
+  const offsetY = (playerIndex < 2 ? -1 : 1) * scale;
   return { offsetX, offsetY };
+}
+
+/** Token sizing constants — single source of truth */
+export const TOKEN_SCALE = 0.7;
+export function getTokenMetrics(cellSizePct: number) {
+  const tokenSizePct = cellSizePct * TOKEN_SCALE;
+  const centerOffset = (cellSizePct - tokenSizePct) / 2;
+  return { tokenSizePct, centerOffset };
 }

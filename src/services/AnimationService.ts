@@ -1,5 +1,5 @@
 import anime from 'animejs';
-import { getCoordinatesFromCell, getPlayerOffset } from '../core/Pathfinding';
+import { getCoordinatesFromCell, getPlayerOffset, getTokenMetrics } from '../core/Pathfinding';
 import type { Tile } from '../core/MapBuilderState';
 
 const LEGACY_CELL_SIZE_PCT = 10;
@@ -25,7 +25,9 @@ export class AnimationService {
       return;
     }
 
-    const { offsetX, offsetY } = getPlayerOffset(playerIndex);
+    const cellSizePct = customMap ? MAP_CELL_SIZE_PCT : LEGACY_CELL_SIZE_PCT;
+    const { centerOffset } = getTokenMetrics(cellSizePct);
+    const { offsetX, offsetY } = getPlayerOffset(playerIndex, cellSizePct);
     const speedFactor = isFast ? 1.5 : 1;
 
     const timeline = anime.timeline({
@@ -39,10 +41,8 @@ export class AnimationService {
     path.forEach((stepIndex) => {
       let x = 0;
       let y = 0;
-      let cellSizePct = LEGACY_CELL_SIZE_PCT;
 
       if (customMap && customMap.length > 0) {
-        cellSizePct = MAP_CELL_SIZE_PCT;
         const tile = customMap[stepIndex];
         if (tile) { x = tile.x; y = tile.y; }
       } else {
@@ -53,8 +53,8 @@ export class AnimationService {
 
       timeline.add({
         targets: tokenElement,
-        left: `${x * cellSizePct + 2 + offsetX}%`,
-        top: `${y * cellSizePct + 2 + offsetY}%`,
+        left: `${x * cellSizePct + centerOffset + offsetX}%`,
+        top: `${y * cellSizePct + centerOffset + offsetY}%`,
         translateY: [
           { value: -20, duration: 150 / speedFactor, easing: 'easeOutQuad' },
           { value: 0, duration: 150 / speedFactor, easing: 'easeInQuad' }
@@ -67,27 +67,22 @@ export class AnimationService {
     });
   }
 
-  public static animateDiceShake(diceElementId: string) {
+  /** Sky-drop dice animation — exact anime.js config from CEO directive */
+  public static animateSkyDropDice(
+    diceElementId: string,
+    onComplete: () => void
+  ) {
     const el = document.getElementById(diceElementId);
-    if (!el) return;
+    if (!el) { onComplete(); return; }
 
     anime({
       targets: el,
-      translateX: [
-        { value: -5, duration: 50 },
-        { value: 5, duration: 50 },
-        { value: -5, duration: 50 },
-        { value: 5, duration: 50 },
-        { value: 0, duration: 50 }
+      translateY: [
+        { value: -800, duration: 0 },
+        { value: 0, duration: 1000, easing: 'easeOutBounce' }
       ],
-      rotate: [
-        { value: -10, duration: 50 },
-        { value: 10, duration: 50 },
-        { value: -10, duration: 50 },
-        { value: 10, duration: 50 },
-        { value: 0, duration: 50 }
-      ],
-      easing: 'easeInOutSine',
+      rotate: { value: '2turn', duration: 1000, easing: 'easeInOutSine' },
+      complete: () => { onComplete(); }
     });
   }
 }
