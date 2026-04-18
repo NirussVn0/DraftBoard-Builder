@@ -12,8 +12,9 @@ import { MysteryCardOverlay } from './components/PlayMenu/MysteryCardOverlay'
 import { WelcomeMenu } from './components/WelcomeMenu'
 import { MapBuilderUI } from './components/MapBuilder/MapBuilderUI'
 import { SettingsPanel } from './components/Settings/SettingsPanel'
+import { KickOverlay } from './components/PlayMenu/KickOverlay'
 
-import { Trophy, RefreshCcw, Home, Settings, Dices } from 'lucide-react'
+import { Trophy, RefreshCcw, Home, Settings, Dices, SkipForward } from 'lucide-react'
 
 import { t } from './locales'
 
@@ -51,6 +52,7 @@ function App() {
   const [showMysteryOverlay, setShowMysteryOverlay] = useState(false)
   const [mysteryValue, setMysteryValue] = useState(0)
   const [showSettings, setShowSettings] = useState(false)
+  const [showKickOverlay, setShowKickOverlay] = useState(false)
 
   useEffect(() => {
     const unsubscribe = gameEngine.subscribe((state) => {
@@ -60,6 +62,10 @@ function App() {
         // Show Mystery Card flip overlay instead of auto-moving
         setMysteryValue(state.diceValue);
         setShowMysteryOverlay(true);
+      }
+
+      if (state.phase === 'EVENT_KICK') {
+        setShowKickOverlay(true);
       }
     })
     return unsubscribe
@@ -118,6 +124,11 @@ function App() {
       true, // isFast = true (1.5x speed)
       state.map || undefined
     );
+  }, []);
+
+  const handleKickComplete = useCallback(() => {
+    setShowKickOverlay(false);
+    gameEngine.resolveKick();
   }, []);
 
   const handleRestart = () => {
@@ -243,6 +254,15 @@ function App() {
         <MysteryCardOverlay
           mysteryValue={mysteryValue}
           onComplete={handleMysteryComplete}
+        />
+      )}
+
+      {/* Kick Overlay */}
+      {showKickOverlay && gameState.kickEvent && (
+        <KickOverlay
+          kickEvent={gameState.kickEvent}
+          players={gameState.players}
+          onComplete={handleKickComplete}
         />
       )}
 

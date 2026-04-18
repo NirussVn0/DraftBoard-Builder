@@ -1,4 +1,6 @@
 import type { Tile } from './MapBuilderState';
+import type { MapSettings } from './SettingsState';
+import { DEFAULT_MAP } from './SettingsState';
 
 export interface Player {
   id: string;
@@ -7,7 +9,22 @@ export interface Player {
   position: number;
 }
 
-export type GamePhase = 'SETUP' | 'IDLE_TURN' | 'ROLLING_DICE' | 'MOVING_TOKEN' | 'EVALUATE_CELL' | 'EVENT_MYSTERY_ROLL' | 'VICTORY';
+export type GamePhase =
+  | 'SETUP'
+  | 'IDLE_TURN'
+  | 'ROLLING_DICE'
+  | 'MOVING_TOKEN'
+  | 'EVALUATE_CELL'
+  | 'EVENT_MYSTERY_ROLL'
+  | 'EVENT_KICK'
+  | 'VICTORY';
+
+export interface KickEvent {
+  kickerPlayerId: string;
+  kickedPlayerId: string;
+  kickedFromPosition: number;
+  kickedToPosition: number;
+}
 
 export interface GameState {
   phase: GamePhase;
@@ -16,4 +33,6 @@ export interface GameState {
   winner: Player | null;
   diceValue: number;
   map: Tile[] | null;
+  mapSettings: MapSettings;
+  kickEvent: KickEvent | null;
 }

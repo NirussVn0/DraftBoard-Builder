@@ -1,6 +1,8 @@
-import type { GameState, Player, GamePhase } from './GameState';
+import type { GameState, Player, GamePhase, KickEvent } from './GameState';
 import { calculatePath, TOTAL_CELLS } from './Pathfinding';
 import type { Tile } from './MapBuilderState';
+import type { MapSettings } from './SettingsState';
+import { DEFAULT_MAP } from './SettingsState';
 
 export type GameStateObserver = (state: GameState) => void;
 
@@ -20,6 +22,8 @@ class GameEngine {
       winner: null,
       diceValue: 1,
       map: null,
+      mapSettings: { ...DEFAULT_MAP },
+      kickEvent: null,
     };
   }
 
@@ -35,11 +39,12 @@ class GameEngine {
     this.observers.forEach((observer) => observer({ ...this.state }));
   }
 
-  public startGame(players: Omit<Player, 'position' | 'id'>[], customMap?: Tile[]) {
+  public startGame(players: Omit<Player, 'position' | 'id'>[], customMap?: Tile[], mapSettings?: MapSettings) {
     this.state = {
       ...this.getInitialState(),
       phase: 'IDLE_TURN',
       map: customMap || null,
+      mapSettings: mapSettings || { ...DEFAULT_MAP },
       players: players.map((p, index) => ({
         ...p,
         id: `player-${index + 1}`,
@@ -60,6 +65,16 @@ class GameEngine {
       phase: 'ROLLING_DICE',
     };
 
+    this.notify();
+  }
+
+  public skipTurn(): void {
+    if (this.state.phase !== 'IDLE_TURN') return;
+
+    this.state = {
+      ...this.state,
+      activePlayerIndex: (this.state.activePlayerIndex + 1) % this.state.players.length,
+    };
     this.notify();
   }
 
@@ -112,33 +127,108 @@ class GameEngine {
   }
 
   private evaluateCell(finalPosition: number, maxLevel: number) {
-    let nextPhase: GamePhase = 'IDLE_TURN';
-    let nextActiveIndex = this.state.activePlayerIndex;
-    let nextWinner = this.state.winner;
-    let nextDiceValue = this.state.diceValue;
+    const activePlayer = this.state.players[this.state.activePlayerIndex];
 
+    // ── Priority 1: Victory ──
     if (finalPosition >= maxLevel) {
-      nextPhase = 'VICTORY';
-      nextWinner = this.state.players[this.state.activePlayerIndex];
-    } else if (this.state.map) {
+      this.state = {
+        ...this.state,
+        phase: 'VICTORY',
+        winner: activePlayer,
+      };
+      this.notify();
+      return;
+    }
+
+    // ── Priority 2: Collision / Kick ──
+    if (this.state.mapSettings.kickDistance > 0) {
+      const collidedPlayer = this.state.players.find(
+        (p, idx) => idx !== this.state.activePlayerIndex
+                  && p.position === finalPosition
+                  && finalPosition > 0 // Don't kick at START
+      );
+
+      if (collidedPlayer) {
+        const kickedTo = Math.max(0, collidedPlayer.position - this.state.mapSettings.kickDistance);
+
+        const newPlayers = this.state.players.map(p =>
+          p.id === collidedPlayer.id ? { ...p, position: kickedTo } : p
+        );
+
+        const kickEvent: KickEvent = {
+          kickerPlayerId: activePlayer.id,
+          kickedPlayerId: collidedPlayer.id,
+          kickedFromPosition: collidedPlayer.position,
+          kickedToPosition: kickedTo,
+        };
+
+        this.state = {
+          ...this.state,
+          players: newPlayers,
+          phase: 'EVENT_KICK',
+          kickEvent,
+        };
+        this.notify();
+        return;
+        // App calls resolveKick() after kick animation completes
+      }
+    }
+
+    // ── Priority 3: Mystery Card ──
+    if (this.state.map) {
       const currentTile = this.state.map[finalPosition];
       if (currentTile && currentTile.type === 'MYSTERY') {
         const randomMystery = Math.floor(Math.random() * 13) - 6;
-        nextDiceValue = randomMystery === 0 ? 3 : randomMystery;
-        nextPhase = 'EVENT_MYSTERY_ROLL';
-      } else {
-        nextActiveIndex = (this.state.activePlayerIndex + 1) % this.state.players.length;
+        this.state = {
+          ...this.state,
+          diceValue: randomMystery === 0 ? 3 : randomMystery,
+          phase: 'EVENT_MYSTERY_ROLL',
+        };
+        this.notify();
+        return;
       }
-    } else {
-      nextActiveIndex = (this.state.activePlayerIndex + 1) % this.state.players.length;
     }
 
+    // ── Priority 4: Normal — next turn ──
     this.state = {
       ...this.state,
-      phase: nextPhase,
-      winner: nextWinner,
-      activePlayerIndex: nextActiveIndex,
-      diceValue: nextDiceValue,
+      phase: 'IDLE_TURN',
+      activePlayerIndex: (this.state.activePlayerIndex + 1) % this.state.players.length,
+    };
+    this.notify();
+  }
+
+  /**
+   * Called by App after KickOverlay animation completes.
+   * Checks if active player's tile is MYSTERY, then advances turn.
+   */
+  public resolveKick(): void {
+    if (this.state.phase !== 'EVENT_KICK') return;
+
+    const activePlayer = this.state.players[this.state.activePlayerIndex];
+
+    // After kick, check if active player landed on MYSTERY
+    if (this.state.map) {
+      const tile = this.state.map[activePlayer.position];
+      if (tile && tile.type === 'MYSTERY') {
+        const randomMystery = Math.floor(Math.random() * 13) - 6;
+        this.state = {
+          ...this.state,
+          phase: 'EVENT_MYSTERY_ROLL',
+          diceValue: randomMystery === 0 ? 3 : randomMystery,
+          kickEvent: null,
+        };
+        this.notify();
+        return;
+      }
+    }
+
+    // No mystery — advance turn
+    this.state = {
+      ...this.state,
+      phase: 'IDLE_TURN',
+      activePlayerIndex: (this.state.activePlayerIndex + 1) % this.state.players.length,
+      kickEvent: null,
     };
     this.notify();
   }
