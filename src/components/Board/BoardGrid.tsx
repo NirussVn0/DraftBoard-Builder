@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { BOARD_SIZE, TOTAL_CELLS, getCoordinatesFromCell, getPlayerOffset, getTokenMetrics } from '../../core/Pathfinding';
+import { BOARD_SIZE, TOTAL_CELLS, getCoordinatesFromCell, getPlayerOffset } from '../../core/Pathfinding';
 import type { Player } from '../../core/GameState';
 import type { Tile } from '../../core/MapBuilderState';
 import { MAP_SIZE } from '../../core/MapBuilderState';
@@ -18,9 +18,8 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map }) => {
   const gridSize = map ? MAP_SIZE : BOARD_SIZE;
   const boardPx = gridSize * TILE_PX;
 
-  // Still use percentage for token positioning offset logic (relative to board cells)
+  // Cell size in % — used only for getPlayerOffset backward compat
   const cellSizePct = 100 / gridSize;
-  const { tokenSizePct, centerOffset } = getTokenMetrics(cellSizePct);
 
   const legacyCells = useMemo(() => {
     const list = [];
@@ -32,7 +31,7 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map }) => {
 
   return (
     <div
-      className="relative bg-white mx-auto overflow-hidden"
+      className="relative bg-transparent mx-auto overflow-hidden"
       style={{ width: boardPx, height: boardPx, minWidth: boardPx, minHeight: boardPx }}
     >
 
@@ -121,17 +120,18 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map }) => {
           <div
             key={p.id}
             id={p.id}
-            className="absolute z-20 rounded-full shadow-lg flex items-center justify-center font-bold text-xs ring-2 ring-white"
+            className="absolute z-30 rounded-full shadow-lg flex items-center justify-center ring-2 ring-white"
             style={{
               width: tokenPx,
               height: tokenPx,
               left: x * TILE_PX + tokenCenter + pxOffsetX,
               top: y * TILE_PX + tokenCenter + pxOffsetY,
               backgroundColor: p.color,
-              color: '#fff',
+              fontSize: tokenPx * 0.55,
+              lineHeight: 1,
             }}
           >
-            {p.name.charAt(0).toUpperCase()}
+            {p.emoji || p.name.charAt(0).toUpperCase()}
           </div>
         );
       })}

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { gameEngine } from './core/GameEngine'
 import type { GameState } from './core/GameState'
 import { AnimationService } from './services/AnimationService'
-import { TOTAL_CELLS, getCoordinatesFromCell, getTokenMetrics, getPlayerOffset } from './core/Pathfinding'
+import { TOTAL_CELLS, getCoordinatesFromCell, getPlayerOffset } from './core/Pathfinding'
 import { cameraService } from './services/CameraService'
 import { audioService } from './services/AudioService'
 
