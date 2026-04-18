@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import EmojiPicker, { EmojiClickData, Theme, EmojiStyle } from 'emoji-picker-react';
+import EmojiPicker, { Theme, EmojiStyle } from 'emoji-picker-react';
+import type { EmojiClickData } from 'emoji-picker-react';
 import type { Player } from '../../core/GameState';
 import { t } from '../../locales';
 

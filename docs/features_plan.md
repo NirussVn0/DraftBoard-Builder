@@ -37,9 +37,9 @@
 | Feature | Details | Status |
 |---------|---------|--------|
 | Sharp Edges | Remove ALL rounded classes from tiles/grid. 100% rectangular. | ✅ |
-| Pure Background | No checkerboard. White background, only render Tile[] elements. | ✅ |
-| Token Containment | Tokens 70% of cell size, centered via `getTokenMetrics()`. Never overflow. | ✅ |
-| Player Stats Panel | Right-side panel: "Card X / End" per player, active turn indicator. | ✅ |
+| Pure Background | No checkerboard. Transparent board bg, tiles render on page bg. | ✅ |
+| Token Containment | Tokens 70% of cell size (TILE_PX * 0.7), z-30 above tiles. | ✅ |
+| Player Stats Panel | Fixed HUD panel: "Card X / End" per player, active turn indicator. | ✅ |
 
 ---
 
@@ -52,6 +52,7 @@
 | Bottom Roll Button | "ROLL DICE" button fixed at bottom-center during IDLE_TURN. | ✅ |
 | Backdrop-Blur Overlay | Full-screen overlay appears during dice roll. | ✅ |
 | Sky-Drop Animation | Dice drops from -800px with `easeOutBounce` + `2turn` rotation. | ✅ |
+| Number Scrambling | Dice face randomizes on every frame during fall, locks on landing. | ✅ |
 | Result Display | Final dice value shown for 1s, then overlay closes. | ✅ |
 
 ---
@@ -98,8 +99,8 @@
 |---------|---------|--------|
 | Cardboard CSS Tokens | `--card-radius: 2px`, `--card-shadow`, `--card-inset`, `--tile-shadow` in `:root`. | ✅ |
 | `.game-card` / `.game-tile` | Utility classes applied to all panels, buttons, overlays, and tiles. | ✅ |
-| Purge Web-App Rounded | Removed `rounded-xl/2xl/3xl/[2rem]/[2.5rem]` from all 7 components. | ✅ |
-| i18n Types | `LocaleStrings` interface with 10 domains, `LocaleKey` type. | ✅ |
+| Purge Web-App Rounded | Removed `rounded-xl/2xl/3xl/[2rem]/[2.5rem]` from all components. | ✅ |
+| i18n Types | `LocaleStrings` interface with 10+ domains, `LocaleKey` type. | ✅ |
 | Vietnamese Dictionary | `vi.ts` with 45+ strings covering all UI text. | ✅ |
 | `t()` Accessor | Module-level function returning active locale dictionary. | ✅ |
 | Component Integration | All components use `t()` — zero hardcoded strings remaining. | ✅ |
@@ -116,7 +117,7 @@
 | `MapSettings` Type | diceCount, kickDistance, exactLanding (per-game session). | ✅ |
 | localStorage Persistence | `loadGlobalSettings()` / `saveGlobalSettings()` helpers. | ✅ |
 | Settings Panel Drawer | Slide-in from right with anime.js. Language switcher + toggle rows. | ✅ |
-| Settings Button Wired | `handleSettings()` in App.tsx opens drawer (no longer a no-op). | ✅ |
+| Settings Button Wired | `handleSettings()` in App.tsx opens drawer. | ✅ |
 
 ---
 
@@ -135,8 +136,8 @@
 
 | Feature | Details | Status |
 |---------|---------|--------|
-| CameraService | Parabolic tracking: zoom-out → pan → zoom-in via anime.js timeline. | ✅ |
-| CameraWrapper | Viewport container with CSS transform for scale/translate. | ✅ |
+| CameraService | Smooth 2D pan tracking via anime.js translate. | ✅ |
+| CameraWrapper | Viewport container with CSS transform for translate. | ✅ |
 | Skip Turn | `skipTurn()` method + secondary button in UI. | ✅ |
 | Dice Separation | PhysicalDice (animation) + DiceResultBanner (number) as separate entities. | ✅ |
 
@@ -148,14 +149,47 @@
 
 | Feature | Details | Status |
 |---------|---------|--------|
-| AudioService Singleton | `src/services/AudioService.ts` using `howler.js`, Singleton pattern. | ✅ |
-| Dice Roll SFX | `playDiceRoll()` fires at exact DOM ground-impact in `PhysicalDice.tsx`. | ✅ |
-| Token Bounce SFX | `playTokenBounce()` fires per step in `AnimationService.animateTokenMove()`. | ✅ |
-| Kick SFX | `playKick()` fires on impact burst in `KickOverlay.tsx`. | ✅ |
-| Mystery Flip SFX | `playMysteryFlip()` fires at 50% rotation in `MysteryCardOverlay.tsx`. | ✅ |
-| Victory Fanfare | `playVictory()` fires on `VICTORY` phase in `App.tsx` observer. | ✅ |
-| Settings Sync | `SettingsPanel` toggle calls `Howler.mute()` for instant on/off without refresh. | ✅ |
-| Placeholder Assets | `public/audio/` with 5 placeholder mp3 files ready for replacement. | ✅ |
+| AudioService Singleton | `src/services/AudioService.ts` — lazy-load with `onloaderror` guard. | ✅ |
+| Dice Roll SFX | `playDiceRoll()` fires at landing in `PhysicalDice.tsx`. | ✅ |
+| Token Bounce SFX | `playTokenBounce()` fires per step in `AnimationService`. | ✅ |
+| Kick SFX | `playKick()` fires on impact in `KickOverlay.tsx`. | ✅ |
+| Mystery Flip SFX | `playMysteryFlip()` fires at card flip in `MysteryCardOverlay.tsx`. | ✅ |
+| Victory Fanfare | `playVictory()` fires on `VICTORY` phase. | ✅ |
+| Settings Sync | Toggle calls `Howler.mute()` for instant on/off. | ✅ |
+| Placeholder Assets | `public/audio/` with 5 placeholder mp3 files. | ✅ |
+
+---
+
+## Epic 3 — Ticket 3.5: HUD & Engine Hotfix ✅ COMPLETE
+
+**Goal**: Fullscreen pixel-based board with fixed HUD and smooth camera.
+
+| Feature | Details | Status |
+|---------|---------|--------|
+| Pixel-Based Board | `TILE_PX = 64` shared constant. Absolute positioning. | ✅ |
+| Fullscreen Container | `w-screen h-screen` with `overflow-hidden`. | ✅ |
+| Fixed HUD Overlays | All UI controls use `fixed` position above board. | ✅ |
+| 2D Pan Camera | `CameraService.panTo()` — smooth easeOutCubic translate. | ✅ |
+| Camera Tracking | Tracks token per-step via `AnimationService` begin callback. | ✅ |
+| Memento Undo | 20-snapshot `structuredClone` history stack in `GameEngine`. | ✅ |
+| Undo Button | "[LÙI LẠI]" HUD button during `IDLE_TURN` when `canUndo` is true. | ✅ |
+
+---
+
+## Epic 3 — Ticket 3.6: Audio Leak & UX Hotfix ✅ COMPLETE
+
+**Goal**: Fix critical bugs and add quality-of-life features.
+
+| Feature | Details | Status |
+|---------|---------|--------|
+| Audio Memory Leak Fix | Lazy Howl init + `onloaderror` to prevent infinite download loops. | ✅ |
+| Unused TS Cleanup | Removed dead `getTokenMetrics` destructure and imports. | ✅ |
+| Token Z-Index Fix | Tokens at `z-30` always render above tiles (`z-10`). | ✅ |
+| Board BG Transparent | Board container `bg-transparent`; page bg shows through. | ✅ |
+| Emoji Avatar Picker | `emoji-picker-react` v4.18 in HomeMenu. Player selects emoji as token. | ✅ |
+| Emoji on Board | Token renders player emoji instead of name initial. | ✅ |
+| Dice Number Scramble | anime.js `update` callback randomizes face during sky-drop. | ✅ |
+| HUD Buttons Verified | Settings and Home buttons wired and functional at `z-50`. | ✅ |
 
 ---
 
@@ -165,4 +199,3 @@
 |---------|---------|--------|
 | Responsive Layout | Mobile-friendly board scaling. | 🔲 |
 | Map Export / Import | Base64-encode map → shareable URL. | 🔲 |
-

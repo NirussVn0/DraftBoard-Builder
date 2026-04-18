@@ -10,6 +10,8 @@
 | Styling | Tailwind CSS v4 |
 | Icons | lucide-react |
 | Animation | animejs v3.2.2 |
+| Audio | howler.js (Singleton, lazy-loaded) |
+| Emoji Picker | emoji-picker-react v4.18 |
 
 ---
 
@@ -26,26 +28,31 @@ src/
 ├── components/
 │   ├── WelcomeMenu.tsx             # Mode selection entry screen (MENU)
 │   ├── Board/
-│   │   ├── BoardGrid.tsx           # Renders tiles (legacy or custom), tokens at computed positions
-│   │   └── PlayerStatsPanel.tsx    # Right-side panel showing player positions & active turn
+│   │   ├── BoardGrid.tsx           # Pixel-based tiles & emoji tokens at absolute positions
+│   │   ├── CameraWrapper.tsx       # Viewport container for CSS transform pan/translate
+│   │   └── PlayerStatsPanel.tsx    # Fixed HUD panel showing player positions & active turn
 │   ├── HomeMenu/
-│   │   └── HomeMenu.tsx            # Player count + name + color configuration (SETUP phase)
+│   │   └── HomeMenu.tsx            # Player count + name + emoji avatar + color setup
 │   ├── MapBuilder/
 │   │   └── MapBuilderUI.tsx        # Editor grid, tool palette, undo/redo controls
 │   ├── PlayMenu/
-│   │   ├── DiceOverlay.tsx         # Sky-drop dice animation overlay (replaces old DiceUI)
+│   │   ├── DiceOverlay.tsx         # Sky-drop dice animation overlay
+│   │   ├── PhysicalDice.tsx        # Animated dice with per-frame number scrambling
+│   │   ├── DiceResultBanner.tsx    # Final dice value display
 │   │   ├── MysteryCardOverlay.tsx  # 3D card flip animation for mystery tiles
-│   │   └── DiceUI.tsx              # [DEPRECATED] Old static center dice
+│   │   └── KickOverlay.tsx         # Kick collision impact animation
 │   └── Settings/
-│       └── SettingsPanel.tsx       # Slide-in drawer for global settings (locale, sound, etc.)
+│       └── SettingsPanel.tsx       # Slide-in drawer for global settings
 ├── core/
-│   ├── GameEngine.ts               # Singleton state machine; all business logic
-│   ├── GameState.ts                # Type definitions: Player, GamePhase, GameState
+│   ├── GameEngine.ts               # Singleton state machine; Memento undo (20-snapshot cap)
+│   ├── GameState.ts                # Types: Player (with emoji), GamePhase, KickEvent, GameState
 │   ├── MapBuilderState.ts          # Tile types, useMapBuilder() hook, generateZigzagMap()
-│   ├── Pathfinding.ts             # Coordinate formulas, path calculator, token metrics
+│   ├── Pathfinding.ts             # Coordinate formulas, path calculator, player offset
 │   └── SettingsState.ts           # GlobalSettings, MapSettings types, localStorage helpers
 └── services/
-    └── AnimationService.ts         # anime.js bridge; token movement + sky-drop dice
+    ├── AnimationService.ts         # anime.js bridge; token movement + sky-drop dice
+    ├── AudioService.ts             # Howler.js Singleton; lazy-load with onloaderror guard
+    └── CameraService.ts            # Smooth 2D pan tracking via anime.js translateX/Y
 ```
 
 ---
@@ -80,13 +87,13 @@ MENU ──► BUILDER ──► PLAYING (SETUP) ──► PLAYING (GAME)
                   ┌────▼────────┐
             ┌────►│  IDLE_TURN  │◄──────────────────────────┐
             │     └────┬────────┘                           │
-            │          │ rollDice()                          │
+            │          │ rollDice() [pushSnapshot()]         │
             │     ┌────▼──────────┐                        │
             │     │ ROLLING_DICE  │  (Sky-drop overlay)    │
             │     └────┬──────────┘                        │
             │          │ concludeDiceRoll()                  │
             │     ┌────▼──────────┐                        │
-            │     │ MOVING_TOKEN  │                        │
+            │     │ MOVING_TOKEN  │  (Camera tracks)       │
             │     └────┬──────────┘                        │
             │          │ finishTokenMove()                   │
             │     ┌────▼──────────┐                        │
@@ -95,14 +102,21 @@ MENU ──► BUILDER ──► PLAYING (SETUP) ──► PLAYING (GAME)
             │          │                                    │
             │    ┌─────┴──────────────┐                   │
             │    │                    │                    │
-            │  [MYSTERY]           [NORMAL/END]            │
+            │  [MYSTERY]           [KICK/NORMAL/END]       │
             │    │                    │                    │
             │  ┌─▼───────────────┐  [END] ──► VICTORY     │
-            │  │EVENT_MYSTERY_ROLL│  [NORMAL]──────────────┘
-            │  └─────────────────┘
+            │  │EVENT_MYSTERY_ROLL│  [KICK]──► EVENT_KICK  │
+            │  └─────────────────┘  [NORMAL]───────────────┘
             │          │ concludeDiceRoll() → finishTokenMove()
             └──────────┘ (same player, isFast=true)
 ```
+
+### Memento Undo System
+
+- `GameEngine` maintains a private `history: GameState[]` stack (max 20).
+- `pushSnapshot()` called before each `rollDice()` via `structuredClone`.
+- `undo()` pops the last snapshot, restoring full game state.
+- `canUndo` flag in `GameState` controls the HUD button visibility.
 
 ---
 
@@ -113,14 +127,15 @@ User clicks "ROLL DICE" (bottom-center button)
   → App.handleRollDice()
   → GameEngine.rollDice()         [Phase: IDLE_TURN → ROLLING_DICE]
   → App shows DiceOverlay (backdrop-blur overlay)
-  → DiceOverlay triggers AnimationService.animateSkyDropDice():
-      anime.js: translateY[-800→0, easeOutBounce] + rotate[2turn, easeInOutSine]
-      Duration: 1000ms
-  → Animation complete → show final dice value → wait 1000ms
+  → DiceOverlay triggers AnimationService.animateSkyDropDice()
+      → anime.js: translateY[-800→0, easeOutBounce] + rotate[2turn]
+      → update(): scramble dice number on every frame
+      → complete(): lock final value, play SFX
   → DiceOverlay.onComplete() → App.handleDiceAnimationComplete()
   → GameEngine.concludeDiceRoll()  [Phase: ROLLING_DICE → MOVING_TOKEN]
   → AnimationService.animateTokenMove(...)
       → Token hops cell-by-cell (300ms/step, easeInOutQuad)
+      → CameraService.panTo() called per step (smooth tracking)
   → onComplete(finalCell)
   → GameEngine.finishTokenMove(finalCell) [Phase: MOVING_TOKEN → EVALUATE_CELL]
   → setTimeout(50ms) → GameEngine.evaluateCell()
@@ -128,12 +143,28 @@ User clicks "ROLL DICE" (bottom-center button)
 
 ---
 
-## Board Layout
+## Board Layout — Pixel-Based Coordinate System
 
-- **Sharp Edges**: All tiles and grid elements use strict 0 border-radius (rectangular).
-- **Pure Background**: No checkerboard/alternating patterns. Pure white board background.
-- **Token Containment**: Tokens sized at 70% of cell (`TOKEN_SCALE = 0.7`), centered with `getTokenMetrics()`.
-- **Side Panel**: `PlayerStatsPanel` shows each player's name, color, current card position, and active turn indicator.
+- **TILE_PX = 64**: Shared constant between `BoardGrid` and `AnimationService`.
+- **Fullscreen**: Board container is `w-screen h-screen` with `overflow-hidden`.
+- **Sharp Edges**: All tiles use strict 0 border-radius (rectangular cardboard aesthetic).
+- **Transparent BG**: Board background is transparent; page bg (`bg-slate-50`) shows through.
+- **Token Z-index**: Tokens at `z-30`, tiles at `z-10` — tokens always render on top.
+
+---
+
+## HUD (Heads-Up Display) Architecture
+
+All UI controls are `fixed` positioned overlays on top of the fullscreen board:
+
+| Element | Position | Z-index |
+|---------|----------|---------|
+| Board + CameraWrapper | `absolute inset-0` | `z-0` |
+| PlayerStatsPanel | `fixed right-4 top-20` | `z-40` |
+| Action Buttons (Roll/Skip/Undo) | `fixed bottom-8 left-1/2` | `z-40` |
+| AppHeader (Settings/Home) | `fixed top-0 right-0` | `z-50` |
+| Dice/Mystery/Kick Overlays | `fixed inset-0` | `z-40` |
+| SettingsPanel Drawer | `fixed right-0 top-0` | `z-50` |
 
 ---
 
@@ -142,53 +173,52 @@ User clicks "ROLL DICE" (bottom-center button)
 Both `BoardGrid.tsx` and `AnimationService.ts` use shared functions from `Pathfinding.ts`:
 
 ```
-getTokenMetrics(cellSizePct) → { tokenSizePct, centerOffset }
 getPlayerOffset(playerIndex, cellSizePct) → { offsetX, offsetY }
 
-Final position:
-  left = x * cellSizePct + centerOffset + offsetX
-  top  = y * cellSizePct + centerOffset + offsetY
+Final position (pixel-based):
+  tokenPx = TILE_PX * 0.7
+  tokenCenter = (TILE_PX - tokenPx) / 2
+  left = x * TILE_PX + tokenCenter + pxOffsetX
+  top  = y * TILE_PX + tokenCenter + pxOffsetY
 ```
+
+---
+
+## AudioService — Lazy Singleton Pattern
+
+- **No eager loading**: Howl instances are created only on first `play()` call.
+- **Error guard**: `onloaderror` marks failed sounds — never retried.
+- **Mute sync**: `Howler.mute()` controlled by SettingsPanel toggle.
 
 ---
 
 ## Completed Architecture Changes
 
 ### ✅ Mystery Card Flip (Phase 3)
-
-- Renamed "Mystery Box" → "Mystery Card" in all UI references.
-- `MysteryCardOverlay.tsx`: 3D card flip via `rotateY[-180→0]` + `scale[0.5→1.2→1]` + `easeOutElastic(1, .8)`.
-- Card starts face-down (purple), flips at 50% to reveal `+X STEPS` or `-X STEPS`.
-- Backdrop-blur overlay, 1.5s display, then token moves at 1.5× speed.
-
-### ✅ Builder UX (Phase 4)
-
-- First tile renders "IN" (START type, emerald background).
-- Last tile always renders "OUT" visually in editor (rose background), even before save.
-- Grid sizing consistent with MAP_SIZE=15.
+- `MysteryCardOverlay.tsx`: 3D card flip via `rotateY[-180→0]` + `scale[0.5→1.2→1]`.
 
 ### ✅ Local Storage Integration (Phase 5)
+- Save/Load maps via `localStorage` key `draftboard_saved_map`.
 
-- **Save**: "Lưu Map" button in `MapBuilderUI` sidebar serializes `Tile[]` to `localStorage` key `draftboard_saved_map`.
-- **Load**: `WelcomeMenu` checks `localStorage` on render. If saved data exists, shows amber "Chơi Map Đã Lưu" button.
-- **App routing**: `PLAY_SAVED` mode in `App.tsx` parses JSON from localStorage into `Tile[]`, with try/catch fallback to default map.
+### ✅ Cardboard Design System (Ticket 3.1a)
+- CSS Tokens: `--card-radius: 2px`, `--card-shadow`, `.game-card`, `.game-tile`.
 
-### ✅ Cardboard Design System (Epic 3 — Ticket 3.1a)
+### ✅ i18n Dictionary System (Ticket 3.1b)
+- `LocaleStrings` interface with 10+ domains. `t()` accessor. Vietnamese default.
 
-- **CSS Tokens** in `index.css`: `--card-radius: 2px`, `--card-shadow`, `--card-inset`, `--tile-shadow`.
-- **Utility classes**: `.game-card` (panels, buttons, overlays) and `.game-tile` (board tiles).
-- **Purged**: All `rounded-xl`, `rounded-2xl`, `rounded-3xl`, `rounded-[2rem]`, `rounded-[2.5rem]` from every component.
-- **Result**: Sharp, rectangular "cardboard" aesthetic across the entire UI.
+### ✅ Settings Panel & State (Ticket 3.3a)
+- Slide-in drawer. Language switcher, sound/animation/camera toggles.
 
-### ✅ i18n Dictionary System (Epic 3 — Ticket 3.1b)
+### ✅ Kick Collision (Ticket 3.3b-d)
+- `EVENT_KICK` phase, `resolveKick()`, KickOverlay animation.
 
-- **Architecture**: `src/locales/types.ts` defines `LocaleStrings` interface with 10 domains (welcome, home, board, stats, dice, mystery, victory, kick, builder, settings, common).
-- **Vietnamese dict**: `src/locales/vi.ts` — default locale with all 45+ strings.
-- **Accessor**: `t()` function returns active dictionary. `setLocale(key)` switches language.
-- **Integration**: All 7 components updated to consume `t()` instead of hardcoded strings.
+### ✅ Audio Engine (Ticket 3.4)
+- Howler.js lazy singleton. 5 SFX channels. Settings sync.
 
-### ✅ Settings Panel & State (Epic 3 — Ticket 3.3a + 3.1c)
+### ✅ HUD & Camera Hotfix (Ticket 3.5)
+- Fullscreen pixel-based board (TILE_PX=64). Fixed HUD overlays. 2D pan camera.
+- Memento Undo: 20-snapshot history stack in GameEngine.
 
-- **SettingsState.ts**: `GlobalSettings` (locale, sound, animations, cameraTrack) persisted to localStorage. `MapSettings` (diceCount, kickDistance, exactLanding) for per-game config.
-- **SettingsPanel.tsx**: Slide-in drawer from right edge with anime.js `translateX` animation. Contains language switcher (vi/en) and toggle rows.
-- **App integration**: Settings button in `AppHeader` now opens the drawer (no longer a no-op).
+### ✅ Audio Leak & UX Hotfix (Ticket 3.6)
+- Lazy Howl init with `onloaderror` guard. Emoji avatars via `emoji-picker-react`.
+- Dice scrambling via anime.js `update` callback.

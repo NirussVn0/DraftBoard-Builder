@@ -123,7 +123,7 @@ function App() {
     return () => clearTimeout(timeout);
   }, [appMode, gameState.phase, gameState.activePlayerIndex, gameState.map]);
 
-  const handleStartGame = (players: { name: string, color: string }[]) => {
+  const handleStartGame = (players: { name: string; color: string; emoji: string }[]) => {
     gameEngine.startGame(players, pendingMap || undefined)
   }
 
