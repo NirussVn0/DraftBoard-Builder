@@ -29,10 +29,10 @@ export const PlayerStatsPanel: React.FC<PlayerStatsPanelProps> = ({
             }}
           >
             <div
-              className="w-7 h-7 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0"
+              className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-base"
               style={{ backgroundColor: player.color }}
             >
-              {player.name.charAt(0).toUpperCase()}
+              {player.emoji || player.name.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-bold text-sm text-slate-800 truncate">{player.name}</p>
