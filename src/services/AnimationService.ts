@@ -1,5 +1,5 @@
 import anime from 'animejs';
-import { getCoordinatesFromCell, getPlayerOffset, getTokenMetrics } from '../core/Pathfinding';
+import { getCoordinatesFromCell, getPlayerOffset } from '../core/Pathfinding';
 import type { Tile } from '../core/MapBuilderState';
 import { audioService } from './AudioService';
 import { cameraService } from './CameraService';
@@ -82,10 +82,11 @@ export class AnimationService {
     });
   }
 
-  /** Sky-drop dice animation — exact anime.js config from CEO directive */
+  /** Sky-drop dice animation — anime.js config with per-frame update callback */
   public static animateSkyDropDice(
     diceElementId: string,
-    onComplete: () => void
+    onComplete: () => void,
+    onUpdate?: () => void
   ) {
     const el = document.getElementById(diceElementId);
     if (!el) { onComplete(); return; }
@@ -97,6 +98,7 @@ export class AnimationService {
         { value: 0, duration: 1000, easing: 'easeOutBounce' }
       ],
       rotate: { value: '2turn', duration: 1000, easing: 'easeInOutSine' },
+      update: () => { onUpdate?.(); },
       complete: () => { onComplete(); }
     });
   }

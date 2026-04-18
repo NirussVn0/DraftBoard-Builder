@@ -13,14 +13,13 @@ const DICE_ICONS = [Dice1, Dice1, Dice2, Dice3, Dice4, Dice5, Dice6];
 
 /**
  * PhysicalDice — the animated 3D spinning cube that drops from sky.
- * Only responsible for the sky-drop animation and cycling dice faces.
- * Calls onLanded() when the dice hits the ground.
+ * Number scrambles continuously via anime.js update callback, then
+ * locks to the real value on landing.
  */
 export const PhysicalDice: React.FC<PhysicalDiceProps> = ({
   diceValue, activeColor, onLanded
 }) => {
   const hasAnimated = useRef(false);
-  const intervalRef = useRef<number | null>(null);
   const [displayValue, setDisplayValue] = useState(1);
   const [landed, setLanded] = useState(false);
 
@@ -28,23 +27,21 @@ export const PhysicalDice: React.FC<PhysicalDiceProps> = ({
     if (hasAnimated.current) return;
     hasAnimated.current = true;
 
-    // Rapid cycling of dice faces during drop
-    intervalRef.current = window.setInterval(() => {
-      setDisplayValue(Math.floor(Math.random() * 6) + 1);
-    }, 80);
-
-    // Sky-drop animation
-    AnimationService.animateSkyDropDice('sky-drop-dice', () => {
-      if (intervalRef.current) window.clearInterval(intervalRef.current);
-      setDisplayValue(diceValue);
-      setLanded(true);
-      audioService.playDiceRoll();
-      onLanded();
-    });
-
-    return () => {
-      if (intervalRef.current) window.clearInterval(intervalRef.current);
-    };
+    // Sky-drop animation with per-frame scrambling via anime.js update hook
+    AnimationService.animateSkyDropDice(
+      'sky-drop-dice',
+      () => {
+        // complete — lock to real value
+        setDisplayValue(diceValue);
+        setLanded(true);
+        audioService.playDiceRoll();
+        onLanded();
+      },
+      () => {
+        // update — scramble number on every animation frame
+        setDisplayValue(Math.floor(Math.random() * 6) + 1);
+      }
+    );
   }, [diceValue, onLanded]);
 
   const Icon = DICE_ICONS[displayValue] || Dice1;
