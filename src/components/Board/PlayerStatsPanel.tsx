@@ -14,7 +14,7 @@ export const PlayerStatsPanel: React.FC<PlayerStatsPanelProps> = ({
   const s = t().stats;
 
   return (
-    <div className="w-56 bg-white border border-slate-200 p-5 flex flex-col gap-3 shrink-0">
+    <div className="fixed right-4 top-20 z-40 w-56 bg-white/95 backdrop-blur-sm shadow-xl border border-slate-200 p-5 flex flex-col gap-3">
       <h2 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-1">{s.heading}</h2>
       {players.map((player, index) => {
         const isActive = index === activePlayerIndex;

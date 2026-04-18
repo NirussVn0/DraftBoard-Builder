@@ -266,29 +266,26 @@ function App() {
 
   return (
     <>
-    <div className="min-h-screen bg-white p-4 sm:p-8 flex flex-col items-center justify-center font-sans text-slate-800">
+    <div className="w-screen h-screen bg-slate-50 overflow-hidden relative font-sans text-slate-800">
       <AppHeader onHome={handleGoHome} onSettings={handleSettings} />
 
-      {/* Board + Stats Panel layout */}
-      <div className="flex gap-6 items-start w-full max-w-5xl">
-        {/* Board */}
-        <div className="flex-1 max-w-3xl flex justify-center" id="board-container">
-          <CameraWrapper>
-            <BoardGrid players={gameState.players} map={gameState.map} />
-          </CameraWrapper>
-        </div>
-
-        {/* Stats Panel */}
-        <PlayerStatsPanel
-          players={gameState.players}
-          activePlayerIndex={gameState.activePlayerIndex}
-          maxPosition={maxPosition}
-        />
+      {/* Layer 0: Fullscreen Board */}
+      <div className="absolute inset-0 z-0" id="board-container">
+        <CameraWrapper>
+          <BoardGrid players={gameState.players} map={gameState.map} />
+        </CameraWrapper>
       </div>
+
+      {/* Layer 1: Fixed HUD */}
+      <PlayerStatsPanel
+        players={gameState.players}
+        activePlayerIndex={gameState.activePlayerIndex}
+        maxPosition={maxPosition}
+      />
 
       {/* Bottom-center action buttons */}
       {gameState.phase === 'IDLE_TURN' && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3">
           <button
             onClick={() => gameEngine.skipTurn()}
             className="flex items-center gap-2 px-6 py-5 bg-slate-200 text-slate-600 font-bold text-sm game-card hover:bg-slate-300 hover:scale-105 active:scale-95 transition-all uppercase tracking-wider"
