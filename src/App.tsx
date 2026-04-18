@@ -8,6 +8,7 @@ import { HomeMenu } from './components/HomeMenu/HomeMenu'
 import { BoardGrid } from './components/Board/BoardGrid'
 import { PlayerStatsPanel } from './components/Board/PlayerStatsPanel'
 import { DiceOverlay } from './components/PlayMenu/DiceOverlay'
+import { MysteryCardOverlay } from './components/PlayMenu/MysteryCardOverlay'
 import { WelcomeMenu } from './components/WelcomeMenu'
 import { MapBuilderUI } from './components/MapBuilder/MapBuilderUI'
 
@@ -44,37 +45,17 @@ function App() {
   const [pendingMap, setPendingMap] = useState<Tile[] | null>(null)
   const [gameState, setGameState] = useState<GameState>(gameEngine.getState())
   const [showDiceOverlay, setShowDiceOverlay] = useState(false)
+  const [showMysteryOverlay, setShowMysteryOverlay] = useState(false)
+  const [mysteryValue, setMysteryValue] = useState(0)
 
   useEffect(() => {
     const unsubscribe = gameEngine.subscribe((state) => {
       setGameState(state)
 
       if (state.phase === 'EVENT_MYSTERY_ROLL') {
-        const activePlayer = state.players[state.activePlayerIndex];
-
-        AnimationService.animateTokenMove(
-          activePlayer.id,
-          state.activePlayerIndex,
-          [activePlayer.position],
-          () => {
-            setTimeout(() => {
-              const pathData = gameEngine.concludeDiceRoll();
-              if (!pathData) return;
-              AnimationService.animateTokenMove(
-                activePlayer.id,
-                state.activePlayerIndex,
-                pathData,
-                (finalCell) => {
-                  gameEngine.finishTokenMove(finalCell);
-                },
-                true,
-                state.map || undefined
-              );
-            }, 500);
-          },
-          false,
-          state.map || undefined
-        );
+        // Show Mystery Card flip overlay instead of auto-moving
+        setMysteryValue(state.diceValue);
+        setShowMysteryOverlay(true);
       }
     })
     return unsubscribe
@@ -108,6 +89,29 @@ function App() {
         gameEngine.finishTokenMove(finalCell);
       },
       false,
+      state.map || undefined
+    );
+  }, []);
+
+  const handleMysteryComplete = useCallback(() => {
+    setShowMysteryOverlay(false);
+
+    // Conclude mystery roll and move token at 1.5x speed
+    const pathData = gameEngine.concludeDiceRoll();
+    if (!pathData) return;
+
+    const state = gameEngine.getState();
+    const activePlayer = state.players[state.activePlayerIndex];
+    if (!activePlayer) return;
+
+    AnimationService.animateTokenMove(
+      activePlayer.id,
+      state.activePlayerIndex,
+      pathData,
+      (finalCell) => {
+        gameEngine.finishTokenMove(finalCell);
+      },
+      true, // isFast = true (1.5x speed)
       state.map || undefined
     );
   }, []);
@@ -208,6 +212,14 @@ function App() {
           diceValue={gameState.diceValue}
           activeColor={activePlayer?.color || '#6366f1'}
           onComplete={handleDiceAnimationComplete}
+        />
+      )}
+
+      {/* Mystery Card Flip Overlay */}
+      {showMysteryOverlay && (
+        <MysteryCardOverlay
+          mysteryValue={mysteryValue}
+          onComplete={handleMysteryComplete}
         />
       )}
 

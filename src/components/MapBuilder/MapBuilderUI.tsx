@@ -110,7 +110,7 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
             onClick={() => setTool('MYSTERY')}
             className={`w-full flex items-center gap-3 p-3 rounded-xl font-bold transition-colors ${tool === 'MYSTERY' ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
           >
-            <Sparkles size={20} /> Mystery Box
+            <Sparkles size={20} /> Mystery Card
           </button>
         </div>
 
@@ -179,17 +179,19 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
             );
           })}
 
-          {path.map((tile) => {
+          {path.map((tile, idx) => {
             const { x, y, type, stepIndex } = tile;
             let bgColor = 'bg-slate-200';
             let content: React.ReactNode = <span className="text-slate-500 font-bold text-[10px] opacity-70">{stepIndex}</span>;
 
+            const isLastTile = idx === path.length - 1 && path.length > 1;
+
             if (type === 'START') {
               bgColor = 'bg-emerald-400';
               content = <span className="font-black text-emerald-900 text-[10px]">IN</span>;
-            } else if (type === 'END') {
+            } else if (type === 'END' || isLastTile) {
               bgColor = 'bg-rose-500';
-              content = <span className="font-black text-rose-100 text-[10px]">OUT</span>;
+              content = <span className="font-black text-white text-[10px]">OUT</span>;
             } else if (type === 'MYSTERY') {
               bgColor = 'bg-purple-500';
               content = <Sparkles size={16} className="text-white" />;
