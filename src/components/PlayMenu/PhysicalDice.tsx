@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { AnimationService } from '../../services/AnimationService';
+import { audioService } from '../../services/AudioService';
 import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6 } from 'lucide-react';
 
 interface PhysicalDiceProps {
@@ -37,6 +38,7 @@ export const PhysicalDice: React.FC<PhysicalDiceProps> = ({
       if (intervalRef.current) window.clearInterval(intervalRef.current);
       setDisplayValue(diceValue);
       setLanded(true);
+      audioService.playDiceRoll();
       onLanded();
     });
 

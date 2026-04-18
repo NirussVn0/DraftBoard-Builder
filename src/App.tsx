@@ -4,6 +4,7 @@ import type { GameState } from './core/GameState'
 import { AnimationService } from './services/AnimationService'
 import { TOTAL_CELLS, getCoordinatesFromCell, MAP_SIZE, getTokenMetrics, getPlayerOffset } from './core/Pathfinding'
 import { cameraService } from './services/CameraService'
+import { audioService } from './services/AudioService'
 
 import { HomeMenu } from './components/HomeMenu/HomeMenu'
 import { BoardGrid } from './components/Board/BoardGrid'
@@ -69,6 +70,10 @@ function App() {
 
       if (state.phase === 'EVENT_KICK') {
         setShowKickOverlay(true);
+      }
+
+      if (state.phase === 'VICTORY') {
+        audioService.playVictory();
       }
     })
     return unsubscribe

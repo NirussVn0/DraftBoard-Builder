@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import anime from 'animejs';
 import { t } from '../../locales';
+import { audioService } from '../../services/AudioService';
 import type { KickEvent, Player } from '../../core/GameState';
 
 interface KickOverlayProps {
@@ -30,6 +31,7 @@ export const KickOverlay: React.FC<KickOverlayProps> = ({ kickEvent, players, on
       opacity: [0, 1],
       duration: 600,
       easing: 'easeOutBack',
+      begin: () => { audioService.playKick(); },
     });
 
     // Text slide in

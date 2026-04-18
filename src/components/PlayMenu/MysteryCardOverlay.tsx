@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import anime from 'animejs';
 import { t } from '../../locales';
+import { audioService } from '../../services/AudioService';
 
 interface MysteryCardOverlayProps {
   mysteryValue: number;
@@ -39,6 +40,7 @@ export const MysteryCardOverlay: React.FC<MysteryCardOverlayProps> = ({
         // Swap to front face at ~90 degrees (halfway through flip)
         if (anim.progress > 50 && !showFront) {
           setShowFront(true);
+          audioService.playMysteryFlip();
         }
       },
       complete: () => {

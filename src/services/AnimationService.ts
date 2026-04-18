@@ -1,6 +1,7 @@
 import anime from 'animejs';
 import { getCoordinatesFromCell, getPlayerOffset, getTokenMetrics } from '../core/Pathfinding';
 import type { Tile } from '../core/MapBuilderState';
+import { audioService } from './AudioService';
 
 const LEGACY_CELL_SIZE_PCT = 10;
 const MAP_CELL_SIZE_PCT = 100 / 15;
@@ -62,7 +63,8 @@ export class AnimationService {
         scale: [
           { value: 1.2, duration: 150 / speedFactor, easing: 'easeOutQuad' },
           { value: 1, duration: 150 / speedFactor, easing: 'easeInQuad' }
-        ]
+        ],
+        begin: () => { audioService.playTokenBounce(); }
       });
     });
   }
