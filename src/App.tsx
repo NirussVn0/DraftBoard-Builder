@@ -85,19 +85,17 @@ function App() {
       return;
     }
 
+    // CEO OVERRIDE: Camera should only snap/pan to the active player during IDLE_TURN.
+    // During MOVING_TOKEN, AnimationService handles the tracking.
+    if (gameState.phase !== 'IDLE_TURN') return;
+
     // Delay camera focus slightly to let UI render
     const timeout = setTimeout(() => {
       const activePlayer = gameState.players[gameState.activePlayerIndex];
       if (!activePlayer) return;
 
-      const containerEl = document.getElementById('board-container');
-      if (!containerEl) return;
-      
-      const width = containerEl.clientWidth;
-      const height = containerEl.clientHeight;
-
-      const cellSizePct = gameState.map ? (100 / MAP_SIZE) : (100 / BOARD_SIZE);
-      const { tokenSizePct, centerOffset } = getTokenMetrics(cellSizePct);
+      const TILE_PX = 64; // Same as BoardGrid
+      const tokenPx = TILE_PX * 0.7;
 
       let gridX = 0, gridY = 0;
       if (gameState.map && gameState.map.length > 0) {
@@ -108,25 +106,22 @@ function App() {
         gridX = coords.x; gridY = coords.y;
       }
 
+      const cellSizePct = gameState.map ? (100 / MAP_SIZE) : (100 / BOARD_SIZE);
       const { offsetX, offsetY } = getPlayerOffset(gameState.activePlayerIndex, cellSizePct);
+      const boardPx = (gameState.map ? MAP_SIZE : BOARD_SIZE) * TILE_PX;
+      
+      const pxOffsetX = (offsetX / 100) * boardPx;
+      const pxOffsetY = (offsetY / 100) * boardPx;
+      const tokenCenter = (TILE_PX - tokenPx) / 2;
 
-      // Convert percentage coordinates to pixels based on container size
-      // The BoardGrid aspect-square means width == height
-      const targetX = (gridX * cellSizePct + centerOffset + offsetX + (tokenSizePct / 2)) * (width / 100);
-      const targetY = (gridY * cellSizePct + centerOffset + offsetY + (tokenSizePct / 2)) * (width / 100);
+      const targetX = gridX * TILE_PX + tokenCenter + pxOffsetX + (tokenPx / 2);
+      const targetY = gridY * TILE_PX + tokenCenter + pxOffsetY + (tokenPx / 2);
 
-      // Parabolic animation
-      cameraService.animateParabolic(
-        'camera-viewport',
-        width,
-        height,
-        targetX,
-        targetY
-      );
+      cameraService.panTo('camera-viewport', 'board-container', targetX, targetY);
     }, 100);
 
     return () => clearTimeout(timeout);
-  }, [appMode, gameState.phase, gameState.activePlayerIndex, gameState.players, gameState.map]);
+  }, [appMode, gameState.phase, gameState.activePlayerIndex, gameState.map]);
 
   const handleStartGame = (players: { name: string, color: string }[]) => {
     gameEngine.startGame(players, pendingMap || undefined)

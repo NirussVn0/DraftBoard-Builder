@@ -2,6 +2,7 @@ import anime from 'animejs';
 import { getCoordinatesFromCell, getPlayerOffset, getTokenMetrics } from '../core/Pathfinding';
 import type { Tile } from '../core/MapBuilderState';
 import { audioService } from './AudioService';
+import { cameraService } from './CameraService';
 
 /** Must match BoardGrid.TILE_PX */
 const TILE_PX = 64;
@@ -72,7 +73,11 @@ export class AnimationService {
           { value: 1.2, duration: 150 / speedFactor, easing: 'easeOutQuad' },
           { value: 1, duration: 150 / speedFactor, easing: 'easeInQuad' }
         ],
-        begin: () => { audioService.playTokenBounce(); }
+        begin: () => { 
+          audioService.playTokenBounce(); 
+          // Center camera on the token as it lands (add half token size to point to center)
+          cameraService.panTo('camera-viewport', 'board-container', targetLeft + (tokenPx / 2), targetTop + (tokenPx / 2));
+        }
       });
     });
   }
