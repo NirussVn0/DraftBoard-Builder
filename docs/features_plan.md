@@ -142,11 +142,27 @@
 
 ---
 
+## Epic 3 — Ticket 3.4: Audio Engine (Howler.js) ✅ COMPLETE
+
+**Goal**: Physics-synced sound effects via Howler.js singleton.
+
+| Feature | Details | Status |
+|---------|---------|--------|
+| AudioService Singleton | `src/services/AudioService.ts` using `howler.js`, Singleton pattern. | ✅ |
+| Dice Roll SFX | `playDiceRoll()` fires at exact DOM ground-impact in `PhysicalDice.tsx`. | ✅ |
+| Token Bounce SFX | `playTokenBounce()` fires per step in `AnimationService.animateTokenMove()`. | ✅ |
+| Kick SFX | `playKick()` fires on impact burst in `KickOverlay.tsx`. | ✅ |
+| Mystery Flip SFX | `playMysteryFlip()` fires at 50% rotation in `MysteryCardOverlay.tsx`. | ✅ |
+| Victory Fanfare | `playVictory()` fires on `VICTORY` phase in `App.tsx` observer. | ✅ |
+| Settings Sync | `SettingsPanel` toggle calls `Howler.mute()` for instant on/off without refresh. | ✅ |
+| Placeholder Assets | `public/audio/` with 5 placeholder mp3 files ready for replacement. | ✅ |
+
+---
+
 ## Phase 6 — Polish & Extras (Stretch) 🔲 BACKLOG
 
 | Feature | Details | Status |
 |---------|---------|--------|
-| Sound Effects | Dice roll, token hop, victory fanfare. | 🔲 |
 | Responsive Layout | Mobile-friendly board scaling. | 🔲 |
 | Map Export / Import | Base64-encode map → shareable URL. | 🔲 |
 

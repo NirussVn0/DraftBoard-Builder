@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { gameEngine } from './core/GameEngine'
 import type { GameState } from './core/GameState'
 import { AnimationService } from './services/AnimationService'
-import { TOTAL_CELLS, getCoordinatesFromCell, MAP_SIZE, getTokenMetrics, getPlayerOffset } from './core/Pathfinding'
+import { TOTAL_CELLS, getCoordinatesFromCell, getTokenMetrics, getPlayerOffset } from './core/Pathfinding'
 import { cameraService } from './services/CameraService'
 import { audioService } from './services/AudioService'
 
@@ -22,7 +22,7 @@ import { Trophy, RefreshCcw, Home, Settings, Dices, SkipForward } from 'lucide-r
 import { t } from './locales'
 
 import type { Tile } from './core/MapBuilderState'
-import { generateZigzagMap } from './core/MapBuilderState'
+import { generateZigzagMap, MAP_SIZE } from './core/MapBuilderState'
 import { BOARD_SIZE } from './core/Pathfinding'
 
 type AppMode = 'MENU' | 'BUILDER' | 'PLAYING';
