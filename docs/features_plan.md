@@ -120,25 +120,25 @@
 
 ---
 
-## Epic 3 — Ticket 3.3b-d: Kick Collision 🔲 PENDING CEO APPROVAL
+## Epic 3 — Ticket 3.3b-d: Kick Collision ✅ COMPLETE
 
 | Feature | Details | Status |
 |---------|---------|--------|
-| `EVENT_KICK` Phase | New GamePhase for collision events. | 🔲 |
-| Collision Detection | `evaluateCell()` checks if another player occupies same tile. | 🔲 |
-| `resolveKick()` | Kicks player back by `kickDistance`, chains to mystery check. | 🔲 |
-| KickOverlay | Impact animation + text banner. | 🔲 |
+| `EVENT_KICK` Phase | New GamePhase for collision events. | ✅ |
+| Collision Detection | `evaluateCell()` checks if another player occupies same tile. | ✅ |
+| `resolveKick()` | Kicks player back by `kickDistance`, chains to mystery check. | ✅ |
+| KickOverlay | Impact animation + text banner. | ✅ |
 
 ---
 
-## Epic 3 — Ticket 3.2: Camera Engine & Dice UX 🔲 PENDING CEO APPROVAL
+## Epic 3 — Ticket 3.2: Camera Engine & Dice UX ✅ COMPLETE
 
 | Feature | Details | Status |
 |---------|---------|--------|
-| CameraService | Parabolic tracking: zoom-out → pan → zoom-in via anime.js timeline. | 🔲 |
-| CameraWrapper | Viewport container with CSS transform for scale/translate. | 🔲 |
-| Skip Turn | `skipTurn()` method + secondary button in UI. | 🔲 |
-| Dice Separation | PhysicalDice (animation) + DiceResultBanner (number) as separate entities. | 🔲 |
+| CameraService | Parabolic tracking: zoom-out → pan → zoom-in via anime.js timeline. | ✅ |
+| CameraWrapper | Viewport container with CSS transform for scale/translate. | ✅ |
+| Skip Turn | `skipTurn()` method + secondary button in UI. | ✅ |
+| Dice Separation | PhysicalDice (animation) + DiceResultBanner (number) as separate entities. | ✅ |
 
 ---
 
