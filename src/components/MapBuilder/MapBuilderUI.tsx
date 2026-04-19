@@ -11,6 +11,7 @@ interface MapBuilderUIProps {
   onCancel: () => void;
 }
 
+export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) => {
   const { path, env, addNode, eraseFrom, setCard, randomFill, clearMap, loadMap, setEnvironment, undo, redo, canUndo, canRedo } = useMapBuilder();
   const [tool, setTool] = React.useState<'DRAW' | 'ERASE' | 'CARD_PAINT' | 'ERASE_CARD' | 'RANDOM_FILL' | 'PAINT_ENV' | 'ERASE_ENV'>('DRAW');
   const [selectedCard, setSelectedCard] = React.useState<CardId>('MYSTERY');
