@@ -28,6 +28,9 @@ export type GamePhase =
   | 'EVENT_QUIZ'
   | 'EVENT_DETENTION_ROLL'
   | 'EVENT_FREEZE'
+  | 'EVENT_MOVE_ANIMATION'
+  | 'EVENT_TELEPORT_ANIMATION'
+  | 'EVENT_SWAP_ANIMATION'
   | 'VICTORY';
 
 export interface KickEvent {
@@ -51,6 +54,7 @@ export interface GameState {
   winner: Player | null;
   diceValue: number;
   map: Tile[] | null;
+  envMap?: Record<string, string>;
   mapSettings: MapSettings;
   kickEvent: KickEvent | null;
   canUndo: boolean;
@@ -58,5 +62,8 @@ export interface GameState {
   currentCard: CardDefinition | null;
   currentResolution: CardResolution | null;
   quizState: QuizState | null;
+  moveAnimation?: { playerId: string; path: number[] };
+  teleportAnimation?: { playerId: string; position: number };
+  swapAnimation?: { player1Id: string; player2Id: string };
   eventQueue: GameEvent[];
 }

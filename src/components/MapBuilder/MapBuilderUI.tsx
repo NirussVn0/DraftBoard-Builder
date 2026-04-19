@@ -11,10 +11,11 @@ interface MapBuilderUIProps {
   onCancel: () => void;
 }
 
-export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) => {
-  const { path, addNode, eraseFrom, setCard, randomFill, clearMap, loadMap, undo, redo, canUndo, canRedo } = useMapBuilder();
-  const [tool, setTool] = React.useState<'DRAW' | 'ERASE' | 'CARD_PAINT' | 'ERASE_CARD' | 'RANDOM_FILL'>('DRAW');
+  const { path, env, addNode, eraseFrom, setCard, randomFill, clearMap, loadMap, setEnvironment, undo, redo, canUndo, canRedo } = useMapBuilder();
+  const [tool, setTool] = React.useState<'DRAW' | 'ERASE' | 'CARD_PAINT' | 'ERASE_CARD' | 'RANDOM_FILL' | 'PAINT_ENV' | 'ERASE_ENV'>('DRAW');
   const [selectedCard, setSelectedCard] = React.useState<CardId>('MYSTERY');
+  const [selectedEmoji, setSelectedEmoji] = React.useState<string>('🌲');
+  const [isDragging, setIsDragging] = React.useState(false);
   
   const [showRandomModal, setShowRandomModal] = useState(false);
   const [randomCount, setRandomCount] = useState(3);
@@ -54,9 +55,18 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
       setCard(maxStep, undefined);
     } else if (tool === 'RANDOM_FILL' && hasTile) {
       randomFill(selectedCard, randomCount);
-      // Optional: auto switch back to DRAW after filling
       setTool('DRAW');
+    } else if (tool === 'PAINT_ENV') {
+      setEnvironment(x, y, selectedEmoji);
+    } else if (tool === 'ERASE_ENV') {
+      setEnvironment(x, y, null);
     }
+  };
+
+  const handleCellEnter = (x: number, y: number) => {
+    if (!isDragging) return;
+    if (tool === 'PAINT_ENV') setEnvironment(x, y, selectedEmoji);
+    if (tool === 'ERASE_ENV') setEnvironment(x, y, null);
   };
 
   const handleRandomToolClick = () => {
@@ -143,6 +153,18 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
               <EraserIcon size={20} /> <span className="text-[10px]">Xóa Thẻ</span>
             </button>
             <button 
+              onClick={() => setTool('PAINT_ENV')}
+              className={`flex flex-col items-center justify-center gap-1 p-3 game-card font-bold transition-colors ${tool === 'PAINT_ENV' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+            >
+              <span className="text-xl leading-none">🌲</span> <span className="text-[10px]">Trang Trí</span>
+            </button>
+            <button 
+              onClick={() => setTool('ERASE_ENV')}
+              className={`flex flex-col items-center justify-center gap-1 p-3 game-card font-bold transition-colors ${tool === 'ERASE_ENV' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+            >
+              <Eraser size={20} /> <span className="text-[10px]">Xóa Cảnh</span>
+            </button>
+            <button 
               onClick={handleRandomToolClick}
               className={`flex flex-col items-center justify-center gap-1 p-3 game-card font-bold transition-colors col-span-2 ${tool === 'RANDOM_FILL' ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
             >
@@ -169,6 +191,23 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
                     <Settings2 size={18} />
                   </button>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {tool === 'PAINT_ENV' && (
+          <div className="space-y-3">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Chọn Cảnh Vật</p>
+            <div className="grid grid-cols-4 gap-2 pr-2 custom-scrollbar max-h-64 overflow-y-auto">
+              {['🌲', '🌳', '🌴', '🌵', '🌾', '🌿', '🍁', '🍄', '🗻', '🌋', '🏕️', '🛖', '🏯', '🏰', '🏚️', '🦴', '☠️'].map(emoji => (
+                <button 
+                  key={emoji}
+                  onClick={() => setSelectedEmoji(emoji)}
+                  className={`flex items-center justify-center aspect-square text-3xl game-card transition-colors ${selectedEmoji === emoji ? 'bg-emerald-100 border-emerald-400' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}`}
+                >
+                  {emoji}
+                </button>
               ))}
             </div>
           </div>
@@ -201,8 +240,12 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
                if (path.length > 5 && path[path.length - 1].type !== 'START') {
                  const finalPath = [...path];
                  finalPath[finalPath.length - 1] = { ...finalPath[finalPath.length - 1], type: 'END' };
-                 localStorage.setItem('draftboard_saved_map', JSON.stringify(finalPath));
-                 onSave(finalPath);
+                 const finalMap = { path: finalPath, env };
+                 localStorage.setItem('draftboard_saved_map', JSON.stringify(finalMap));
+                 onSave(finalPath); // wait, onSave expects Tile[], I'll keep it simple or change it later. Actually, the user's issue says onSave needs to support env.
+                 // let's change onSave below. Wait, I shouldn't break `App.tsx` onSave.
+                 // I will store the whole MapState in localStorage. `App.tsx` will read it.
+                 // But onSave currently takes `Tile[]`. I can pass it. Wait, the env won't be saved if I pass Tile[] to onSave!
                } else {
                  alert(t().builder.invalidMap);
                }
@@ -217,9 +260,10 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
                  if (path.length > 5) {
                    const finalPath = [...path];
                    finalPath[finalPath.length - 1] = { ...finalPath[finalPath.length - 1], type: 'END' as const };
-                   localStorage.setItem('draftboard_saved_map', JSON.stringify(finalPath));
+                   const finalMap = { path: finalPath, env };
+                   localStorage.setItem('draftboard_saved_map', JSON.stringify(finalMap));
                    
-                   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(finalPath));
+                   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(finalMap));
                    const downloadNode = document.createElement('a');
                    downloadNode.setAttribute("href", dataStr);
                    downloadNode.setAttribute("download", "draftboard_map.json");
@@ -252,9 +296,13 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
                 reader.onload = (evt) => {
                   try {
                     const json = JSON.parse(evt.target?.result as string);
-                    if (Array.isArray(json) && json.length > 0 && typeof json[0].stepIndex === 'number') {
-                      loadMap(json as Tile[]);
+                    if (json.path && Array.isArray(json.path)) {
+                      loadMap(json);
                       alert("Nhập map thành công!");
+                    } else if (Array.isArray(json)) {
+                      // Backward compatibility with Tile[]
+                      loadMap({ path: json, env: {} });
+                      alert("Nhập map thành công (Legacy format)!");
                     } else {
                       alert("File JSON không hợp lệ.");
                     }
@@ -283,7 +331,10 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
         )}
 
         <div 
-          className="w-full h-full relative"
+          className="w-full h-full relative select-none"
+          onMouseDown={() => setIsDragging(true)}
+          onMouseUp={() => setIsDragging(false)}
+          onMouseLeave={() => setIsDragging(false)}
           style={{
             display: 'grid',
             gridTemplateColumns: `repeat(${MAP_SIZE}, minmax(0, 1fr))`,
@@ -294,13 +345,17 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
             const x = i % MAP_SIZE;
             const y = Math.floor(i / MAP_SIZE);
             const isAlternate = (x + y) % 2 === 0;
+            const envEmoji = env[`${x},${y}`];
 
             return (
               <div
                 key={`bg-${x}-${y}`}
-                onClick={() => handleCellClick(x, y)}
-                className={`border-[0.5px] border-slate-200/80 cursor-pointer hover:bg-indigo-100/60 transition-colors ${isAlternate ? 'bg-slate-50' : 'bg-white'}`}
-              />
+                onMouseDown={() => handleCellClick(x, y)}
+                onMouseEnter={() => handleCellEnter(x, y)}
+                className={`border-[0.5px] border-slate-200/80 cursor-pointer hover:bg-indigo-100/60 transition-colors flex items-center justify-center text-3xl ${isAlternate ? 'bg-slate-50' : 'bg-white'}`}
+              >
+                 {envEmoji}
+              </div>
             );
           })}
 

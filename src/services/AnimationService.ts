@@ -102,4 +102,127 @@ export class AnimationService {
       complete: () => { onComplete(); }
     });
   }
+
+  public static animateTeleport(
+    tokenId: string,
+    playerIndex: number,
+    targetCell: number,
+    onComplete: () => void,
+    customMap?: Tile[]
+  ) {
+    const tokenElement = document.getElementById(tokenId);
+    if (!tokenElement) {
+      onComplete();
+      return;
+    }
+
+    const gridSize = customMap ? 15 : 10;
+    const cellSizePct = 100 / gridSize;
+    const { offsetX, offsetY } = getPlayerOffset(playerIndex, cellSizePct);
+    const boardPx = gridSize * TILE_PX;
+    const tokenPx = TILE_PX * 0.7;
+    const tokenCenter = (TILE_PX - tokenPx) / 2;
+    const pxOffsetX = (offsetX / 100) * boardPx;
+    const pxOffsetY = (offsetY / 100) * boardPx;
+
+    let x = 0; let y = 0;
+    if (customMap && customMap.length > 0) {
+      const tile = customMap[targetCell];
+      if (tile) { x = tile.x; y = tile.y; }
+    } else {
+      const coords = getCoordinatesFromCell(targetCell);
+      x = coords.x; y = coords.y;
+    }
+
+    const targetLeft = x * TILE_PX + tokenCenter + pxOffsetX;
+    const targetTop = y * TILE_PX + tokenCenter + pxOffsetY;
+
+    anime({
+      targets: tokenElement,
+      opacity: [1, 0, 1],
+      scale: [1, 0.2, 1.5, 1],
+      left: targetLeft,
+      top: targetTop,
+      duration: 1000,
+      easing: 'easeInOutQuad',
+      begin: () => {
+         audioService.playTokenBounce(); // Optional teleport sound
+         cameraService.panTo('camera-viewport', 'board-container', targetLeft + (tokenPx / 2), targetTop + (tokenPx / 2));
+      },
+      complete: () => onComplete()
+    });
+  }
+
+  public static animateSwap(
+    token1Id: string,
+    player1Index: number,
+    targetCell1: number,
+    token2Id: string,
+    player2Index: number,
+    targetCell2: number,
+    onComplete: () => void,
+    customMap?: Tile[]
+  ) {
+    const el1 = document.getElementById(token1Id);
+    const el2 = document.getElementById(token2Id);
+    if (!el1 || !el2) {
+      onComplete();
+      return;
+    }
+
+    const gridSize = customMap ? 15 : 10;
+    const cellSizePct = 100 / gridSize;
+    const offset1 = getPlayerOffset(player1Index, cellSizePct);
+    const offset2 = getPlayerOffset(player2Index, cellSizePct);
+    const boardPx = gridSize * TILE_PX;
+    const tokenPx = TILE_PX * 0.7;
+    const tokenCenter = (TILE_PX - tokenPx) / 2;
+
+    const getPos = (cell: number, offset: {offsetX: number, offsetY: number}) => {
+       let x = 0; let y = 0;
+       if (customMap && customMap.length > 0) {
+          const tile = customMap[cell];
+          if (tile) { x = tile.x; y = tile.y; }
+       } else {
+          const coords = getCoordinatesFromCell(cell);
+          x = coords.x; y = coords.y;
+       }
+       return {
+          left: x * TILE_PX + tokenCenter + (offset.offsetX / 100) * boardPx,
+          top: y * TILE_PX + tokenCenter + (offset.offsetY / 100) * boardPx
+       };
+    };
+
+    const pos1 = getPos(targetCell2, offset1); // el1 moves to targetCell2
+    const pos2 = getPos(targetCell1, offset2); // el2 moves to targetCell1
+
+    const tl = anime.timeline({
+       complete: () => onComplete()
+    });
+
+    // Blink before swap
+    tl.add({
+       targets: [el1, el2],
+       opacity: [1, 0, 1, 0, 1],
+       duration: 600,
+       easing: 'linear'
+    });
+
+    // Swap positions
+    tl.add({
+       targets: el1,
+       left: pos1.left,
+       top: pos1.top,
+       duration: 500,
+       easing: 'easeInOutBack'
+    }, '-=200');
+
+    tl.add({
+       targets: el2,
+       left: pos2.left,
+       top: pos2.top,
+       duration: 500,
+       easing: 'easeInOutBack'
+    }, '-=500');
+  }
 }

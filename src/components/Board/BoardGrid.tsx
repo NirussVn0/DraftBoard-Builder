@@ -14,10 +14,11 @@ const TILE_PX = 64;
 interface BoardGridProps {
   players: Player[];
   map?: Tile[] | null;
+  envMap?: Record<string, string>;
   biome?: BiomeTheme;
 }
 
-export const BoardGrid: React.FC<BoardGridProps> = ({ players, map, biome = 'OFF' }) => {
+export const BoardGrid: React.FC<BoardGridProps> = ({ players, map, envMap, biome = 'OFF' }) => {
   const gridSize = map ? MAP_SIZE : BOARD_SIZE;
   const boardPx = gridSize * TILE_PX;
 
@@ -48,7 +49,8 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map, biome = 'OFF
         gridSize={gridSize} 
         tilePx={TILE_PX} 
         biome={biome} 
-        mapKey={mapKey} 
+        mapKey={mapKey}
+        envMap={envMap}
       />
 
       {map ? (

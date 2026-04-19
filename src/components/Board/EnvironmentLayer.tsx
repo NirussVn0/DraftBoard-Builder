@@ -19,6 +19,7 @@ interface EnvironmentLayerProps {
   tilePx: number;
   biome: BiomeTheme;
   mapKey: string; // seed key — hash of map to keep placement deterministic
+  envMap?: Record<string, string>;
 }
 
 export const EnvironmentLayer: React.FC<EnvironmentLayerProps> = ({
@@ -27,33 +28,58 @@ export const EnvironmentLayer: React.FC<EnvironmentLayerProps> = ({
   tilePx,
   biome,
   mapKey,
+  envMap,
 }) => {
   const emojis = useMemo(() => {
-    if (biome === 'OFF') return [];
-
-    const pathSet = new Set(tiles.map(t => `${t.x},${t.y}`));
-    const list = BIOME_EMOJIS[biome as Exclude<BiomeTheme, 'OFF'>];
-    const rand = seededRandom(hashString(mapKey));
     const results: { x: number; y: number; emoji: string; opacity: number; rotate: number }[] = [];
+    const pathSet = new Set(tiles.map(t => `${t.x},${t.y}`));
 
-    for (let row = 0; row < gridSize; row++) {
-      for (let col = 0; col < gridSize; col++) {
-        if (pathSet.has(`${col},${row}`)) continue;
-        // ~35% fill density
-        if (rand() > 0.35) continue;
+    // 1. First add custom painted environments from MapBuilder
+    if (envMap) {
+      Object.entries(envMap).forEach(([key, emoji]) => {
+        if (!emoji) return;
+        const [xStr, yStr] = key.split(',');
+        const x = parseInt(xStr, 10);
+        const y = parseInt(yStr, 10);
+        if (isNaN(x) || isNaN(y)) return;
+        
         results.push({
-          x: col,
-          y: row,
-          emoji: list[Math.floor(rand() * list.length)],
-          opacity: 0.4 + rand() * 0.4,
-          rotate: Math.floor(rand() * 40) - 20,
+          x,
+          y,
+          emoji,
+          opacity: 1.0,
+          rotate: 0,
         });
+      });
+    }
+
+    // 2. Then add procedurally generated biome environments
+    if (biome !== 'OFF') {
+      const list = BIOME_EMOJIS[biome as Exclude<BiomeTheme, 'OFF'>];
+      const rand = seededRandom(hashString(mapKey));
+
+      for (let row = 0; row < gridSize; row++) {
+        for (let col = 0; col < gridSize; col++) {
+          const key = `${col},${row}`;
+          // Don't place random biome if there's a path or a custom painted environment there
+          if (pathSet.has(key) || (envMap && envMap[key])) continue;
+          
+          // ~35% fill density
+          if (rand() > 0.35) continue;
+          results.push({
+            x: col,
+            y: row,
+            emoji: list[Math.floor(rand() * list.length)],
+            opacity: 0.4 + rand() * 0.4,
+            rotate: Math.floor(rand() * 40) - 20,
+          });
+        }
       }
     }
     return results;
-  }, [tiles, gridSize, biome, mapKey]);
+  }, [tiles, gridSize, biome, mapKey, envMap]);
 
-  if (biome === 'OFF' || emojis.length === 0) return null;
+  if (emojis.length === 0) return null;
 
   return (
     <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>

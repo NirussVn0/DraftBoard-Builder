@@ -58,7 +58,8 @@ function AppHeader({ onHome, onSettings }: { onHome: () => void; onSettings: () 
 
 function App() {
   const [appMode, setAppMode] = useState<AppMode>('MENU')
-  const [pendingMap, setPendingMap] = useState<Tile[] | null>(null)
+  const [pendingMapPath, setPendingMapPath] = useState<Tile[] | null>(null)
+  const [pendingMapEnv, setPendingMapEnv] = useState<Record<string, string>>({})
   const [gameState, setGameState] = useState<GameState>(gameEngine.getState())
   const [showDiceOverlay, setShowDiceOverlay] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
@@ -84,7 +85,13 @@ function App() {
     const sharedMap = MapShareService.readFromURL();
     if (sharedMap) {
       if (window.confirm(t().common.sharedMapPrompt || 'You received a shared map! Do you want to play it now?')) {
-        setPendingMap(sharedMap);
+        if (Array.isArray(sharedMap)) {
+          setPendingMapPath(sharedMap);
+          setPendingMapEnv({});
+        } else if (sharedMap && sharedMap.path) {
+          setPendingMapPath(sharedMap.path);
+          setPendingMapEnv(sharedMap.env || {});
+        }
         setAppMode('PLAYING');
       }
       MapShareService.clearURLParam(); // Cleanup URL
@@ -135,8 +142,44 @@ function App() {
     return () => clearTimeout(timeout);
   }, [appMode, gameState.phase, gameState.activePlayerIndex, gameState.map]);
 
+  useEffect(() => {
+     if (gameState.phase === 'EVENT_MOVE_ANIMATION' && gameState.moveAnimation) {
+        const { playerId, path } = gameState.moveAnimation;
+        const playerIndex = gameState.players.findIndex(p => p.id === playerId);
+        if (playerIndex !== -1) {
+           AnimationService.animateTokenMove(
+              playerId, playerIndex, path, 
+              (finalCell) => gameEngine.finishEventMove(playerId, finalCell),
+              true, gameState.map || undefined
+           );
+        }
+     } else if (gameState.phase === 'EVENT_TELEPORT_ANIMATION' && gameState.teleportAnimation) {
+        const { playerId, position } = gameState.teleportAnimation;
+        const playerIndex = gameState.players.findIndex(p => p.id === playerId);
+        if (playerIndex !== -1) {
+           AnimationService.animateTeleport(
+              playerId, playerIndex, position,
+              () => gameEngine.finishEventTeleport(playerId, position),
+              gameState.map || undefined
+           );
+        }
+     } else if (gameState.phase === 'EVENT_SWAP_ANIMATION' && gameState.swapAnimation) {
+        const { player1Id, player2Id } = gameState.swapAnimation;
+        const player1Index = gameState.players.findIndex(p => p.id === player1Id);
+        const player2Index = gameState.players.findIndex(p => p.id === player2Id);
+        if (player1Index !== -1 && player2Index !== -1) {
+           AnimationService.animateSwap(
+              player1Id, player1Index, gameState.players[player1Index].position,
+              player2Id, player2Index, gameState.players[player2Index].position,
+              () => gameEngine.finishEventSwap(player1Id, player2Id),
+              gameState.map || undefined
+           );
+        }
+     }
+  }, [gameState.phase, gameState.moveAnimation, gameState.teleportAnimation, gameState.swapAnimation, gameState.map, gameState.players]);
+
   const handleStartGame = (players: { name: string; color: string; emoji: string }[], mapSettings: MapSettings) => {
-    gameEngine.startGame(players, pendingMap || undefined, mapSettings)
+    gameEngine.startGame(players, pendingMapPath || undefined, pendingMapEnv, mapSettings)
   }
 
   const handleRollDice = () => {
@@ -201,7 +244,8 @@ function App() {
           try {
             const parsedState = JSON.parse(savedGame);
             gameEngine.loadState(parsedState);
-            setPendingMap(parsedState.map);
+            setPendingMapPath(parsedState.map);
+            setPendingMapEnv(parsedState.envMap || {});
             setAppMode('PLAYING');
           } catch {
             alert(t().common.savedMapError);
@@ -211,35 +255,51 @@ function App() {
         const savedData = localStorage.getItem('draftboard_saved_map');
         if (savedData) {
           try {
-            const savedMap: Tile[] = JSON.parse(savedData);
-            setPendingMap(savedMap);
+            const savedMap = JSON.parse(savedData);
+            if (savedMap.path) {
+               setPendingMapPath(savedMap.path);
+               setPendingMapEnv(savedMap.env || {});
+            } else {
+               setPendingMapPath(savedMap);
+               setPendingMapEnv({});
+            }
             setAppMode('PLAYING');
           } catch {
             alert(t().common.savedMapError);
-            setPendingMap(generateZigzagMap());
+            setPendingMapPath(generateZigzagMap());
+            setPendingMapEnv({});
             setAppMode('PLAYING');
           }
         } else {
-          setPendingMap(generateZigzagMap());
+          setPendingMapPath(generateZigzagMap());
+          setPendingMapEnv({});
           setAppMode('PLAYING');
         }
       } else {
         setAppMode(mode as AppMode);
         if (mode === 'PLAYING') {
-          setPendingMap(generateZigzagMap());
+          setPendingMapPath(generateZigzagMap());
+          setPendingMapEnv({});
         }
       }
     }} />;
   }
 
-  // ── BUILDER ──
   if (appMode === 'BUILDER') {
     return (
       <>
         <AppHeader onHome={handleGoHome} onSettings={handleSettings} />
         <MapBuilderUI
           onSave={(path) => {
-            setPendingMap(path);
+            const data = localStorage.getItem('draftboard_saved_map');
+            if (data) {
+              const parsed = JSON.parse(data);
+              setPendingMapPath(parsed.path || path);
+              setPendingMapEnv(parsed.env || {});
+            } else {
+              setPendingMapPath(path);
+              setPendingMapEnv({});
+            }
             gameEngine.resetGame();
             setAppMode('PLAYING');
           }}
@@ -271,7 +331,7 @@ function App() {
       {/* Layer 0: Fullscreen Board */}
       <div className="absolute inset-0 z-0" id="board-container">
         <CameraWrapper>
-          <BoardGrid players={gameState.players} map={gameState.map} biome={gameState.mapSettings.biome} />
+          <BoardGrid players={gameState.players} map={gameState.map} envMap={gameState.envMap} biome={gameState.mapSettings.biome} />
         </CameraWrapper>
       </div>
 

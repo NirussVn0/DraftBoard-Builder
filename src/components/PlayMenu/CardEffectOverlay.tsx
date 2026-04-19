@@ -83,7 +83,11 @@ export const CardEffectOverlay: React.FC<CardEffectOverlayProps> = ({ card, reso
                {card.icon} {card.name} Kích Hoạt!
              </h3>
              <p className="text-xl font-bold opacity-90">
-                {resolution.type === 'MOVE' && `Hiệu ứng: Tiến/Lùi ${Math.abs(resolution.steps!)} bước!`}
+                {resolution.type === 'MOVE' && (
+                  <div className={`mt-4 inline-block px-6 py-2 rounded-xl text-white font-black text-2xl shadow-xl ${resolution.steps! > 0 ? 'bg-emerald-500 border-emerald-400' : 'bg-rose-500 border-rose-400'} border-4`}>
+                    {resolution.steps! > 0 ? `Tiến ${resolution.steps} bước` : `Lùi ${Math.abs(resolution.steps!)} bước`}
+                  </div>
+                )}
                 {resolution.type === 'BUFF' && `Hiệu ứng: Nhận trạng thái ${resolution.buff?.id}!`}
                 {resolution.type === 'TELEPORT' && `Hiệu ứng: Dịch chuyển tức thời!`}
                 {resolution.type === 'SWAP' && `Hiệu ứng: Hoán đổi vị trí!`}

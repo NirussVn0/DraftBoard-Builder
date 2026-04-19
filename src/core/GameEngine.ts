@@ -34,6 +34,7 @@ class GameEngine {
       currentResolution: null,
       quizState: null,
       eventQueue: [],
+      envMap: {},
     };
   }
 
@@ -49,11 +50,12 @@ class GameEngine {
     this.observers.forEach((observer) => observer({ ...this.state }));
   }
 
-  public startGame(players: Omit<Player, 'position' | 'id' | 'buffs'>[], customMap?: Tile[], mapSettings?: MapSettings) {
+  public startGame(players: Omit<Player, 'position' | 'id' | 'buffs'>[], customMap?: Tile[], envMap?: Record<string, string>, mapSettings?: MapSettings) {
     this.state = {
       ...this.getInitialState(),
       phase: 'IDLE_TURN',
       map: customMap || null,
+      envMap: envMap || {},
       mapSettings: mapSettings || { ...DEFAULT_MAP },
       players: players.map((p, index) => ({
         ...p,
@@ -68,9 +70,11 @@ class GameEngine {
   }
 
   public loadState(savedState: GameState) {
+    const hydratedCard = savedState.currentCard ? CARD_DEFINITIONS.get(savedState.currentCard.id) : null;
+    
     this.state = {
       ...savedState,
-      currentCard: savedState.currentCard || null,
+      currentCard: hydratedCard || null,
       currentResolution: savedState.currentResolution || null,
       quizState: savedState.quizState || null,
       eventQueue: savedState.eventQueue || [],
@@ -367,8 +371,7 @@ class GameEngine {
            const p2 = this.state.players.find(p => p.id === res.swapTargetId);
            if (p1 && p2) {
               eventsToInsert.push(
-                 { type: 'TELEPORT_PLAYER', playerId: p1.id, position: p2.position },
-                 { type: 'TELEPORT_PLAYER', playerId: p2.id, position: p1.position }
+                 { type: 'SWAP_PLAYERS', player1Id: p1.id, player2Id: p2.id }
               );
            }
         }
@@ -408,12 +411,33 @@ class GameEngine {
         this.state.eventQueue.shift();
         const p = this.state.players.find(pl => pl.id === event.playerId);
         if (p) {
-           const newPos = Math.max(0, p.position + event.steps);
-           this.state.players = this.state.players.map(pl => pl.id === event.playerId ? { ...pl, position: newPos } : pl);
-           // After a card moves someone, it might land on mystery again. 
-           // In advanced games, we evaluate. Here we just move instantly for chaos effect.
+           const maxLevel = this.state.map ? this.state.map.length - 1 : TOTAL_CELLS - 1;
+           let path: number[] = [];
+           let curr = p.position;
+           if (event.steps > 0) {
+              for (let i = 0; i < event.steps && curr < maxLevel; i++) {
+                 curr++;
+                 path.push(curr);
+              }
+           } else {
+              for (let i = 0; i < Math.abs(event.steps) && curr > 0; i++) {
+                 curr--;
+                 path.push(curr);
+              }
+           }
+           if (path.length > 0) {
+              this.state = { 
+                  ...this.state, 
+                  phase: 'EVENT_MOVE_ANIMATION', 
+                  moveAnimation: { playerId: event.playerId, path }
+              };
+              this.notify();
+           } else {
+              this.processQueue();
+           }
+        } else {
+           this.processQueue();
         }
-        this.processQueue();
         break;
       }
 
@@ -421,9 +445,32 @@ class GameEngine {
         this.state.eventQueue.shift();
         const p = this.state.players.find(pl => pl.id === event.playerId);
         if (p) {
-           this.state.players = this.state.players.map(pl => pl.id === event.playerId ? { ...pl, position: event.position } : pl);
+           this.state = { 
+               ...this.state, 
+               phase: 'EVENT_TELEPORT_ANIMATION', 
+               teleportAnimation: { playerId: event.playerId, position: event.position }
+           };
+           this.notify();
+        } else {
+           this.processQueue();
         }
-        this.processQueue();
+        break;
+      }
+
+      case 'SWAP_PLAYERS': {
+        this.state.eventQueue.shift();
+        const p1 = this.state.players.find(pl => pl.id === event.player1Id);
+        const p2 = this.state.players.find(pl => pl.id === event.player2Id);
+        if (p1 && p2) {
+           this.state = { 
+               ...this.state, 
+               phase: 'EVENT_SWAP_ANIMATION', 
+               swapAnimation: { player1Id: p1.id, player2Id: p2.id }
+           };
+           this.notify();
+        } else {
+           this.processQueue();
+        }
         break;
       }
 
@@ -555,9 +602,9 @@ class GameEngine {
 
 
   public resolveKick(): void {
-    // Legacy — maps to continueQueue in Epic 4.
+    // Legacy — maps to processQueue in Epic 4.
     this.state.kickEvent = null;
-    this.continueQueue();
+    this.processQueue();
   }
 
   public advanceQuizPhase(): void {
@@ -568,6 +615,34 @@ class GameEngine {
       quizState: { ...this.state.quizState, phase: next },
     };
     this.notify();
+  }
+
+  public finishEventMove(playerId: string, finalPosition: number): void {
+    this.state.players = this.state.players.map(p => p.id === playerId ? { ...p, position: finalPosition } : p);
+    this.state.moveAnimation = undefined;
+    this.processQueue();
+  }
+
+  public finishEventTeleport(playerId: string, finalPosition: number): void {
+    this.state.players = this.state.players.map(p => p.id === playerId ? { ...p, position: finalPosition } : p);
+    this.state.teleportAnimation = undefined;
+    this.processQueue();
+  }
+
+  public finishEventSwap(player1Id: string, player2Id: string): void {
+    const p1 = this.state.players.find(p => p.id === player1Id);
+    const p2 = this.state.players.find(p => p.id === player2Id);
+    if (p1 && p2) {
+       const pos1 = p1.position;
+       const pos2 = p2.position;
+       this.state.players = this.state.players.map(p => {
+          if (p.id === player1Id) return { ...p, position: pos2 };
+          if (p.id === player2Id) return { ...p, position: pos1 };
+          return p;
+       });
+    }
+    this.state.swapAnimation = undefined;
+    this.processQueue();
   }
 
   public pushQuizResult(winnerId: string, loserId: string): void {

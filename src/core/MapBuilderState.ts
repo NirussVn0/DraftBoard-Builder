@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react';
 
 import type { CardId } from './CardTypes';
 
+export type BuilderTool = 'DRAW_PATH' | 'ERASE_PATH' | 'PLACE_CARD' | 'ERASE_CARD' | 'PAINT_ENV';
+
 export type TileType = 'START' | 'NORMAL' | 'MYSTERY' | 'END';
 
 export interface Tile {
@@ -12,9 +14,16 @@ export interface Tile {
   cardId?: CardId;
 }
 
+export type EnvironmentMap = Record<string, string>;
+
+export interface MapState {
+  path: Tile[];
+  env: EnvironmentMap;
+}
+
 export const MAP_SIZE = 15;
 
-export function generateZigzagMap(): Tile[] {
+export function generateZigzagMap(): MapState {
   const tiles: Tile[] = [];
   let step = 0;
 
@@ -27,19 +36,21 @@ export function generateZigzagMap(): Tile[] {
   for (let x = 1; x <= 4; x++) tiles.push({ stepIndex: step++, x, y: 10, type: 'NORMAL' });
 
   tiles.push({ stepIndex: step++, x: 5, y: 10, type: 'END' });
-  return tiles;
+  return { path: tiles, env: {} };
 }
 
 export function useMapBuilder() {
-  const [history, setHistory] = useState<Tile[][]>([[]]);
+  const [history, setHistory] = useState<MapState[]>([{ path: [], env: {} }]);
   const [historyIndex, setHistoryIndex] = useState<number>(0);
+  const [currentEmoji, setCurrentEmoji] = useState<string>('🌲');
 
-  const path = history[historyIndex] || [];
+  const currentState = history[historyIndex] || { path: [], env: {} };
+  const { path, env } = currentState;
 
-  const pushState = useCallback((newPath: Tile[]) => {
+  const pushState = useCallback((newState: MapState) => {
     setHistory((prev) => {
       const newHistory = prev.slice(0, historyIndex + 1);
-      newHistory.push(newPath);
+      newHistory.push(newState);
       return newHistory;
     });
     setHistoryIndex((prev) => prev + 1);
@@ -49,7 +60,7 @@ export function useMapBuilder() {
     const currentPath = path;
 
     if (currentPath.length === 0) {
-      pushState([{ stepIndex: 0, x, y, type: 'START' }]);
+      pushState({ path: [{ stepIndex: 0, x, y, type: 'START' }], env });
       return;
     }
 
@@ -77,18 +88,18 @@ export function useMapBuilder() {
       }
     }
 
-    pushState([...currentPath, ...newNodes]);
-  }, [path, pushState]);
+    pushState({ path: [...currentPath, ...newNodes], env });
+  }, [path, env, pushState]);
 
   const eraseFrom = useCallback((stepIndex: number) => {
     if (stepIndex === 0) {
-      pushState([]);
+      pushState({ path: [], env });
       return;
     }
     const newPath = path.slice(0, stepIndex + 1);
     newPath[newPath.length - 1] = { ...newPath[newPath.length - 1], type: 'END' };
-    pushState(newPath);
-  }, [path, pushState]);
+    pushState({ path: newPath, env });
+  }, [path, env, pushState]);
 
   const setCard = useCallback((stepIndex: number, cardId: CardId | undefined) => {
     const newPath = path.map(t => {
@@ -97,15 +108,25 @@ export function useMapBuilder() {
       }
       return t;
     });
-    pushState(newPath);
-  }, [path, pushState]);
+    pushState({ path: newPath, env });
+  }, [path, env, pushState]);
+
+  const setEnvironment = useCallback((x: number, y: number, emoji: string | null) => {
+    const key = `${x},${y}`;
+    const newEnv = { ...env };
+    if (emoji) {
+       newEnv[key] = emoji;
+    } else {
+       delete newEnv[key];
+    }
+    pushState({ path, env: newEnv });
+  }, [path, env, pushState]);
 
   const randomFill = useCallback((cardId: CardId, count: number) => {
     const emptyTiles = path.filter(t => t.type === 'NORMAL' && !t.cardId);
     if (emptyTiles.length === 0) return;
 
     const fillCount = Math.min(count, emptyTiles.length);
-    // Shuffle empty tiles
     const shuffled = [...emptyTiles].sort(() => Math.random() - 0.5);
     const selected = new Set(shuffled.slice(0, fillCount).map(t => t.stepIndex));
 
@@ -115,11 +136,11 @@ export function useMapBuilder() {
       }
       return t;
     });
-    pushState(newPath);
-  }, [path, pushState]);
+    pushState({ path: newPath, env });
+  }, [path, env, pushState]);
 
   const clearMap = useCallback(() => {
-    pushState([]);
+    pushState({ path: [], env: {} });
   }, [pushState]);
 
   const undo = useCallback(() => {
@@ -130,12 +151,12 @@ export function useMapBuilder() {
     setHistoryIndex((prev) => Math.min(history.length - 1, prev + 1));
   }, [history.length]);
 
-  const loadMap = useCallback((newPath: Tile[]) => {
-    pushState(newPath);
+  const loadMap = useCallback((newState: MapState) => {
+    pushState(newState);
   }, [pushState]);
 
   return {
-    path, addNode, eraseFrom, setCard, randomFill, clearMap, loadMap,
+    path, env, addNode, eraseFrom, setCard, randomFill, clearMap, loadMap, setEnvironment,
     undo, redo, canUndo: historyIndex > 0, canRedo: historyIndex < history.length - 1
   };
 }
