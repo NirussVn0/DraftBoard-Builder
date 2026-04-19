@@ -6,7 +6,7 @@ Dưới đây là danh sách các Card có sử dụng hiệu ứng Meme (gif/vi
 | :--- | :--- | :--- | :--- | :--- |
 | **DEADLINE_BOMB** | Quả Bom Deadline | `megumin-explosion.gif` | `/assets/memes/megumin-explosion.gif` | Meme cháy nổ, Megumin (Konosuba) niệm chú Explosion hoặc bom nổ cực mạnh. |
 | **ZA_WARUDO** | Za Warudo! | `dio-zawarudo.gif` | `/assets/memes/dio-zawarudo.gif` | Cảnh Dio (JoJo) hô "Za Warudo!", màu sắc chuyển sang âm bản, đồng hồ ngừng trôi. |
-| **AMENOTEJIKARA** | Isekai | `isekai.gif` | `/assets/memes/isekai.gif` | Meme Truck-kun tông hoặc cảnh main anime bị chuyển sinh. |
+| **AMENOTEJIKARA** | Isekai | `isekai.gif` | `/assets/memes/isekai.gif` | Meme bị hút vào cổng không gian hoặc lỗ đen vũ trụ. |
 | **COUNTER_ARGUMENT** | Phản Biện | `meliodas-counter.gif` | `/assets/memes/meliodas-counter.gif` | Meme Meliodas (Thất Hình Đại Tội) dùng "Full Counter" hoặc meme giơ thẻ bài lật ngược (Uno Reverse). |
 | **BLACKOUT** | Cúp Điện | `blackout.gif` | `/assets/memes/blackout.gif` | Meme phụt tắt đèn (như cúp điện), hoặc meme giật điện nhấp nháy. |
 | **POP_QUIZ** | Trả Bài Miệng | `domain-expansion.gif` | `/assets/memes/domain-expansion.gif` | Cảnh Gojo hoặc Sukuna (Jujutsu Kaisen) hô Bành Trướng Lãnh Địa (Domain Expansion). |

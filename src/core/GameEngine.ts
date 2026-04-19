@@ -611,11 +611,17 @@ class GameEngine {
       }
 
       case 'FREEZE_PLAYER': {
-        this.state.eventQueue.shift();
-        this.state.eventQueue.unshift({ type: 'APPLY_BUFF', targetId: event.playerId, buff: { id: 'FROZEN', turnsRemaining: event.turns, sourcePlayerId: this.state.players[this.state.activePlayerIndex].id }});
+        // Apply FROZEN buff directly — do NOT use queue, because continueQueue()
+        // will shift the next item when the UI animation ends, which would eat the APPLY_BUFF.
+        const freezeTarget = this.state.players.find(p => p.id === event.playerId);
+        if (freezeTarget) {
+          const newBuffs = freezeTarget.buffs.filter(b => b.id !== 'FROZEN');
+          newBuffs.push({ id: 'FROZEN', turnsRemaining: event.turns, sourcePlayerId: this.state.players[this.state.activePlayerIndex].id });
+          this.state.players = this.state.players.map(p => p.id === event.playerId ? { ...p, buffs: newBuffs } : p);
+        }
+        // Don't shift — let continueQueue() handle it when UI calls back
         this.state = { ...this.state, phase: 'EVENT_FREEZE' };
         this.notify();
-        // UI calls continueQueue()
         break;
       }
 
