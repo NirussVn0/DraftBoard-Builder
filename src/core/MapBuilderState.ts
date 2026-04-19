@@ -14,7 +14,14 @@ export interface Tile {
   cardId?: CardId;
 }
 
-export type EnvironmentMap = Record<string, string>;
+export interface EnvItem {
+  id: string;
+  x: number; // percentage (0 to 100)
+  y: number; // percentage (0 to 100)
+  emoji: string;
+}
+
+export type EnvironmentMap = EnvItem[];
 
 export interface MapState {
   path: Tile[];
@@ -40,11 +47,10 @@ export function generateZigzagMap(): MapState {
 }
 
 export function useMapBuilder() {
-  const [history, setHistory] = useState<MapState[]>([{ path: [], env: {} }]);
+  const [history, setHistory] = useState<MapState[]>([{ path: [], env: [] }]);
   const [historyIndex, setHistoryIndex] = useState<number>(0);
-  const [currentEmoji, setCurrentEmoji] = useState<string>('🌲');
 
-  const currentState = history[historyIndex] || { path: [], env: {} };
+  const currentState = history[historyIndex] || { path: [], env: [] };
   const { path, env } = currentState;
 
   const pushState = useCallback((newState: MapState) => {
@@ -111,14 +117,13 @@ export function useMapBuilder() {
     pushState({ path: newPath, env });
   }, [path, env, pushState]);
 
-  const setEnvironment = useCallback((x: number, y: number, emoji: string | null) => {
-    const key = `${x},${y}`;
-    const newEnv = { ...env };
-    if (emoji) {
-       newEnv[key] = emoji;
-    } else {
-       delete newEnv[key];
-    }
+  const addEnvItem = useCallback((x: number, y: number, emoji: string) => {
+    const newEnv = [...env, { id: crypto.randomUUID(), x, y, emoji }];
+    pushState({ path, env: newEnv });
+  }, [path, env, pushState]);
+
+  const removeEnvItem = useCallback((id: string) => {
+    const newEnv = env.filter(item => item.id !== id);
     pushState({ path, env: newEnv });
   }, [path, env, pushState]);
 
@@ -140,7 +145,7 @@ export function useMapBuilder() {
   }, [path, env, pushState]);
 
   const clearMap = useCallback(() => {
-    pushState({ path: [], env: {} });
+    pushState({ path: [], env: [] });
   }, [pushState]);
 
   const undo = useCallback(() => {
@@ -151,12 +156,31 @@ export function useMapBuilder() {
     setHistoryIndex((prev) => Math.min(history.length - 1, prev + 1));
   }, [history.length]);
 
-  const loadMap = useCallback((newState: MapState) => {
-    pushState(newState);
+  const loadMap = useCallback((newState: any) => {
+    if (newState.env && !Array.isArray(newState.env)) {
+      // Migrate from Record<string, string> to EnvItem[]
+      const migratedEnv: EnvItem[] = [];
+      Object.entries(newState.env).forEach(([key, emoji]) => {
+        if (!emoji) return;
+        const [xStr, yStr] = key.split(',');
+        const gridX = parseInt(xStr, 10);
+        const gridY = parseInt(yStr, 10);
+        if (isNaN(gridX) || isNaN(gridY)) return;
+        migratedEnv.push({
+          id: crypto.randomUUID(),
+          x: (gridX / MAP_SIZE) * 100 + (100 / MAP_SIZE) / 2, // roughly center of cell
+          y: (gridY / MAP_SIZE) * 100 + (100 / MAP_SIZE) / 2,
+          emoji: emoji as string
+        });
+      });
+      pushState({ path: newState.path || [], env: migratedEnv });
+    } else {
+      pushState({ path: newState.path || [], env: newState.env || [] });
+    }
   }, [pushState]);
 
   return {
-    path, env, addNode, eraseFrom, setCard, randomFill, clearMap, loadMap, setEnvironment,
+    path, env, addNode, eraseFrom, setCard, randomFill, clearMap, loadMap, addEnvItem, removeEnvItem,
     undo, redo, canUndo: historyIndex > 0, canRedo: historyIndex < history.length - 1
   };
 }

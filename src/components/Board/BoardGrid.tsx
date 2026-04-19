@@ -14,7 +14,7 @@ const TILE_PX = 64;
 interface BoardGridProps {
   players: Player[];
   map?: Tile[] | null;
-  envMap?: Record<string, string>;
+  envMap?: { id: string; x: number; y: number; emoji: string; }[];
   biome?: BiomeTheme;
 }
 

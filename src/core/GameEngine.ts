@@ -34,7 +34,7 @@ class GameEngine {
       currentResolution: null,
       quizState: null,
       eventQueue: [],
-      envMap: {},
+      envMap: [],
     };
   }
 
@@ -50,12 +50,12 @@ class GameEngine {
     this.observers.forEach((observer) => observer({ ...this.state }));
   }
 
-  public startGame(players: Omit<Player, 'position' | 'id' | 'buffs'>[], customMap?: Tile[], envMap?: Record<string, string>, mapSettings?: MapSettings) {
+  public startGame(players: Omit<Player, 'position' | 'id' | 'buffs'>[], customMap?: Tile[], envMap?: { id: string; x: number; y: number; emoji: string; }[], mapSettings?: MapSettings) {
     this.state = {
       ...this.getInitialState(),
       phase: 'IDLE_TURN',
       map: customMap || null,
-      envMap: envMap || {},
+      envMap: envMap || [],
       mapSettings: mapSettings || { ...DEFAULT_MAP },
       players: players.map((p, index) => ({
         ...p,
@@ -178,10 +178,14 @@ class GameEngine {
   public rollDice(): void {
     if (this.state.phase !== 'IDLE_TURN' && this.state.phase !== 'EVENT_DETENTION_ROLL') return;
     this.pushSnapshot();
-    const diceRoll = Math.floor(Math.random() * 6) + 1;
+    const count = this.state.mapSettings.diceCount || 1;
+    let total = 0;
+    for (let i = 0; i < count; i++) {
+      total += Math.floor(Math.random() * 6) + 1;
+    }
     this.state = {
       ...this.state,
-      diceValue: diceRoll,
+      diceValue: total,
       phase: 'ROLLING_DICE',
     };
     this.notify();
@@ -329,12 +333,11 @@ class GameEngine {
            deckConfig: this.state.mapSettings.deckConfig,
         };
         const res = card.resolve(ctx);
-        
         this.state.eventQueue.unshift(
-           { type: 'ANIMATE_PRECAST', card },
-           { type: 'RESOLVE_CARD', card, resolution: res },
-           { type: 'ANIMATE_CARD', card, resolution: res }
-        );
+            { type: 'ANIMATE_PRECAST', card },
+            { type: 'ANIMATE_CARD', card, resolution: res },
+            { type: 'RESOLVE_CARD', card, resolution: res }
+         );
         this.state.eventQueue.push({ type: 'ADVANCE_TURN' });
         this.processQueue();
         break;

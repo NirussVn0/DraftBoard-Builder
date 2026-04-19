@@ -19,7 +19,7 @@ interface EnvironmentLayerProps {
   tilePx: number;
   biome: BiomeTheme;
   mapKey: string; // seed key — hash of map to keep placement deterministic
-  envMap?: Record<string, string>;
+  envMap?: { id: string; x: number; y: number; emoji: string; }[];
 }
 
 export const EnvironmentLayer: React.FC<EnvironmentLayerProps> = ({
@@ -35,18 +35,16 @@ export const EnvironmentLayer: React.FC<EnvironmentLayerProps> = ({
     const pathSet = new Set(tiles.map(t => `${t.x},${t.y}`));
 
     // 1. First add custom painted environments from MapBuilder
-    if (envMap) {
-      Object.entries(envMap).forEach(([key, emoji]) => {
-        if (!emoji) return;
-        const [xStr, yStr] = key.split(',');
-        const x = parseInt(xStr, 10);
-        const y = parseInt(yStr, 10);
-        if (isNaN(x) || isNaN(y)) return;
+    if (envMap && Array.isArray(envMap)) {
+      envMap.forEach((item) => {
+        // item.x and item.y are percentages, convert them to grid coordinates equivalent
+        const gridX = (item.x / 100) * gridSize - 0.5; // adjust for centering
+        const gridY = (item.y / 100) * gridSize - 0.5;
         
         results.push({
-          x,
-          y,
-          emoji,
+          x: gridX,
+          y: gridY,
+          emoji: item.emoji,
           opacity: 1.0,
           rotate: 0,
         });
@@ -61,8 +59,8 @@ export const EnvironmentLayer: React.FC<EnvironmentLayerProps> = ({
       for (let row = 0; row < gridSize; row++) {
         for (let col = 0; col < gridSize; col++) {
           const key = `${col},${row}`;
-          // Don't place random biome if there's a path or a custom painted environment there
-          if (pathSet.has(key) || (envMap && envMap[key])) continue;
+          // Don't place random biome if there's a path there
+          if (pathSet.has(key)) continue;
           
           // ~35% fill density
           if (rand() > 0.35) continue;

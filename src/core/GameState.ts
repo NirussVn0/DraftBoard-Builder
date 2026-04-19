@@ -54,7 +54,7 @@ export interface GameState {
   winner: Player | null;
   diceValue: number;
   map: Tile[] | null;
-  envMap?: Record<string, string>;
+  envMap: { id: string; x: number; y: number; emoji: string; }[];
   mapSettings: MapSettings;
   kickEvent: KickEvent | null;
   canUndo: boolean;

@@ -8,6 +8,15 @@ interface PlayerStatsPanelProps {
   maxPosition: number;
 }
 
+/** Map buff IDs to their visual icons for the HUD */
+const BUFF_ICONS: Record<string, { icon: string; label: string }> = {
+  LIFEBUOY:         { icon: '🛟', label: 'Phao Cứu Sinh' },
+  COUNTER_ARGUMENT: { icon: '💬', label: 'Phản Biện' },
+  PARASITE:         { icon: '🦠', label: 'Ăn Bám' },
+  DETENTION:        { icon: '⛓️', label: 'Cấm Túc' },
+  FROZEN:           { icon: '🧊', label: 'Đóng Băng' },
+};
+
 export const PlayerStatsPanel: React.FC<PlayerStatsPanelProps> = ({
   players, activePlayerIndex, maxPosition
 }) => {
@@ -39,6 +48,24 @@ export const PlayerStatsPanel: React.FC<PlayerStatsPanelProps> = ({
               <p className="text-xs text-slate-400 font-medium">
                 {s.cardPosition(player.position, maxPosition)}
               </p>
+              {/* Active buff icons */}
+              {player.buffs.length > 0 && (
+                <div className="flex gap-1 mt-1 flex-wrap">
+                  {player.buffs.map((buff, bIdx) => {
+                    const info = BUFF_ICONS[buff.id];
+                    if (!info) return null;
+                    return (
+                      <span
+                        key={bIdx}
+                        title={`${info.label}${buff.turnsRemaining > 0 ? ` (${buff.turnsRemaining} lượt)` : ''}`}
+                        className="text-sm leading-none cursor-default hover:scale-125 transition-transform"
+                      >
+                        {info.icon}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
             </div>
             {isActive && (
               <span

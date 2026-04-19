@@ -1,24 +1,30 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { PhysicalDice } from './PhysicalDice';
 import { DiceResultBanner } from './DiceResultBanner';
 
 interface DiceOverlayProps {
   diceValue: number;
+  diceCount: number;
   activeColor: string;
   onComplete: () => void;
 }
 
 /**
- * DiceOverlay — orchestrates PhysicalDice (sky-drop) and DiceResultBanner (number).
- * Timing: Dice drops (1000ms) → pause (200ms) → Banner slides in (300ms) → hold (800ms) → close.
+ * DiceOverlay — orchestrates N PhysicalDice (sky-drop) and DiceResultBanner (total).
+ * Each die drops with a slight stagger. After ALL dice land:
+ * pause (200ms) → Banner slides in (300ms) → hold (800ms) → close.
  */
 export const DiceOverlay: React.FC<DiceOverlayProps> = ({
-  diceValue, activeColor, onComplete
+  diceValue, diceCount, activeColor, onComplete
 }) => {
   const [showBanner, setShowBanner] = useState(false);
+  const landedCount = useRef(0);
 
   const handleDiceLanded = useCallback(() => {
-    // Dice has landed — wait 200ms pause, then show banner
+    landedCount.current += 1;
+    if (landedCount.current < diceCount) return;
+
+    // All dice have landed — wait 200ms pause, then show banner
     setTimeout(() => {
       setShowBanner(true);
 
@@ -27,19 +33,25 @@ export const DiceOverlay: React.FC<DiceOverlayProps> = ({
         onComplete();
       }, 800);
     }, 200);
-  }, [onComplete]);
+  }, [diceCount, onComplete]);
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/20 backdrop-blur-sm">
       <div className="flex flex-col items-center gap-4">
         {/* Physical dice — sky-drop animation */}
-        <PhysicalDice
-          diceValue={diceValue}
-          activeColor={activeColor}
-          onLanded={handleDiceLanded}
-        />
+        <div className="flex items-center gap-4">
+          {Array.from({ length: diceCount }).map((_, i) => (
+            <PhysicalDice
+              key={i}
+              diceIndex={i}
+              diceValue={diceValue}
+              activeColor={activeColor}
+              onLanded={handleDiceLanded}
+            />
+          ))}
+        </div>
 
-        {/* Result banner — appears after dice lands */}
+        {/* Result banner — appears after ALL dice land */}
         {showBanner && (
           <DiceResultBanner value={diceValue} activeColor={activeColor} />
         )}

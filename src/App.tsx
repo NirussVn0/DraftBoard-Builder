@@ -59,7 +59,7 @@ function AppHeader({ onHome, onSettings }: { onHome: () => void; onSettings: () 
 function App() {
   const [appMode, setAppMode] = useState<AppMode>('MENU')
   const [pendingMapPath, setPendingMapPath] = useState<Tile[] | null>(null)
-  const [pendingMapEnv, setPendingMapEnv] = useState<Record<string, string>>({})
+  const [pendingMapEnv, setPendingMapEnv] = useState<{ id: string; x: number; y: number; emoji: string; }[]>([])
   const [gameState, setGameState] = useState<GameState>(gameEngine.getState())
   const [showDiceOverlay, setShowDiceOverlay] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
@@ -87,10 +87,10 @@ function App() {
       if (window.confirm(t().common.sharedMapPrompt || 'You received a shared map! Do you want to play it now?')) {
         if (Array.isArray(sharedMap)) {
           setPendingMapPath(sharedMap);
-          setPendingMapEnv({});
+          setPendingMapEnv([]);
         } else if (sharedMap && sharedMap.path) {
           setPendingMapPath(sharedMap.path);
-          setPendingMapEnv(sharedMap.env || {});
+          setPendingMapEnv(sharedMap.env || []);
         }
         setAppMode('PLAYING');
       }
@@ -245,7 +245,7 @@ function App() {
             const parsedState = JSON.parse(savedGame);
             gameEngine.loadState(parsedState);
             setPendingMapPath(parsedState.map);
-            setPendingMapEnv(parsedState.envMap || {});
+            setPendingMapEnv(parsedState.envMap || []);
             setAppMode('PLAYING');
           } catch {
             alert(t().common.savedMapError);
@@ -258,28 +258,28 @@ function App() {
             const savedMap = JSON.parse(savedData);
             if (savedMap.path) {
                setPendingMapPath(savedMap.path);
-               setPendingMapEnv(savedMap.env || {});
+               setPendingMapEnv(savedMap.env || []);
             } else {
                setPendingMapPath(savedMap);
-               setPendingMapEnv({});
+               setPendingMapEnv([]);
             }
             setAppMode('PLAYING');
           } catch {
             alert(t().common.savedMapError);
             setPendingMapPath(generateZigzagMap());
-            setPendingMapEnv({});
+            setPendingMapEnv([]);
             setAppMode('PLAYING');
           }
         } else {
           setPendingMapPath(generateZigzagMap());
-          setPendingMapEnv({});
+          setPendingMapEnv([]);
           setAppMode('PLAYING');
         }
       } else {
         setAppMode(mode as AppMode);
         if (mode === 'PLAYING') {
           setPendingMapPath(generateZigzagMap());
-          setPendingMapEnv({});
+          setPendingMapEnv([]);
         }
       }
     }} />;
@@ -295,10 +295,10 @@ function App() {
             if (data) {
               const parsed = JSON.parse(data);
               setPendingMapPath(parsed.path || path);
-              setPendingMapEnv(parsed.env || {});
+              setPendingMapEnv(parsed.env || []);
             } else {
               setPendingMapPath(path);
-              setPendingMapEnv({});
+              setPendingMapEnv([]);
             }
             gameEngine.resetGame();
             setAppMode('PLAYING');
@@ -373,6 +373,7 @@ function App() {
       {showDiceOverlay && (
         <DiceOverlay
           diceValue={gameState.diceValue}
+          diceCount={gameState.mapSettings.diceCount || 1}
           activeColor={activePlayer?.color || '#6366f1'}
           onComplete={handleDiceAnimationComplete}
         />

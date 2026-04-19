@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { MAP_SIZE, useMapBuilder } from '../../core/MapBuilderState';
 import type { Tile } from '../../core/MapBuilderState';
 import { ArrowRight, ArrowDown, ArrowLeft, ArrowUp, Eraser, RefreshCcw, Save, Undo2, Redo2, Download, MousePointerSquareDashed, Dices, Settings2, X, Upload, Eraser as EraserIcon } from 'lucide-react';
 import { t } from '../../locales';
 import { CARD_DEFINITIONS } from '../../core/CardRegistry';
 import type { CardId } from '../../core/CardTypes';
+import EmojiPicker from 'emoji-picker-react';
 
 interface MapBuilderUIProps {
   onSave: (path: Tile[]) => void;
@@ -12,7 +13,7 @@ interface MapBuilderUIProps {
 }
 
 export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) => {
-  const { path, env, addNode, eraseFrom, setCard, randomFill, clearMap, loadMap, setEnvironment, undo, redo, canUndo, canRedo } = useMapBuilder();
+  const { path, env, addNode, eraseFrom, setCard, randomFill, clearMap, loadMap, addEnvItem, removeEnvItem, undo, redo, canUndo, canRedo } = useMapBuilder();
   const [tool, setTool] = React.useState<'DRAW' | 'ERASE' | 'CARD_PAINT' | 'ERASE_CARD' | 'RANDOM_FILL' | 'PAINT_ENV' | 'ERASE_ENV'>('DRAW');
   const [selectedCard, setSelectedCard] = React.useState<CardId>('MYSTERY');
   const [selectedEmoji, setSelectedEmoji] = React.useState<string>('🌲');
@@ -20,7 +21,8 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
   
   const [showRandomModal, setShowRandomModal] = useState(false);
   const [randomCount, setRandomCount] = useState(3);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const lastPaintTime = useRef<number>(0);
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -57,17 +59,29 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
     } else if (tool === 'RANDOM_FILL' && hasTile) {
       randomFill(selectedCard, randomCount);
       setTool('DRAW');
-    } else if (tool === 'PAINT_ENV') {
-      setEnvironment(x, y, selectedEmoji);
-    } else if (tool === 'ERASE_ENV') {
-      setEnvironment(x, y, null);
     }
   };
 
-  const handleCellEnter = (x: number, y: number) => {
+  const paintEnvironment = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (tool !== 'PAINT_ENV') return;
+    const now = Date.now();
+    if (now - lastPaintTime.current < 100) return;
+    lastPaintTime.current = now;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    addEnvItem(x, y, selectedEmoji);
+  };
+
+  const handleBoardMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+    if (tool === 'PAINT_ENV') paintEnvironment(e);
+  };
+
+  const handleBoardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isDragging) return;
-    if (tool === 'PAINT_ENV') setEnvironment(x, y, selectedEmoji);
-    if (tool === 'ERASE_ENV') setEnvironment(x, y, null);
+    if (tool === 'PAINT_ENV') paintEnvironment(e);
   };
 
   const handleRandomToolClick = () => {
@@ -200,16 +214,17 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
         {tool === 'PAINT_ENV' && (
           <div className="space-y-3">
             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Chọn Cảnh Vật</p>
-            <div className="grid grid-cols-4 gap-2 pr-2 custom-scrollbar max-h-64 overflow-y-auto">
-              {['🌲', '🌳', '🌴', '🌵', '🌾', '🌿', '🍁', '🍄', '🗻', '🌋', '🏕️', '🛖', '🏯', '🏰', '🏚️', '🦴', '☠️'].map(emoji => (
-                <button 
-                  key={emoji}
-                  onClick={() => setSelectedEmoji(emoji)}
-                  className={`flex items-center justify-center aspect-square text-3xl game-card transition-colors ${selectedEmoji === emoji ? 'bg-emerald-100 border-emerald-400' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}`}
-                >
-                  {emoji}
-                </button>
-              ))}
+            <div className="rounded-lg overflow-hidden border-2 border-slate-200">
+              <EmojiPicker 
+                width="100%" 
+                height={350} 
+                onEmojiClick={(data) => setSelectedEmoji(data.emoji)} 
+                lazyLoadEmojis={true}
+              />
+            </div>
+            <div className="mt-2 p-3 bg-emerald-50 rounded-lg border-2 border-emerald-200 flex items-center justify-between">
+              <span className="text-emerald-800 font-bold text-sm">Đang chọn:</span>
+              <span className="text-3xl bg-white p-2 rounded shadow-sm">{selectedEmoji}</span>
             </div>
           </div>
         )}
@@ -333,9 +348,10 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
 
         <div 
           className="w-full h-full relative select-none"
-          onMouseDown={() => setIsDragging(true)}
+          onMouseDown={handleBoardMouseDown}
           onMouseUp={() => setIsDragging(false)}
           onMouseLeave={() => setIsDragging(false)}
+          onMouseMove={handleBoardMouseMove}
           style={{
             display: 'grid',
             gridTemplateColumns: `repeat(${MAP_SIZE}, minmax(0, 1fr))`,
@@ -346,19 +362,47 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
             const x = i % MAP_SIZE;
             const y = Math.floor(i / MAP_SIZE);
             const isAlternate = (x + y) % 2 === 0;
-            const envEmoji = env[`${x},${y}`];
 
             return (
               <div
                 key={`bg-${x}-${y}`}
                 onMouseDown={() => handleCellClick(x, y)}
-                onMouseEnter={() => handleCellEnter(x, y)}
-                className={`border-[0.5px] border-slate-200/80 cursor-pointer hover:bg-indigo-100/60 transition-colors flex items-center justify-center text-3xl ${isAlternate ? 'bg-slate-50' : 'bg-white'}`}
+                onMouseEnter={() => {
+                  if (isDragging) handleCellClick(x, y);
+                }}
+                className={`border-[0.5px] border-slate-200/80 cursor-pointer hover:bg-indigo-100/60 transition-colors ${isAlternate ? 'bg-slate-50' : 'bg-white'}`}
               >
-                 {envEmoji}
               </div>
             );
           })}
+
+          {/* Render EnvItems freely */}
+          {env.map((item) => (
+            <div
+              key={item.id}
+              className={`absolute flex items-center justify-center text-3xl transition-transform hover:scale-110 select-none ${tool === 'ERASE_ENV' ? 'cursor-crosshair hover:opacity-50 hover:bg-rose-100 rounded-full' : 'pointer-events-none'}`}
+              style={{
+                left: `${item.x}%`,
+                top: `${item.y}%`,
+                transform: 'translate(-50%, -50%)',
+                zIndex: 5,
+              }}
+              onMouseDown={(e) => {
+                if (tool === 'ERASE_ENV') {
+                  e.stopPropagation();
+                  removeEnvItem(item.id);
+                }
+              }}
+              onMouseEnter={(e) => {
+                if (tool === 'ERASE_ENV' && isDragging) {
+                  e.stopPropagation();
+                  removeEnvItem(item.id);
+                }
+              }}
+            >
+              {item.emoji}
+            </div>
+          ))}
 
           {path.map((tile, idx) => {
             const { x, y, type, stepIndex, cardId } = tile;
