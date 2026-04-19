@@ -4,11 +4,12 @@ import type { DeckConfig } from './SettingsState';
 export type CardTier = 'GREEN' | 'RED' | 'PURPLE';
 
 export type CardId =
-  | 'BOOST' | 'SHIELD' | 'REFLECT' | 'TRIBUTE'
-  | 'SLIP' | 'KAMIKAZE' | 'MARKET_CRASH' | 'DUNGEON'
-  | 'DUEL' | 'GODS_HAND' | 'SHADOW_STEP' | 'SWAP' | 'THE_WORLD';
+  | 'EUREKA' | 'LIFEBUOY' | 'COUNTER_ARGUMENT' | 'PARASITE'
+  | 'MIND_BLANK' | 'DEADLINE_BOMB' | 'BLACKOUT' | 'DETENTION'
+  | 'POP_QUIZ' | 'SUPERVISOR_HAND' | 'NINJA_COPY' | 'AMENOTEJIKARA' | 'ZA_WARUDO'
+  | 'MYSTERY';
 
-export type BuffId = 'SHIELD' | 'REFLECT' | 'TRIBUTE' | 'DUNGEON' | 'FROZEN';
+export type BuffId = 'LIFEBUOY' | 'COUNTER_ARGUMENT' | 'PARASITE' | 'DETENTION' | 'FROZEN';
 
 export interface Buff {
   id: BuffId;
@@ -20,8 +21,8 @@ export interface CardDefinition {
   id: CardId;
   tier: CardTier;
   icon: string;
-  nameKey: string;
-  descKey: string;
+  name: string;
+  description: string;
   resolve: (ctx: CardContext) => CardResolution;
 }
 
@@ -34,12 +35,12 @@ export interface CardContext {
 }
 
 export interface CardResolution {
-  type: 'MOVE' | 'BUFF' | 'DEBUFF' | 'TELEPORT' | 'FREEZE' | 'DUEL' | 'DUNGEON' | 'SWAP';
+  type: 'MOVE' | 'BUFF' | 'DEBUFF' | 'TELEPORT' | 'FREEZE' | 'QUIZ' | 'DETENTION' | 'SWAP';
   targetPlayerIds: string[];
   steps?: number;
   newPosition?: number;
   buff?: Buff;
   freezeTurns?: number;
-  duelOpponentId?: string;
+  quizOpponentId?: string;
   swapTargetId?: string;
 }

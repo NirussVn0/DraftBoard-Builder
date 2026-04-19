@@ -4,7 +4,7 @@ import type { Tile } from './MapBuilderState';
 import type { MapSettings } from './SettingsState';
 import { DEFAULT_MAP } from './SettingsState';
 import type { GameEvent } from './GameEvent';
-import { drawCard } from './CardRegistry';
+import { CARD_DEFINITIONS } from './CardRegistry';
 import type { CardContext } from './CardTypes';
 
 export type GameStateObserver = (state: GameState) => void;
@@ -32,7 +32,7 @@ class GameEngine {
       canUndo: false,
       currentCard: null,
       currentResolution: null,
-      duelState: null,
+      quizState: null,
       eventQueue: [],
     };
   }
@@ -72,7 +72,7 @@ class GameEngine {
       ...savedState,
       currentCard: savedState.currentCard || null,
       currentResolution: savedState.currentResolution || null,
-      duelState: savedState.duelState || null,
+      quizState: savedState.quizState || null,
       eventQueue: savedState.eventQueue || [],
       players: savedState.players.map(p => ({
         ...p,
@@ -118,8 +118,8 @@ class GameEngine {
       skipTurn = true;
     }
 
-    // Check DUNGEON
-    const dungeon = player.buffs.find(b => b.id === 'DUNGEON');
+    // Check DETENTION
+    const dungeon = player.buffs.find(b => b.id === 'DETENTION');
     if (dungeon && !skipTurn) {
       dungeonRoll = true;
     }
@@ -141,7 +141,7 @@ class GameEngine {
     }
 
     if (dungeonRoll) {
-      this.state = { ...this.state, phase: 'EVENT_DUNGEON_ROLL' };
+      this.state = { ...this.state, phase: 'EVENT_DETENTION_ROLL' };
       this.notify();
       return;
     }
@@ -156,7 +156,7 @@ class GameEngine {
       activePlayerIndex: (this.state.activePlayerIndex + 1) % this.state.players.length,
       currentCard: null,
       currentResolution: null,
-      duelState: null,
+      quizState: null,
       kickEvent: null,
     };
     this.notify();
@@ -172,7 +172,7 @@ class GameEngine {
   // --- Dice & Movement ---
 
   public rollDice(): void {
-    if (this.state.phase !== 'IDLE_TURN' && this.state.phase !== 'EVENT_DUNGEON_ROLL') return;
+    if (this.state.phase !== 'IDLE_TURN' && this.state.phase !== 'EVENT_DETENTION_ROLL') return;
     this.pushSnapshot();
     const diceRoll = Math.floor(Math.random() * 6) + 1;
     this.state = {
@@ -192,10 +192,10 @@ class GameEngine {
     if (this.state.phase !== 'ROLLING_DICE') return null;
 
     const player = this.state.players[this.state.activePlayerIndex];
-    const isDungeon = player.buffs.some(b => b.id === 'DUNGEON');
+    const isDungeon = player.buffs.some(b => b.id === 'DETENTION');
     if (isDungeon) {
-      if (this.state.diceValue >= this.state.mapSettings.deckConfig.dungeonEscapeValue) {
-        this.removeBuff(player.id, 'DUNGEON');
+      if (this.state.diceValue >= this.state.mapSettings.deckConfig.detentionEscapeValue) {
+        this.removeBuff(player.id, 'DETENTION');
       } else {
         this.advanceTurn();
         return null;
@@ -273,12 +273,16 @@ class GameEngine {
       }
     }
 
-    // Check Mystery
+    // Check Card
     if (this.state.map) {
       const currentTile = this.state.map[finalPosition];
-      if (currentTile && currentTile.type === 'MYSTERY') {
-        this.state.eventQueue.push({ type: 'DRAW_CARD' });
-        willAdvanceTurn = false;
+      if (currentTile) {
+        // Backward compatibility for type === 'MYSTERY'
+        const actualCardId = currentTile.cardId || (currentTile.type === 'MYSTERY' ? 'MYSTERY' : undefined);
+        if (actualCardId) {
+          this.state.eventQueue.push({ type: 'TRIGGER_TILE_CARD', cardId: actualCardId });
+          willAdvanceTurn = false;
+        }
       }
     }
 
@@ -291,15 +295,28 @@ class GameEngine {
 
   // --- Event Queue Processor ---
 
+  public continueQueue(): void {
+    if (this.state.eventQueue.length > 0) {
+      this.state.eventQueue.shift();
+    }
+    this.processQueue();
+  }
+
   public processQueue(): void {
     if (this.state.eventQueue.length === 0) return;
 
     const event = this.state.eventQueue[0];
 
     switch (event.type) {
-      case 'DRAW_CARD': {
+      case 'TRIGGER_TILE_CARD': {
         this.state.eventQueue.shift();
-        const card = drawCard(this.state.mapSettings.deckConfig);
+        const card = CARD_DEFINITIONS.get(event.cardId);
+        if (!card) {
+           this.state.eventQueue.push({ type: 'ADVANCE_TURN' });
+           this.processQueue();
+           break;
+        }
+        
         const ctx: CardContext = {
            activePlayer: this.state.players[this.state.activePlayerIndex],
            allPlayers: this.state.players,
@@ -313,9 +330,8 @@ class GameEngine {
            { type: 'ANIMATE_PRECAST', card },
            { type: 'RESOLVE_CARD', card, resolution: res },
            { type: 'ANIMATE_CARD', card, resolution: res }
-           // Card resolution might push MORE events like MOVE or TELEPORT. We shouldn't automatically advance turn unless queue is truly empty. Wait, evaluateCell already enqueued ADVANCE_TURN if no kick/mystery. Oh wait, if mystery, evaluateCell doesn't push ADVANCE_TURN. So we must push it here.
         );
-        this.state.eventQueue.push({ type: 'ADVANCE_TURN' }); // Ensure turn ends eventually
+        this.state.eventQueue.push({ type: 'ADVANCE_TURN' });
         this.processQueue();
         break;
       }
@@ -342,8 +358,10 @@ class GameEngine {
            res.targetPlayerIds.forEach(id => eventsToInsert.push({ type: 'APPLY_BUFF', targetId: id, buff: res.buff! }));
         } else if (res.type === 'FREEZE') {
            res.targetPlayerIds.forEach(id => eventsToInsert.push({ type: 'FREEZE_PLAYER', playerId: id, turns: res.freezeTurns! }));
-        } else if (res.type === 'DUEL') {
-           eventsToInsert.push({ type: 'DUEL_START', challengerId: res.targetPlayerIds[0], opponentId: res.duelOpponentId! });
+        } else if (res.type === 'DETENTION') {
+           res.targetPlayerIds.forEach(id => eventsToInsert.push({ type: 'APPLY_BUFF', targetId: id, buff: { id: 'DETENTION', turnsRemaining: -1, sourcePlayerId: this.state.players[this.state.activePlayerIndex].id } }));
+        } else if (res.type === 'QUIZ') {
+           eventsToInsert.push({ type: 'QUIZ_START', challengerId: res.targetPlayerIds[0], opponentId: res.quizOpponentId! });
         } else if (res.type === 'SWAP') {
            const p1 = this.state.players.find(p => p.id === res.targetPlayerIds[0]);
            const p2 = this.state.players.find(p => p.id === res.swapTargetId);
@@ -415,14 +433,14 @@ class GameEngine {
         const kicked = this.state.players.find(p => p.id === event.kickedId);
         
         if (kicker && kicked) {
-           const hasShield = kicked.buffs.some(b => b.id === 'SHIELD');
-           const hasReflect = kicked.buffs.some(b => b.id === 'REFLECT');
+           const hasShield = kicked.buffs.some(b => b.id === 'LIFEBUOY');
+           const hasReflect = kicked.buffs.some(b => b.id === 'COUNTER_ARGUMENT');
 
            if (hasReflect) {
-              this.state.eventQueue.unshift({ type: 'CHECK_REFLECT', targetId: kicked.id, attackerId: kicker.id, damage: this.state.mapSettings.kickDistance });
+              this.state.eventQueue.unshift({ type: 'CHECK_COUNTER_ARGUMENT', targetId: kicked.id, attackerId: kicker.id, damage: this.state.mapSettings.kickDistance });
               this.processQueue();
            } else if (hasShield) {
-              this.state.eventQueue.unshift({ type: 'CHECK_SHIELD', targetId: kicked.id, attackerId: kicker.id, damage: this.state.mapSettings.kickDistance });
+              this.state.eventQueue.unshift({ type: 'CHECK_LIFEBUOY', targetId: kicked.id, attackerId: kicker.id, damage: this.state.mapSettings.kickDistance });
               this.processQueue();
            } else {
               const kickedTo = Math.max(0, kicked.position - this.state.mapSettings.kickDistance);
@@ -439,8 +457,9 @@ class GameEngine {
               // After kick, evaluate mystery if needed
               if (this.state.map) {
                  const tile = this.state.map[kicker.position];
-                 if (tile && tile.type === 'MYSTERY') {
-                    this.state.eventQueue.unshift({ type: 'DRAW_CARD' });
+                 const actualCardId = tile?.cardId || (tile?.type === 'MYSTERY' ? 'MYSTERY' : undefined);
+                 if (actualCardId) {
+                    this.state.eventQueue.unshift({ type: 'TRIGGER_TILE_CARD', cardId: actualCardId });
                  } else {
                     this.state.eventQueue.unshift({ type: 'ADVANCE_TURN' });
                  }
@@ -457,51 +476,51 @@ class GameEngine {
         break;
       }
 
-      case 'CHECK_SHIELD': {
+      case 'CHECK_LIFEBUOY': {
         this.state.eventQueue.shift();
-        this.removeBuff(event.targetId, 'SHIELD');
-        this.state = { ...this.state, phase: 'EVENT_SHIELD_BREAK' };
+        this.removeBuff(event.targetId, 'LIFEBUOY');
+        this.state = { ...this.state, phase: 'EVENT_LIFEBUOY_BREAK' };
         this.notify();
         // UI calls continueQueue()
         break;
       }
 
-      case 'CHECK_REFLECT': {
+      case 'CHECK_COUNTER_ARGUMENT': {
         this.state.eventQueue.shift();
         const attacker = this.state.players.find(p => p.id === event.attackerId);
         if (attacker) {
            this.state.eventQueue.unshift({ type: 'TELEPORT_PLAYER', playerId: attacker.id, position: Math.max(0, attacker.position - event.damage) });
         }
-        this.state = { ...this.state, phase: 'EVENT_REFLECT' };
+        this.state = { ...this.state, phase: 'EVENT_COUNTER' };
         this.notify();
         // UI calls continueQueue()
         break;
       }
 
-      case 'DUEL_START': {
+      case 'QUIZ_START': {
         this.state.eventQueue.shift();
         this.state = { 
            ...this.state, 
-           phase: 'EVENT_DUEL',
-           duelState: {
+           phase: 'EVENT_QUIZ',
+           quizState: {
               challengerId: event.challengerId,
               opponentId: event.opponentId,
               phase: 'VS_SCREEN'
            }
         };
         this.notify();
-        // UI will handle duel logic, then push DUEL_RESOLVE
+        // UI will handle quiz logic, then push QUIZ_RESOLVE
         break;
       }
 
-      case 'DUEL_RESOLVE': {
+      case 'QUIZ_RESOLVE': {
         this.state.eventQueue.shift();
         const winner = this.state.players.find(p => p.id === event.winnerId);
         const loser = this.state.players.find(p => p.id === event.loserId);
         
         if (winner && loser) {
-           const reward = this.state.mapSettings.deckConfig.duelReward;
-           const penalty = this.state.mapSettings.deckConfig.duelPenalty;
+           const reward = this.state.mapSettings.deckConfig.quizReward;
+           const penalty = this.state.mapSettings.deckConfig.quizPenalty;
            this.state.eventQueue.unshift(
               { type: 'MOVE_PLAYER', playerId: winner.id, steps: reward },
               { type: 'MOVE_PLAYER', playerId: loser.id, steps: -penalty }
@@ -526,7 +545,7 @@ class GameEngine {
         break;
       }
 
-      case 'DUNGEON_CHECK': {
+      case 'DETENTION_CHECK': {
         this.state.eventQueue.shift();
         this.processQueue();
         break;
@@ -534,15 +553,41 @@ class GameEngine {
     }
   }
 
-  public continueQueue() {
-    this.state.eventQueue.shift();
-    this.processQueue();
-  }
 
   public resolveKick(): void {
-    // Legacy support, maps to continueQueue in Epic 4.
+    // Legacy — maps to continueQueue in Epic 4.
     this.state.kickEvent = null;
     this.continueQueue();
+  }
+
+  public advanceQuizPhase(): void {
+    if (this.state.phase !== 'EVENT_QUIZ' || !this.state.quizState) return;
+    const next = this.state.quizState.phase === 'VS_SCREEN' ? 'QUESTION' : 'WAITING_HOST';
+    this.state = {
+      ...this.state,
+      quizState: { ...this.state.quizState, phase: next },
+    };
+    this.notify();
+  }
+
+  public pushQuizResult(winnerId: string, loserId: string): void {
+    if (this.state.phase !== 'EVENT_QUIZ') return;
+    this.state.eventQueue.unshift({ type: 'QUIZ_RESOLVE', winnerId, loserId });
+    this.state = {
+      ...this.state,
+      quizState: this.state.quizState ? { ...this.state.quizState, phase: 'RESOLVED', winnerId } : null,
+    };
+    this.notify();
+    setTimeout(() => this.processQueue(), 1200); // allow winner VFX
+  }
+
+  public resolveDetentionRoll(value: number): void {
+    const player = this.state.players[this.state.activePlayerIndex];
+    if (!player) return;
+    if (value >= this.state.mapSettings.deckConfig.detentionEscapeValue) {
+      this.removeBuff(player.id, 'DETENTION');
+    }
+    this.advanceTurn();
   }
 
   public undo(): void {

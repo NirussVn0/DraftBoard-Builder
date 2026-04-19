@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
 
+import type { CardId } from './CardTypes';
+
 export type TileType = 'START' | 'NORMAL' | 'MYSTERY' | 'END';
 
 export interface Tile {
@@ -7,6 +9,7 @@ export interface Tile {
   x: number;
   y: number;
   type: TileType;
+  cardId?: CardId;
 }
 
 export const MAP_SIZE = 15;
@@ -87,10 +90,28 @@ export function useMapBuilder() {
     pushState(newPath);
   }, [path, pushState]);
 
-  const toggleMystery = useCallback((stepIndex: number) => {
+  const setCard = useCallback((stepIndex: number, cardId: CardId | undefined) => {
     const newPath = path.map(t => {
-      if (t.stepIndex === stepIndex && t.type !== 'START' && t.type !== 'END') {
-        return { ...t, type: (t.type === 'MYSTERY' ? 'NORMAL' : 'MYSTERY') as TileType };
+      if (t.stepIndex === stepIndex && t.type === 'NORMAL') {
+        return { ...t, cardId };
+      }
+      return t;
+    });
+    pushState(newPath);
+  }, [path, pushState]);
+
+  const randomFill = useCallback((cardId: CardId, count: number) => {
+    const emptyTiles = path.filter(t => t.type === 'NORMAL' && !t.cardId);
+    if (emptyTiles.length === 0) return;
+
+    const fillCount = Math.min(count, emptyTiles.length);
+    // Shuffle empty tiles
+    const shuffled = [...emptyTiles].sort(() => Math.random() - 0.5);
+    const selected = new Set(shuffled.slice(0, fillCount).map(t => t.stepIndex));
+
+    const newPath = path.map(t => {
+      if (selected.has(t.stepIndex)) {
+        return { ...t, cardId };
       }
       return t;
     });
@@ -109,8 +130,12 @@ export function useMapBuilder() {
     setHistoryIndex((prev) => Math.min(history.length - 1, prev + 1));
   }, [history.length]);
 
+  const loadMap = useCallback((newPath: Tile[]) => {
+    pushState(newPath);
+  }, [pushState]);
+
   return {
-    path, addNode, eraseFrom, toggleMystery, clearMap,
+    path, addNode, eraseFrom, setCard, randomFill, clearMap, loadMap,
     undo, redo, canUndo: historyIndex > 0, canRedo: historyIndex < history.length - 1
   };
 }

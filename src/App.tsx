@@ -11,11 +11,18 @@ import { BoardGrid } from './components/Board/BoardGrid'
 import { CameraWrapper } from './components/Board/CameraWrapper'
 import { PlayerStatsPanel } from './components/Board/PlayerStatsPanel'
 import { DiceOverlay } from './components/PlayMenu/DiceOverlay'
-import { MysteryCardOverlay } from './components/PlayMenu/MysteryCardOverlay'
+import { CardPrecastOverlay } from './components/PlayMenu/CardPrecastOverlay'
+import { CardEffectOverlay } from './components/PlayMenu/CardEffectOverlay'
+import { PopQuizOverlay } from './components/PlayMenu/PopQuizOverlay'
+import { DetentionOverlay } from './components/PlayMenu/DetentionOverlay'
+import { FreezeOverlay } from './components/PlayMenu/FreezeOverlay'
+import { LifebuoyBreakOverlay } from './components/PlayMenu/LifebuoyBreakOverlay'
+import { CounterOverlay } from './components/PlayMenu/CounterOverlay'
 import { WelcomeMenu } from './components/WelcomeMenu'
 import { MapBuilderUI } from './components/MapBuilder/MapBuilderUI'
 import { SettingsPanel } from './components/Settings/SettingsPanel'
 import { KickOverlay } from './components/PlayMenu/KickOverlay'
+import { MapShareService } from './services/MapShareService'
 
 import { Trophy, RefreshCcw, Home, Settings, Dices, SkipForward, Undo2 } from 'lucide-react'
 
@@ -54,20 +61,12 @@ function App() {
   const [pendingMap, setPendingMap] = useState<Tile[] | null>(null)
   const [gameState, setGameState] = useState<GameState>(gameEngine.getState())
   const [showDiceOverlay, setShowDiceOverlay] = useState(false)
-  const [showMysteryOverlay, setShowMysteryOverlay] = useState(false)
-  const [mysteryValue, setMysteryValue] = useState(0)
   const [showSettings, setShowSettings] = useState(false)
   const [showKickOverlay, setShowKickOverlay] = useState(false)
 
   useEffect(() => {
     const unsubscribe = gameEngine.subscribe((state) => {
       setGameState(state)
-
-      if (state.phase === 'EVENT_MYSTERY_ROLL') {
-        // Show Mystery Card flip overlay instead of auto-moving
-        setMysteryValue(state.diceValue);
-        setShowMysteryOverlay(true);
-      }
 
       if (state.phase === 'EVENT_KICK') {
         setShowKickOverlay(true);
@@ -79,6 +78,18 @@ function App() {
     })
     return unsubscribe
   }, [])
+
+  useEffect(() => {
+    // Check for shared map via LZ-String in URL
+    const sharedMap = MapShareService.readFromURL();
+    if (sharedMap) {
+      if (window.confirm(t().common.sharedMapPrompt || 'You received a shared map! Do you want to play it now?')) {
+        setPendingMap(sharedMap);
+        setAppMode('PLAYING');
+      }
+      MapShareService.clearURLParam(); // Cleanup URL
+    }
+  }, []);
 
   useEffect(() => {
     if (appMode !== 'PLAYING' || gameState.phase === 'SETUP') {
@@ -152,29 +163,6 @@ function App() {
         gameEngine.finishTokenMove(finalCell);
       },
       false,
-      state.map || undefined
-    );
-  }, []);
-
-  const handleMysteryComplete = useCallback(() => {
-    setShowMysteryOverlay(false);
-
-    // Conclude mystery roll and move token at 1.5x speed
-    const pathData = gameEngine.concludeDiceRoll();
-    if (!pathData) return;
-
-    const state = gameEngine.getState();
-    const activePlayer = state.players[state.activePlayerIndex];
-    if (!activePlayer) return;
-
-    AnimationService.animateTokenMove(
-      activePlayer.id,
-      state.activePlayerIndex,
-      pathData,
-      (finalCell) => {
-        gameEngine.finishTokenMove(finalCell);
-      },
-      true, // isFast = true (1.5x speed)
       state.map || undefined
     );
   }, []);
@@ -283,7 +271,7 @@ function App() {
       {/* Layer 0: Fullscreen Board */}
       <div className="absolute inset-0 z-0" id="board-container">
         <CameraWrapper>
-          <BoardGrid players={gameState.players} map={gameState.map} />
+          <BoardGrid players={gameState.players} map={gameState.map} biome={gameState.mapSettings.biome} />
         </CameraWrapper>
       </div>
 
@@ -330,12 +318,62 @@ function App() {
         />
       )}
 
-      {/* Mystery Card Flip Overlay */}
-      {showMysteryOverlay && (
-        <MysteryCardOverlay
-          mysteryValue={mysteryValue}
-          onComplete={handleMysteryComplete}
+      {/* Card Precast Overlay */}
+      {gameState.phase === 'EVENT_DRAW_CARD' && gameState.currentCard && (
+        <CardPrecastOverlay
+          card={gameState.currentCard}
+          onComplete={() => gameEngine.continueQueue()}
         />
+      )}
+
+      {/* Card Effect Overlay */}
+      {gameState.phase === 'EVENT_CARD_ANIMATE' && gameState.currentCard && gameState.currentResolution && (
+        <CardEffectOverlay
+          card={gameState.currentCard}
+          resolution={gameState.currentResolution}
+          onComplete={() => gameEngine.continueQueue()}
+        />
+      )}
+
+      {/* Pop Quiz Overlay */}
+      {gameState.phase === 'EVENT_QUIZ' && gameState.quizState && (
+        <PopQuizOverlay
+          quizState={gameState.quizState}
+          players={gameState.players}
+        />
+      )}
+
+      {/* Detention Roll Overlay */}
+      {gameState.phase === 'EVENT_DETENTION_ROLL' && (() => {
+        const prisoner = gameState.players[gameState.activePlayerIndex];
+        return prisoner ? (
+          <DetentionOverlay
+            prisoner={prisoner}
+            onComplete={() => {}}
+          />
+        ) : null;
+      })()}
+
+      {/* Freeze Overlay */}
+      {gameState.phase === 'EVENT_FREEZE' && (() => {
+        const frozenIds = gameState.currentResolution?.targetPlayerIds ?? [];
+        return (
+          <FreezeOverlay
+            frozenPlayerIds={frozenIds}
+            players={gameState.players}
+            onComplete={() => gameEngine.continueQueue()}
+          />
+        );
+      })()}
+
+      {/* Lifebuoy Break Overlay */}
+      {gameState.phase === 'EVENT_LIFEBUOY_BREAK' && (
+        <LifebuoyBreakOverlay onComplete={() => gameEngine.continueQueue()} />
+      )}
+
+      {/* Counter Overlay */}
+      {gameState.phase === 'EVENT_COUNTER' && (
+        <CounterOverlay onComplete={() => gameEngine.continueQueue()} />
       )}
 
       {/* Kick Overlay */}

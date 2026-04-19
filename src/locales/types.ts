@@ -76,6 +76,51 @@ export interface LocaleStrings {
   common: {
     confirmExit: string;
     savedMapError: string;
+    sharedMapPrompt: string;
+  };
+  cards: {
+    eureka: { name: string; desc: string };
+    lifebuoy: { name: string; desc: string };
+    counter: { name: string; desc: string };
+    parasite: { name: string; desc: string };
+    mindBlank: { name: string; desc: string };
+    deadlineBomb: { name: string; desc: string };
+    blackout: { name: string; desc: string };
+    detention: { name: string; desc: string };
+    popQuiz: { name: string; desc: string };
+    supervisorHand: { name: string; desc: string };
+    ninjaCopy: { name: string; desc: string };
+    amenotejikara: { name: string; desc: string };
+    zaWarudo: { name: string; desc: string };
+  };
+  deckConfig: {
+    title: string;
+    basic: string;
+    skill: string;
+    chaos: string;
+    rarityBias: string;
+    rarityHelp: string;
+  };
+  systemUI: {
+    title: string;
+    camera: string;
+    sfx: string;
+    volume: string;
+    biome: string;
+    biomeOptions: {
+      off: string;
+      forest: string;
+      ice: string;
+      desert: string;
+      temptation: string;
+      forge: string;
+      summit: string;
+    };
+  };
+  tabs: {
+    board: string;
+    deck: string;
+    system: string;
   };
 }
 

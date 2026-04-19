@@ -23,10 +23,10 @@ export type GamePhase =
   | 'EVENT_CARD_ANIMATE'
   | 'EVENT_MYSTERY_ROLL'
   | 'EVENT_KICK'
-  | 'EVENT_SHIELD_BREAK'
-  | 'EVENT_REFLECT'
-  | 'EVENT_DUEL'
-  | 'EVENT_DUNGEON_ROLL'
+  | 'EVENT_LIFEBUOY_BREAK'
+  | 'EVENT_COUNTER'
+  | 'EVENT_QUIZ'
+  | 'EVENT_DETENTION_ROLL'
   | 'EVENT_FREEZE'
   | 'VICTORY';
 
@@ -37,7 +37,7 @@ export interface KickEvent {
   kickedToPosition: number;
 }
 
-export interface DuelState {
+export interface QuizState {
   challengerId: string;
   opponentId: string;
   phase: 'VS_SCREEN' | 'QUESTION' | 'WAITING_HOST' | 'RESOLVED';
@@ -57,6 +57,6 @@ export interface GameState {
 
   currentCard: CardDefinition | null;
   currentResolution: CardResolution | null;
-  duelState: DuelState | null;
+  quizState: QuizState | null;
   eventQueue: GameEvent[];
 }

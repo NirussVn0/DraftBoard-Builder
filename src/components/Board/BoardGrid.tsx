@@ -3,8 +3,10 @@ import { BOARD_SIZE, TOTAL_CELLS, getCoordinatesFromCell, getPlayerOffset } from
 import type { Player } from '../../core/GameState';
 import type { Tile } from '../../core/MapBuilderState';
 import { MAP_SIZE } from '../../core/MapBuilderState';
-import { Sparkles } from 'lucide-react';
+
+import { CARD_DEFINITIONS } from '../../core/CardRegistry';
 import { t } from '../../locales';
+import { EnvironmentLayer } from './EnvironmentLayer';import type { BiomeTheme } from './EnvironmentLayer';
 
 /** Tile size in pixels — upscaled for fullscreen board */
 const TILE_PX = 64;
@@ -12,9 +14,10 @@ const TILE_PX = 64;
 interface BoardGridProps {
   players: Player[];
   map?: Tile[] | null;
+  biome?: BiomeTheme;
 }
 
-export const BoardGrid: React.FC<BoardGridProps> = ({ players, map }) => {
+export const BoardGrid: React.FC<BoardGridProps> = ({ players, map, biome = 'OFF' }) => {
   const gridSize = map ? MAP_SIZE : BOARD_SIZE;
   const boardPx = gridSize * TILE_PX;
 
@@ -29,11 +32,24 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map }) => {
     return list;
   }, []);
 
+  // Compute mapKey for EnvironmentLayer
+  const mapKey = useMemo(() => {
+    if (!map) return 'default-board';
+    return map.map(t => `${t.x},${t.y}`).join('|');
+  }, [map]);
+
   return (
     <div
       className="relative bg-transparent mx-auto"
       style={{ width: boardPx, height: boardPx, minWidth: boardPx, minHeight: boardPx }}
     >
+      <EnvironmentLayer 
+        tiles={map || []} 
+        gridSize={gridSize} 
+        tilePx={TILE_PX} 
+        biome={biome} 
+        mapKey={mapKey} 
+      />
 
       {map ? (
         /* Custom map — ONLY render Tile[] path elements, NO background grid */
@@ -43,15 +59,20 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map }) => {
             let bgColor = 'bg-slate-200';
             let content: React.ReactNode = <span className="text-slate-500 font-bold text-[11px]">{stepIndex}</span>;
 
+            const actualCardId = tile.cardId || (type === 'MYSTERY' ? 'MYSTERY' : undefined);
+
             if (type === 'START') {
               bgColor = 'bg-emerald-400';
               content = <span className="font-black text-emerald-900 text-xs">{t().board.tileIn}</span>;
             } else if (type === 'END') {
               bgColor = 'bg-rose-500';
               content = <span className="font-black text-white text-xs">{t().board.tileOut}</span>;
-            } else if (type === 'MYSTERY') {
-              bgColor = 'bg-purple-500';
-              content = <Sparkles size={16} className="text-white" />;
+            } else if (actualCardId) {
+              const def = CARD_DEFINITIONS.get(actualCardId);
+              if (def) {
+                bgColor = def.tier === 'PURPLE' ? 'bg-purple-500' : def.tier === 'RED' ? 'bg-rose-500' : 'bg-emerald-500';
+                content = <span className="text-2xl" title={def.name}>{def.icon}</span>;
+              }
             }
 
             return (

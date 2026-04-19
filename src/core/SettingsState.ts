@@ -14,50 +14,52 @@ export const DEFAULT_GLOBAL: GlobalSettings = {
 };
 
 export interface DeckConfig {
-  enableBoost: boolean;
-  boostRange: [number, number];
-  enableSlip: boolean;
-  slipRange: [number, number];
-  enableShield: boolean;
-  enableReflect: boolean;
-  reflectTurns: number;
-  enableTribute: boolean;
-  enableKamikaze: boolean;
-  kamikazeMode: 'MATCH_STEPS' | 'RESET_ZERO';
-  enableMarketCrash: boolean;
-  marketCrashSteps: number;
-  enableDungeon: boolean;
-  dungeonEscapeValue: number;
-  enableDuel: boolean;
-  duelReward: number;
-  duelPenalty: number;
-  enableGodsHand: boolean;
-  enableShadowStep: boolean;
-  shadowStepTarget: 'TOP1' | 'RANDOM';
-  enableSwap: boolean;
-  enableTheWorld: boolean;
-  theWorldMode: 'FREEZE_ALL' | 'FREEZE_ONE';
+  enableEureka: boolean;
+  eurekaRange: [number, number];
+  enableMindBlank: boolean;
+  mindBlankRange: [number, number];
+  enableLifebuoy: boolean;
+  enableCounter: boolean;
+  counterTurns: number;
+  enableParasite: boolean;
+  enableDeadlineBomb: boolean;
+  deadlineBombMode: 'MATCH_STEPS' | 'RESET_ZERO';
+  enableBlackout: boolean;
+  blackoutSteps: number;
+  enableDetention: boolean;
+  detentionEscapeValue: number;
+  enablePopQuiz: boolean;
+  quizReward: number;
+  quizPenalty: number;
+  enableSupervisorHand: boolean;
+  enableNinjaCopy: boolean;
+  ninjaCopyTarget: 'TOP1' | 'RANDOM';
+  enableAmenotejikara: boolean;
+  enableZaWarudo: boolean;
+  zaWarudoMode: 'FREEZE_ALL' | 'FREEZE_ONE';
   rarityBias: number;
   hostMode: boolean;
 }
 
 export const DEFAULT_DECK: DeckConfig = {
-  enableBoost: true, boostRange: [1, 6],
-  enableSlip: true, slipRange: [1, 6],
-  enableShield: true,
-  enableReflect: true, reflectTurns: 3,
-  enableTribute: true,
-  enableKamikaze: true, kamikazeMode: 'MATCH_STEPS',
-  enableMarketCrash: true, marketCrashSteps: 3,
-  enableDungeon: true, dungeonEscapeValue: 6,
-  enableDuel: false, duelReward: 3, duelPenalty: 3,
-  enableGodsHand: true,
-  enableShadowStep: true, shadowStepTarget: 'TOP1',
-  enableSwap: true,
-  enableTheWorld: true, theWorldMode: 'FREEZE_ALL',
+  enableEureka: true, eurekaRange: [1, 6],
+  enableMindBlank: true, mindBlankRange: [1, 6],
+  enableLifebuoy: true,
+  enableCounter: true, counterTurns: 3,
+  enableParasite: true,
+  enableDeadlineBomb: true, deadlineBombMode: 'MATCH_STEPS',
+  enableBlackout: true, blackoutSteps: 3,
+  enableDetention: true, detentionEscapeValue: 6,
+  enablePopQuiz: false, quizReward: 3, quizPenalty: 3,
+  enableSupervisorHand: true,
+  enableNinjaCopy: true, ninjaCopyTarget: 'TOP1',
+  enableAmenotejikara: true,
+  enableZaWarudo: true, zaWarudoMode: 'FREEZE_ALL',
   rarityBias: 30,
   hostMode: false,
 };
+
+import type { BiomeTheme } from '../components/Board/EnvironmentLayer';
 
 /** ── Per-game Map Settings (configured in HomeMenu SETUP) ── */
 export interface MapSettings {
@@ -65,6 +67,7 @@ export interface MapSettings {
   kickDistance: number;     // 0=off (kick disabled), 1-6
   exactLanding: boolean;   // true=bounce-back, false=overshoot wins
   mysteryRange: number;    // DEPRECATED
+  biome: BiomeTheme;
   deckConfig: DeckConfig;
 }
 
@@ -73,6 +76,7 @@ export const DEFAULT_MAP: MapSettings = {
   kickDistance: 3,
   exactLanding: true,
   mysteryRange: 6,
+  biome: 'OFF',
   deckConfig: { ...DEFAULT_DECK },
 };
 

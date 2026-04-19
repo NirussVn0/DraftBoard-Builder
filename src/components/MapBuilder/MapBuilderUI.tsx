@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MAP_SIZE, useMapBuilder } from '../../core/MapBuilderState';
 import type { Tile } from '../../core/MapBuilderState';
-import { ArrowRight, ArrowDown, ArrowLeft, ArrowUp, Eraser, Sparkles, RefreshCcw, Save, Undo2, Redo2, Download } from 'lucide-react';
+import { ArrowRight, ArrowDown, ArrowLeft, ArrowUp, Eraser, RefreshCcw, Save, Undo2, Redo2, Download, MousePointerSquareDashed, Dices, Settings2, X, Upload, Eraser as EraserIcon } from 'lucide-react';
 import { t } from '../../locales';
+import { CARD_DEFINITIONS } from '../../core/CardRegistry';
+import type { CardId } from '../../core/CardTypes';
 
 interface MapBuilderUIProps {
   onSave: (path: Tile[]) => void;
@@ -10,8 +12,13 @@ interface MapBuilderUIProps {
 }
 
 export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) => {
-  const { path, addNode, eraseFrom, toggleMystery, clearMap, undo, redo, canUndo, canRedo } = useMapBuilder();
-  const [tool, setTool] = React.useState<'DRAW' | 'ERASE' | 'MYSTERY'>('DRAW');
+  const { path, addNode, eraseFrom, setCard, randomFill, clearMap, loadMap, undo, redo, canUndo, canRedo } = useMapBuilder();
+  const [tool, setTool] = React.useState<'DRAW' | 'ERASE' | 'CARD_PAINT' | 'ERASE_CARD' | 'RANDOM_FILL'>('DRAW');
+  const [selectedCard, setSelectedCard] = React.useState<CardId>('MYSTERY');
+  
+  const [showRandomModal, setShowRandomModal] = useState(false);
+  const [randomCount, setRandomCount] = useState(3);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -39,10 +46,22 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
     } else if (tool === 'ERASE' && hasTile) {
       const maxStep = Math.max(...tilesAtCell.map(t => t.stepIndex));
       eraseFrom(maxStep);
-    } else if (tool === 'MYSTERY' && hasTile) {
+    } else if (tool === 'CARD_PAINT' && hasTile) {
       const maxStep = Math.max(...tilesAtCell.map(t => t.stepIndex));
-      toggleMystery(maxStep);
+      setCard(maxStep, selectedCard);
+    } else if (tool === 'ERASE_CARD' && hasTile) {
+      const maxStep = Math.max(...tilesAtCell.map(t => t.stepIndex));
+      setCard(maxStep, undefined);
+    } else if (tool === 'RANDOM_FILL' && hasTile) {
+      randomFill(selectedCard, randomCount);
+      // Optional: auto switch back to DRAW after filling
+      setTool('DRAW');
     }
+  };
+
+  const handleRandomToolClick = () => {
+    setTool('RANDOM_FILL');
+    setShowRandomModal(true);
   };
 
   const renderArrows = () => {
@@ -86,34 +105,74 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
     return arrows;
   };
 
+  const cardsList = Array.from(CARD_DEFINITIONS.values());
+
   return (
-    <div className="min-h-screen bg-slate-50 flex p-4 sm:p-8 gap-8 font-sans items-center justify-center">
-      <div className="w-64 bg-white text-slate-800 game-card p-6 flex flex-col gap-6">
+    <div className="min-h-screen bg-slate-50 flex p-4 sm:p-8 gap-8 font-sans items-center justify-center relative">
+      <div className="w-80 bg-white text-slate-800 game-card p-6 flex flex-col gap-6 max-h-[90vh] overflow-y-auto">
         <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600">
           {t().builder.title}
         </h2>
 
+        {/* Tools Section */}
         <div className="space-y-3">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t().builder.tools}</p>
-          <button 
-            onClick={() => setTool('DRAW')}
-            className={`w-full flex items-center gap-3 p-3 game-card font-bold transition-colors ${tool === 'DRAW' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
-          >
-            <ArrowRight size={20} /> {t().builder.drawPath}
-          </button>
-          <button 
-            onClick={() => setTool('ERASE')}
-            className={`w-full flex items-center gap-3 p-3 game-card font-bold transition-colors ${tool === 'ERASE' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
-          >
-            <Eraser size={20} /> {t().builder.eraser}
-          </button>
-          <button 
-            onClick={() => setTool('MYSTERY')}
-            className={`w-full flex items-center gap-3 p-3 game-card font-bold transition-colors ${tool === 'MYSTERY' ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
-          >
-            <Sparkles size={20} /> {t().builder.mysteryCard}
-          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button 
+              onClick={() => setTool('DRAW')}
+              className={`flex flex-col items-center justify-center gap-1 p-3 game-card font-bold transition-colors ${tool === 'DRAW' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+            >
+              <ArrowRight size={20} /> <span className="text-[10px]">Vẽ Đường</span>
+            </button>
+            <button 
+              onClick={() => setTool('ERASE')}
+              className={`flex flex-col items-center justify-center gap-1 p-3 game-card font-bold transition-colors ${tool === 'ERASE' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+            >
+              <Eraser size={20} /> <span className="text-[10px]">Xóa (Đường)</span>
+            </button>
+            <button 
+              onClick={() => setTool('CARD_PAINT')}
+              className={`flex flex-col items-center justify-center gap-1 p-3 game-card font-bold transition-colors ${tool === 'CARD_PAINT' ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+            >
+              <MousePointerSquareDashed size={20} /> <span className="text-[10px]">Gắn Thẻ</span>
+            </button>
+            <button 
+              onClick={() => setTool('ERASE_CARD')}
+              className={`flex flex-col items-center justify-center gap-1 p-3 game-card font-bold transition-colors ${tool === 'ERASE_CARD' ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+            >
+              <EraserIcon size={20} /> <span className="text-[10px]">Xóa Thẻ</span>
+            </button>
+            <button 
+              onClick={handleRandomToolClick}
+              className={`flex flex-col items-center justify-center gap-1 p-3 game-card font-bold transition-colors col-span-2 ${tool === 'RANDOM_FILL' ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+            >
+              <Dices size={20} /> <span className="text-[10px]">Điền Thẻ Ngẫu Nhiên</span>
+            </button>
+          </div>
         </div>
+
+        {/* Card Palette (shows when CARD_PAINT is active) */}
+        {tool === 'CARD_PAINT' && (
+          <div className="space-y-3">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Chọn Thẻ</p>
+            <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+              {cardsList.map(card => (
+                <div key={card.id} className="flex gap-2">
+                  <button 
+                    onClick={() => setSelectedCard(card.id)}
+                    className={`flex-1 flex items-center gap-2 p-2 game-card font-bold transition-colors text-left text-sm ${selectedCard === card.id ? 'bg-amber-100 border-amber-400 text-amber-900' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
+                  >
+                    <span className="text-xl">{card.icon}</span>
+                    <span className="truncate">{card.name}</span>
+                  </button>
+                  <button className="p-2 game-card bg-slate-50 hover:bg-slate-200 text-slate-500" title="Cài đặt thẻ (Comming soon)">
+                    <Settings2 size={18} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="flex gap-2 mt-2">
           <button 
@@ -152,28 +211,77 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
           >
             <Save size={20} /> {t().builder.savePlay}
           </button>
-          <button 
-            onClick={() => {
-               if (path.length > 5) {
-                 const finalPath = [...path];
-                 finalPath[finalPath.length - 1] = { ...finalPath[finalPath.length - 1], type: 'END' as const };
-                 localStorage.setItem('draftboard_saved_map', JSON.stringify(finalPath));
-                 alert(t().builder.savedSuccess);
-               } else {
-                 alert(t().builder.tooShort);
-               }
-            }}
-            className="w-full flex items-center justify-center gap-2 p-3 font-bold bg-amber-500 hover:bg-amber-400 text-white shadow-lg shadow-amber-500/20 hover:scale-[1.02] active:scale-95 transition-all"
-          >
-            <Download size={18} /> {t().builder.saveLocal}
-          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button 
+              onClick={() => {
+                 if (path.length > 5) {
+                   const finalPath = [...path];
+                   finalPath[finalPath.length - 1] = { ...finalPath[finalPath.length - 1], type: 'END' as const };
+                   localStorage.setItem('draftboard_saved_map', JSON.stringify(finalPath));
+                   
+                   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(finalPath));
+                   const downloadNode = document.createElement('a');
+                   downloadNode.setAttribute("href", dataStr);
+                   downloadNode.setAttribute("download", "draftboard_map.json");
+                   document.body.appendChild(downloadNode);
+                   downloadNode.click();
+                   downloadNode.remove();
+                 } else {
+                   alert(t().builder.tooShort);
+                 }
+              }}
+              className="flex items-center justify-center gap-2 p-3 font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors text-xs"
+            >
+              <Download size={16} /> Xuất Map
+            </button>
+            <button 
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center justify-center gap-2 p-3 font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors text-xs"
+            >
+              <Upload size={16} /> Nhập Map
+            </button>
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              style={{ display: 'none' }} 
+              accept=".json"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                  try {
+                    const json = JSON.parse(evt.target?.result as string);
+                    if (Array.isArray(json) && json.length > 0 && typeof json[0].stepIndex === 'number') {
+                      loadMap(json as Tile[]);
+                      alert("Nhập map thành công!");
+                    } else {
+                      alert("File JSON không hợp lệ.");
+                    }
+                  } catch (err) {
+                    alert("Lỗi đọc file JSON.");
+                  }
+                };
+                reader.readAsText(file);
+                if (fileInputRef.current) fileInputRef.current.value = '';
+              }}
+            />
+          </div>
           <button onClick={onCancel} className="w-full text-slate-400 hover:text-slate-700 text-sm font-bold pt-2">
             {t().builder.cancel}
           </button>
         </div>
       </div>
 
+      {/* Main Board Area */}
       <div className="flex-1 max-w-3xl aspect-square bg-white game-card border-4 border-slate-200 relative overflow-hidden flex items-center justify-center">
+        {/* RANDOM_FILL instructions overlay */}
+        {tool === 'RANDOM_FILL' && !showRandomModal && (
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-indigo-600 text-white px-6 py-3 rounded-full font-bold shadow-lg animate-bounce pointer-events-none">
+            Click vào đường đi để điền ngẫu nhiên thẻ {CARD_DEFINITIONS.get(selectedCard)?.name}!
+          </div>
+        )}
+
         <div 
           className="w-full h-full relative"
           style={{
@@ -197,7 +305,7 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
           })}
 
           {path.map((tile, idx) => {
-            const { x, y, type, stepIndex } = tile;
+            const { x, y, type, stepIndex, cardId } = tile;
             let bgColor = 'bg-slate-200';
             let content: React.ReactNode = <span className="text-slate-500 font-bold text-[10px] opacity-70">{stepIndex}</span>;
 
@@ -209,9 +317,16 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
             } else if (type === 'END' || isLastTile) {
               bgColor = 'bg-rose-500';
               content = <span className="font-black text-white text-[10px]">{t().board.tileOut}</span>;
-            } else if (type === 'MYSTERY') {
-              bgColor = 'bg-purple-500';
-              content = <Sparkles size={16} className="text-white" />;
+            } else if (cardId || type === 'MYSTERY') {
+              // Backward compatibility for type === 'MYSTERY'
+              const actualCardId = cardId || (type === 'MYSTERY' ? 'MYSTERY' : undefined);
+              if (actualCardId) {
+                const def = CARD_DEFINITIONS.get(actualCardId);
+                if (def) {
+                   bgColor = def.tier === 'PURPLE' ? 'bg-purple-500' : def.tier === 'RED' ? 'bg-rose-500' : 'bg-emerald-500';
+                   content = <span className="text-xl" title={def.name}>{def.icon}</span>;
+                }
+              }
             }
 
             return (
@@ -235,6 +350,54 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
           {renderArrows()}
         </div>
       </div>
+
+      {/* Random Fill Modal */}
+      {showRandomModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm">
+          <div className="bg-white game-card p-6 w-[400px] flex flex-col gap-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-black text-indigo-600">Cấu Hình Random Fill</h3>
+              <button onClick={() => { setShowRandomModal(false); setTool('DRAW'); }} className="text-slate-400 hover:text-slate-600">
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-bold text-slate-500 mb-2 block">Chọn Thẻ Cần Điền</label>
+                <select 
+                  value={selectedCard}
+                  onChange={(e) => setSelectedCard(e.target.value as CardId)}
+                  className="w-full p-3 game-card bg-slate-50 text-slate-800 font-bold outline-none border-2 border-slate-200 focus:border-indigo-500"
+                >
+                  {cardsList.map(c => (
+                    <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-sm font-bold text-slate-500 mb-2 block">Số lượng thẻ</label>
+                <input 
+                  type="number"
+                  min="1"
+                  max="50"
+                  value={randomCount}
+                  onChange={(e) => setRandomCount(parseInt(e.target.value) || 1)}
+                  className="w-full p-3 game-card bg-slate-50 text-slate-800 font-bold outline-none border-2 border-slate-200 focus:border-indigo-500"
+                />
+              </div>
+            </div>
+
+            <button 
+              onClick={() => setShowRandomModal(false)}
+              className="w-full py-3 bg-indigo-600 text-white font-bold game-card hover:bg-indigo-500"
+            >
+              Lưu & Bắt đầu điền
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
