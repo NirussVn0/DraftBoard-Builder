@@ -142,6 +142,7 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
                if (path.length > 5 && path[path.length - 1].type !== 'START') {
                  const finalPath = [...path];
                  finalPath[finalPath.length - 1] = { ...finalPath[finalPath.length - 1], type: 'END' };
+                 localStorage.setItem('draftboard_saved_map', JSON.stringify(finalPath));
                  onSave(finalPath);
                } else {
                  alert(t().builder.invalidMap);

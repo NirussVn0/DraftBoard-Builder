@@ -6,6 +6,7 @@ export const vi: LocaleStrings = {
     subtitle: 'Chọn chế độ chơi',
     playDefault: 'Chơi Map Mặc Định',
     playSaved: 'Chơi Map Đã Lưu',
+    resumeGame: 'Chơi Tiếp Ván Cũ',
     createBuilder: 'Tạo Map Mới',
   },
   home: {
@@ -30,9 +31,17 @@ export const vi: LocaleStrings = {
     undoButton: 'Lùi Lại',
   },
   mystery: {
-    title: 'Thẻ Bí Ẩn',
-    backLabel: 'BÍ ẨN',
+    title: 'Mystery Card',
+    backLabel: 'MYSTERY',
     stepsLabel: (n) => n > 0 ? `+${n} BƯỚC` : `${n} BƯỚC`,
+  },
+  mapSettings: {
+    title: 'Cài Đặt Game',
+    diceCount: 'Số Xúc Xắc',
+    mysteryRange: 'Biên Độ Mystery Card',
+    enableKick: 'Tính Năng Đá (Kick)',
+    on: 'Bật',
+    off: 'Tắt',
   },
   victory: {
     title: 'CHIẾN THẮNG!',
@@ -47,7 +56,7 @@ export const vi: LocaleStrings = {
     tools: 'Công Cụ',
     drawPath: 'Vẽ Đường',
     eraser: 'Xóa',
-    mysteryCard: 'Thẻ Bí Ẩn',
+    mysteryCard: 'Mystery Card',
     clearMap: 'Xóa Map',
     savePlay: 'Lưu & Chơi',
     saveLocal: 'Lưu Map',

@@ -68,9 +68,9 @@ MENU ──► BUILDER ──► PLAYING (SETUP) ──► PLAYING (GAME)
 
 | AppMode | Screen | Transition |
 |---------|--------|-----------|
-| `MENU` | `WelcomeMenu` — choose "Play Default Map" or "Create Map Builder" | User selects mode |
-| `BUILDER` | `MapBuilderUI` — draw & save a custom path | Save → PLAYING, Cancel → MENU |
-| `PLAYING` | `HomeMenu` (SETUP) → `BoardGrid` + `PlayerStatsPanel` + game loop | Game completes → restart → MENU |
+| `MENU` | `WelcomeMenu` — 4 buttons: Create Map, Play Saved, Resume Game, Play Default | User selects mode |
+| `BUILDER` | `MapBuilderUI` — draw & save a custom path | Save → PLAYING (auto-saves to localStorage), Cancel → MENU |
+| `PLAYING` | `HomeMenu` (SETUP with Map Settings) → `BoardGrid` + `PlayerStatsPanel` + game loop | Home → saves game state → MENU |
 
 ---
 
@@ -146,7 +146,7 @@ User clicks "ROLL DICE" (bottom-center button)
 ## Board Layout — Pixel-Based Coordinate System
 
 - **TILE_PX = 64**: Shared constant between `BoardGrid` and `AnimationService`.
-- **Fullscreen**: Board container is `w-screen h-screen` with `overflow-hidden`.
+- **Fullscreen**: Board container is `w-screen h-screen`. No `overflow-hidden` on board/camera containers (tokens must be free to overflow cell boundaries).
 - **Sharp Edges**: All tiles use strict 0 border-radius (rectangular cardboard aesthetic).
 - **Transparent BG**: Board background is transparent; page bg (`bg-slate-50`) shows through.
 - **Token Z-index**: Tokens at `z-30`, tiles at `z-10` — tokens always render on top.
@@ -222,3 +222,25 @@ Final position (pixel-based):
 ### ✅ Audio Leak & UX Hotfix (Ticket 3.6)
 - Lazy Howl init with `onloaderror` guard. Emoji avatars via `emoji-picker-react`.
 - Dice scrambling via anime.js `update` callback.
+
+### ✅ Forgotten Features & Menu Flow (Ticket 3.7)
+- **Z-Index Fix**: Removed `overflow-hidden` from `BoardGrid` and `CameraWrapper` to prevent token clipping.
+- **Mystery Card Rename**: All "Thẻ Bí Ẩn" / "BÍ ẨN" → "Mystery Card" / "MYSTERY" (kept English in Vietnamese locale).
+- **Map Settings UI**: HomeMenu now includes pre-game settings: Dice Count (1-5), Mystery Range (±3/±6), Kick toggle.
+- **Save/Load Flow**: Map auto-saved on "Lưu & Chơi". Game state saved to `draftboard_saved_game` on Home exit.
+- **WelcomeMenu 4-button layout**: Create Map, Play Saved Map (conditional), Resume Game (conditional), Play Default.
+- **GameEngine.loadState()**: Restores full GameState from localStorage for resume functionality.
+
+---
+
+## Epic 4 — "Cuộc Đua Đường Đời" (PLANNED)
+
+> Full architecture: `docs/brainstorm/epic_4_architecture.md`
+
+Key additions:
+- **Event Deck**: 13 cards across 3 tiers (Green/Red/Purple) with Strategy Pattern registry.
+- **Event Queue**: Async queue system replacing direct evaluateCell() mutations.
+- **Player Buffs**: Shield, Reflect, Tribute, Dungeon, Frozen status effects.
+- **Host Mode**: Duel card + Quiz tiles for classroom use.
+- **Biome Decor**: Seeded random environment layer with emoji decorations.
+- **Map Share**: LZ-String URL compression for serverless map sharing.

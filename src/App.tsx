@@ -24,6 +24,7 @@ import { t } from './locales'
 import type { Tile } from './core/MapBuilderState'
 import { generateZigzagMap, MAP_SIZE } from './core/MapBuilderState'
 import { BOARD_SIZE } from './core/Pathfinding'
+import type { MapSettings } from './core/SettingsState'
 
 type AppMode = 'MENU' | 'BUILDER' | 'PLAYING';
 
@@ -123,8 +124,8 @@ function App() {
     return () => clearTimeout(timeout);
   }, [appMode, gameState.phase, gameState.activePlayerIndex, gameState.map]);
 
-  const handleStartGame = (players: { name: string; color: string; emoji: string }[]) => {
-    gameEngine.startGame(players, pendingMap || undefined)
+  const handleStartGame = (players: { name: string; color: string; emoji: string }[], mapSettings: MapSettings) => {
+    gameEngine.startGame(players, pendingMap || undefined, mapSettings)
   }
 
   const handleRollDice = () => {
@@ -191,6 +192,9 @@ function App() {
   const handleGoHome = () => {
     const confirmed = window.confirm(t().common.confirmExit);
     if (confirmed) {
+      if (appMode === 'PLAYING' && gameState.phase !== 'SETUP') {
+        localStorage.setItem('draftboard_saved_game', JSON.stringify(gameEngine.getState()));
+      }
       gameEngine.resetGame();
       setAppMode('MENU');
     }
@@ -203,7 +207,19 @@ function App() {
   // ── MENU ──
   if (appMode === 'MENU') {
     return <WelcomeMenu onSelectMode={(mode) => {
-      if (mode === 'PLAY_SAVED') {
+      if (mode === 'RESUME') {
+        const savedGame = localStorage.getItem('draftboard_saved_game');
+        if (savedGame) {
+          try {
+            const parsedState = JSON.parse(savedGame);
+            gameEngine.loadState(parsedState);
+            setPendingMap(parsedState.map);
+            setAppMode('PLAYING');
+          } catch {
+            alert(t().common.savedMapError);
+          }
+        }
+      } else if (mode === 'PLAY_SAVED') {
         const savedData = localStorage.getItem('draftboard_saved_map');
         if (savedData) {
           try {
@@ -220,7 +236,7 @@ function App() {
           setAppMode('PLAYING');
         }
       } else {
-        setAppMode(mode);
+        setAppMode(mode as AppMode);
         if (mode === 'PLAYING') {
           setPendingMap(generateZigzagMap());
         }

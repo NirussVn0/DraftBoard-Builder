@@ -1,13 +1,14 @@
 import React from 'react';
-import { Play, PenTool, FolderOpen } from 'lucide-react';
+import { Play, PenTool, FolderOpen, History } from 'lucide-react';
 import { t } from '../locales';
 
 interface WelcomeMenuProps {
-  onSelectMode: (mode: 'PLAYING' | 'BUILDER' | 'PLAY_SAVED') => void;
+  onSelectMode: (mode: 'PLAYING' | 'BUILDER' | 'PLAY_SAVED' | 'RESUME') => void;
 }
 
 export const WelcomeMenu: React.FC<WelcomeMenuProps> = ({ onSelectMode }) => {
   const hasSavedMap = !!localStorage.getItem('draftboard_saved_map');
+  const hasSavedGame = !!localStorage.getItem('draftboard_saved_game');
   const s = t().welcome;
 
   return (
@@ -19,15 +20,19 @@ export const WelcomeMenu: React.FC<WelcomeMenuProps> = ({ onSelectMode }) => {
         <p className="text-slate-500 font-medium mb-12">{s.subtitle}</p>
 
         <div className="space-y-4">
+          {/* Nút 1: Tạo Map Mới (luôn hiện) */}
           <button
-            onClick={() => onSelectMode('PLAYING')}
+            id="btn-create-map"
+            onClick={() => onSelectMode('BUILDER')}
             className="w-full flex items-center justify-center gap-3 py-5 game-card font-bold bg-indigo-600 hover:bg-indigo-500 text-white hover:-translate-y-1 transition-all"
           >
-            <Play size={24} /> {s.playDefault}
+            <PenTool size={24} /> {s.createBuilder}
           </button>
 
+          {/* Nút 2: Chơi Map Đã Lưu (chỉ hiện khi có draftboard_saved_map) */}
           {hasSavedMap && (
             <button
+              id="btn-play-saved"
               onClick={() => onSelectMode('PLAY_SAVED')}
               className="w-full flex items-center justify-center gap-3 py-5 game-card font-bold bg-amber-500 hover:bg-amber-400 text-white hover:-translate-y-1 transition-all"
             >
@@ -35,11 +40,24 @@ export const WelcomeMenu: React.FC<WelcomeMenuProps> = ({ onSelectMode }) => {
             </button>
           )}
 
+          {/* Nút 3: Chơi Tiếp Ván Cũ (chỉ hiện khi có draftboard_saved_game) */}
+          {hasSavedGame && (
+            <button
+              id="btn-resume-game"
+              onClick={() => onSelectMode('RESUME')}
+              className="w-full flex items-center justify-center gap-3 py-5 game-card font-bold bg-emerald-600 hover:bg-emerald-500 text-white hover:-translate-y-1 transition-all"
+            >
+              <History size={24} /> {s.resumeGame}
+            </button>
+          )}
+
+          {/* Nút Chơi Map Mặc Định (fallback) */}
           <button
-            onClick={() => onSelectMode('BUILDER')}
-            className="w-full flex items-center justify-center gap-3 py-5 game-card font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 hover:-translate-y-1 transition-all"
+            id="btn-play-default"
+            onClick={() => onSelectMode('PLAYING')}
+            className="w-full flex items-center justify-center gap-3 py-4 game-card font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 hover:-translate-y-1 transition-all"
           >
-            <PenTool size={24} /> {s.createBuilder}
+            <Play size={22} /> {s.playDefault}
           </button>
         </div>
       </div>

@@ -31,7 +31,7 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map }) => {
 
   return (
     <div
-      className="relative bg-transparent mx-auto overflow-hidden"
+      className="relative bg-transparent mx-auto"
       style={{ width: boardPx, height: boardPx, minWidth: boardPx, minHeight: boardPx }}
     >
 

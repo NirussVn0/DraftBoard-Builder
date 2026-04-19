@@ -4,6 +4,7 @@ export interface LocaleStrings {
     subtitle: string;
     playDefault: string;
     playSaved: string;
+    resumeGame: string;
     createBuilder: string;
   };
   home: {
@@ -31,6 +32,14 @@ export interface LocaleStrings {
     title: string;
     backLabel: string;
     stepsLabel: (n: number) => string;
+  };
+  mapSettings: {
+    title: string;
+    diceCount: string;
+    mysteryRange: string;
+    enableKick: string;
+    on: string;
+    off: string;
   };
   victory: {
     title: string;
