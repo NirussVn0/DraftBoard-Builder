@@ -143,7 +143,7 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map, envMap, biom
           <div
             key={p.id}
             id={p.id}
-            className="absolute z-30 rounded-full shadow-lg flex items-center justify-center ring-2 ring-white"
+            className={`absolute z-30 rounded-full shadow-lg flex items-center justify-center ring-2 ring-white ${p.buffs.some(b => b.id === 'FROZEN') ? 'grayscale opacity-80' : ''}`}
             style={{
               width: tokenPx,
               height: tokenPx,

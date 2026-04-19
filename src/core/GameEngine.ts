@@ -119,7 +119,10 @@ class GameEngine {
     newPlayers[this.state.activePlayerIndex] = {
       ...player,
       buffs: player.buffs
-        .map(b => ({ ...b, turnsRemaining: b.turnsRemaining > 0 ? b.turnsRemaining - 1 : b.turnsRemaining }))
+        .map(b => {
+           if (wasFrozen && b.id === 'FROZEN') return b;
+           return { ...b, turnsRemaining: b.turnsRemaining > 0 ? b.turnsRemaining - 1 : b.turnsRemaining };
+        })
         .filter(b => b.turnsRemaining !== 0) // -1 is infinite
     };
 
@@ -143,6 +146,16 @@ class GameEngine {
 
   public concludeFrozenSkip(): void {
     if (this.state.phase !== 'EVENT_FROZEN_SKIP') return;
+    
+    // Decrement FROZEN now
+    const player = this.state.players[this.state.activePlayerIndex];
+    if (player) {
+      const newBuffs = player.buffs
+        .map(b => b.id === 'FROZEN' ? { ...b, turnsRemaining: b.turnsRemaining - 1 } : b)
+        .filter(b => b.turnsRemaining !== 0);
+      this.state.players = this.state.players.map(p => p.id === player.id ? { ...p, buffs: newBuffs } : p);
+    }
+    
     this.advanceTurn();
     this.notify();
   }
@@ -260,6 +273,7 @@ class GameEngine {
     }
 
     let willAdvanceTurn = true;
+    let hasKick = false;
 
     // Check Kick
     if (this.state.mapSettings.kickDistance > 0) {
@@ -276,11 +290,12 @@ class GameEngine {
            kickedId: collidedPlayer.id
         });
         willAdvanceTurn = false;
+        hasKick = true;
       }
     }
 
     // Check Card
-    if (this.state.map) {
+    if (!hasKick && this.state.map) {
       const currentTile = this.state.map[finalPosition];
       if (currentTile) {
         // Backward compatibility for type === 'MYSTERY'
@@ -528,8 +543,21 @@ class GameEngine {
         this.state.eventQueue.shift();
         this.removeBuff(event.targetId, 'LIFEBUOY');
         this.state = { ...this.state, phase: 'EVENT_LIFEBUOY_BREAK' };
+        
+        const kicker = this.state.players.find(p => p.id === event.attackerId);
+        if (kicker && this.state.map) {
+           const tile = this.state.map[kicker.position];
+           const actualCardId = tile?.cardId || (tile?.type === 'MYSTERY' ? 'MYSTERY' : undefined);
+           if (actualCardId) {
+              this.state.eventQueue.unshift({ type: 'TRIGGER_TILE_CARD', cardId: actualCardId });
+           } else {
+              this.state.eventQueue.unshift({ type: 'ADVANCE_TURN' });
+           }
+        } else {
+           this.state.eventQueue.unshift({ type: 'ADVANCE_TURN' });
+        }
+
         this.notify();
-        // UI calls continueQueue()
         break;
       }
 
@@ -537,11 +565,15 @@ class GameEngine {
         this.state.eventQueue.shift();
         const attacker = this.state.players.find(p => p.id === event.attackerId);
         if (attacker) {
-           this.state.eventQueue.unshift({ type: 'TELEPORT_PLAYER', playerId: attacker.id, position: Math.max(0, attacker.position - event.damage) });
+           this.state.eventQueue.unshift(
+              { type: 'TELEPORT_PLAYER', playerId: attacker.id, position: Math.max(0, attacker.position - event.damage) },
+              { type: 'ADVANCE_TURN' }
+           );
+        } else {
+           this.state.eventQueue.unshift({ type: 'ADVANCE_TURN' });
         }
         this.state = { ...this.state, phase: 'EVENT_COUNTER' };
         this.notify();
-        // UI calls continueQueue()
         break;
       }
 
