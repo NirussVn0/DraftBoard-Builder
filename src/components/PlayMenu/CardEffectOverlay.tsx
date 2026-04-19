@@ -10,14 +10,25 @@ interface CardEffectOverlayProps {
 
 export const CardEffectOverlay: React.FC<CardEffectOverlayProps> = ({ card, resolution, onComplete }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  
+  const hasAnimated = useRef(false);
+  let memeSrc = '';
+  if (card.id === 'DEADLINE_BOMB') memeSrc = '/assets/memes/megumin-explosion.gif';
+  if (card.id === 'ZA_WARUDO') memeSrc = '/assets/memes/dio-zawarudo.mp4';
+  if (card.id === 'AMENOTEJIKARA') memeSrc = '/assets/memes/isekai.gif';
+  if (card.id === 'COUNTER_ARGUMENT') memeSrc = '/assets/memes/meliodas-counter.gif';
+  if (card.id === 'BLACKOUT') memeSrc = '/assets/memes/blackout.gif';
+  if (card.id === 'POP_QUIZ') memeSrc = '/assets/memes/domain-expansion.gif';
+
   useEffect(() => {
+    if (hasAnimated.current) return;
+    hasAnimated.current = true;
+
     const container = containerRef.current;
     if (!container) return;
 
     const tl = anime.timeline({
       complete: () => {
-         setTimeout(onComplete, 1500); // Read time
+         setTimeout(onComplete, memeSrc ? 3500 : 1500); // Read time longer if meme
       }
     });
 
@@ -49,15 +60,7 @@ export const CardEffectOverlay: React.FC<CardEffectOverlayProps> = ({ card, reso
          easing: 'easeInOutSine'
        });
     }
-  }, [card, resolution, onComplete]);
-
-  let memeSrc = '';
-  if (card.id === 'DEADLINE_BOMB') memeSrc = '/assets/memes/megumin-explosion.gif';
-  if (card.id === 'ZA_WARUDO') memeSrc = '/assets/memes/dio-zawarudo.gif';
-  if (card.id === 'AMENOTEJIKARA') memeSrc = '/assets/memes/ninja-teleport.gif';
-  if (card.id === 'COUNTER_ARGUMENT') memeSrc = '/assets/memes/meliodas-counter.gif';
-  if (card.id === 'NINJA_COPY') memeSrc = '/assets/memes/sasuke-swap.gif';
-  if (card.id === 'POP_QUIZ') memeSrc = '/assets/memes/domain-expansion.gif';
+  }, [card, resolution, onComplete, memeSrc]);
 
   // Fallback styling for the banner
   let bannerColor = 'bg-slate-800 border-slate-500 text-white';
@@ -67,22 +70,30 @@ export const CardEffectOverlay: React.FC<CardEffectOverlayProps> = ({ card, reso
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-       {card.tier === 'RED' && <div className="absolute inset-0 bg-red-500/20 mix-blend-multiply" />}
-       {card.tier === 'PURPLE' && <div className="absolute inset-0 bg-purple-500/20 mix-blend-multiply" />}
+       {memeSrc && memeSrc.match(/\.(mp4|webm)$/i) ? (
+         <video 
+           src={memeSrc} 
+           autoPlay 
+           loop 
+           playsInline
+           className="fixed inset-0 w-full h-full object-cover z-0" 
+         />
+       ) : memeSrc ? (
+         <img 
+           src={memeSrc} 
+           alt={card.name} 
+           className="fixed inset-0 w-full h-full object-cover z-0" 
+         />
+       ) : null}
+       {card.tier === 'RED' && <div className="absolute inset-0 bg-red-500/40 mix-blend-multiply z-0" />}
+       {card.tier === 'PURPLE' && <div className="absolute inset-0 bg-purple-500/40 mix-blend-multiply z-0" />}
 
-       <div ref={containerRef} className="pointer-events-auto flex flex-col items-center gap-6 z-10 w-full max-w-2xl px-4">
-          {memeSrc && (
-             <img 
-               src={memeSrc} 
-               alt={card.name} 
-               className="w-full h-64 object-cover rounded-xl shadow-[0_0_30px_rgba(0,0,0,0.5)] border-4 border-white/20" 
-             />
-          )}
-          <div className={`w-full backdrop-blur-md p-6 game-card text-center border-4 shadow-2xl ${bannerColor}`}>
+       <div ref={containerRef} className="pointer-events-auto relative z-10 flex flex-col items-center justify-end pb-20 w-full h-full px-4">
+          <div className={`w-full max-w-2xl backdrop-blur-md p-6 rounded-3xl text-center border-4 shadow-2xl animate-bounce-slight ${bannerColor}`}>
              <h3 className="text-3xl font-black uppercase mb-2">
                {card.icon} {card.name} Kích Hoạt!
              </h3>
-             <p className="text-xl font-bold opacity-90">
+             <div className="text-xl font-bold opacity-90">
                 {resolution.type === 'MOVE' && (
                   <div className={`mt-4 inline-block px-6 py-2 rounded-xl text-white font-black text-2xl shadow-xl ${resolution.steps! > 0 ? 'bg-emerald-500 border-emerald-400' : 'bg-rose-500 border-rose-400'} border-4`}>
                     {resolution.steps! > 0 ? `Tiến ${resolution.steps} bước` : `Lùi ${Math.abs(resolution.steps!)} bước`}
@@ -93,7 +104,7 @@ export const CardEffectOverlay: React.FC<CardEffectOverlayProps> = ({ card, reso
                 {resolution.type === 'SWAP' && `Hiệu ứng: Hoán đổi vị trí!`}
                 {resolution.type === 'FREEZE' && `Hiệu ứng: Đóng băng ${resolution.freezeTurns} lượt!`}
                 {resolution.type === 'QUIZ' && `Hiệu ứng: Bành trướng lãnh địa! Solo 1v1!`}
-             </p>
+             </div>
           </div>
        </div>
     </div>

@@ -37,9 +37,8 @@ export const PhysicalDice: React.FC<PhysicalDiceProps> = ({
       AnimationService.animateSkyDropDice(
         elementId,
         () => {
-          // complete — lock to a random d6 face (visual only)
-          const face = Math.floor(Math.random() * 6) + 1;
-          setDisplayValue(face);
+          // complete — lock to the actual rolled face
+          setDisplayValue(diceValue);
           setLanded(true);
           audioService.playDiceRoll();
           onLanded();

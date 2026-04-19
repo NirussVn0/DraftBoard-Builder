@@ -112,21 +112,7 @@ class GameEngine {
     const player = this.state.players[this.state.activePlayerIndex];
     if (!player) return;
 
-    let skipTurn = false;
-    let dungeonRoll = false;
-
-    // Check FROZEN
-    const frozen = player.buffs.find(b => b.id === 'FROZEN');
-    if (frozen) {
-      this.removeBuff(player.id, 'FROZEN');
-      skipTurn = true;
-    }
-
-    // Check DETENTION
-    const dungeon = player.buffs.find(b => b.id === 'DETENTION');
-    if (dungeon && !skipTurn) {
-      dungeonRoll = true;
-    }
+    const wasFrozen = player.buffs.some(b => b.id === 'FROZEN');
 
     // Tick buffs
     const newPlayers = [...this.state.players];
@@ -139,17 +125,25 @@ class GameEngine {
 
     this.state = { ...this.state, players: newPlayers };
 
-    if (skipTurn) {
-      this.advanceTurn();
+    if (wasFrozen) {
+      this.state = { ...this.state, phase: 'EVENT_FROZEN_SKIP' };
+      this.notify();
       return;
     }
 
-    if (dungeonRoll) {
+    const hasDetention = newPlayers[this.state.activePlayerIndex].buffs.some(b => b.id === 'DETENTION');
+    if (hasDetention) {
       this.state = { ...this.state, phase: 'EVENT_DETENTION_ROLL' };
       this.notify();
       return;
     }
 
+    this.notify();
+  }
+
+  public concludeFrozenSkip(): void {
+    if (this.state.phase !== 'EVENT_FROZEN_SKIP') return;
+    this.advanceTurn();
     this.notify();
   }
 
@@ -180,12 +174,16 @@ class GameEngine {
     this.pushSnapshot();
     const count = this.state.mapSettings.diceCount || 1;
     let total = 0;
+    const rolls: number[] = [];
     for (let i = 0; i < count; i++) {
-      total += Math.floor(Math.random() * 6) + 1;
+      const roll = Math.floor(Math.random() * 6) + 1;
+      rolls.push(roll);
+      total += roll;
     }
     this.state = {
       ...this.state,
       diceValue: total,
+      diceRolls: rolls,
       phase: 'ROLLING_DICE',
     };
     this.notify();

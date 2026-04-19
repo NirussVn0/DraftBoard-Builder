@@ -14,7 +14,7 @@ const BUFF_ICONS: Record<string, { icon: string; label: string }> = {
   COUNTER_ARGUMENT: { icon: '💬', label: 'Phản Biện' },
   PARASITE:         { icon: '🦠', label: 'Ăn Bám' },
   DETENTION:        { icon: '⛓️', label: 'Cấm Túc' },
-  FROZEN:           { icon: '🧊', label: 'Đóng Băng' },
+  FROZEN:           { icon: '⏳', label: 'Đóng Băng Thời Gian' },
 };
 
 export const PlayerStatsPanel: React.FC<PlayerStatsPanelProps> = ({
@@ -38,7 +38,7 @@ export const PlayerStatsPanel: React.FC<PlayerStatsPanelProps> = ({
             }}
           >
             <div
-              className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-base"
+              className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-base ${player.buffs.some(b => b.id === 'FROZEN') ? 'grayscale' : ''}`}
               style={{ backgroundColor: player.color }}
             >
               {player.emoji || player.name.charAt(0).toUpperCase()}

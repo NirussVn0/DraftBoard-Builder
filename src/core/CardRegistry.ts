@@ -132,9 +132,9 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
   }],
 
   ['AMENOTEJIKARA', {
-    id: 'AMENOTEJIKARA', tier: 'PURPLE', icon: '🔄',
-    name: 'Chuyển Sinh',
-    description: 'Tráo đổi hoàn toàn vị trí với một người chơi random!',
+    id: 'AMENOTEJIKARA', tier: 'PURPLE', icon: '🚛',
+    name: 'Isekai',
+    description: 'Bị Truck-kun tông! Tráo đổi hoàn toàn vị trí với một người chơi random!',
     resolve: (ctx) => {
       const others = ctx.allPlayers.filter(p => p.id !== ctx.activePlayer.id);
       const target = others[Math.floor(Math.random() * others.length)];

@@ -6,6 +6,8 @@ import { t } from '../../locales';
 import { CARD_DEFINITIONS } from '../../core/CardRegistry';
 import type { CardId } from '../../core/CardTypes';
 import EmojiPicker from 'emoji-picker-react';
+import { CardSettingsModal } from './CardSettingsModal';
+import { DEFAULT_DECK } from '../../core/SettingsState';
 
 interface MapBuilderUIProps {
   onSave: (path: Tile[]) => void;
@@ -17,6 +19,7 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
   const [tool, setTool] = React.useState<'DRAW' | 'ERASE' | 'CARD_PAINT' | 'ERASE_CARD' | 'RANDOM_FILL' | 'PAINT_ENV' | 'ERASE_ENV'>('DRAW');
   const [selectedCard, setSelectedCard] = React.useState<CardId>('MYSTERY');
   const [selectedEmoji, setSelectedEmoji] = React.useState<string>('🌲');
+  const [showCardSettings, setShowCardSettings] = useState<string | null>(null);
   const [isDragging, setIsDragging] = React.useState(false);
   
   const [showRandomModal, setShowRandomModal] = useState(false);
@@ -202,7 +205,9 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
                     <span className="text-xl">{card.icon}</span>
                     <span className="truncate">{card.name}</span>
                   </button>
-                  <button className="p-2 game-card bg-slate-50 hover:bg-slate-200 text-slate-500" title="Cài đặt thẻ (Comming soon)">
+                  <button 
+                    onClick={() => setShowCardSettings(card.id)}
+                    className="p-2 game-card bg-slate-50 hover:bg-slate-200 text-slate-500" title="Cài đặt thẻ">
                     <Settings2 size={18} />
                   </button>
                 </div>
@@ -258,10 +263,7 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
                  finalPath[finalPath.length - 1] = { ...finalPath[finalPath.length - 1], type: 'END' };
                  const finalMap = { path: finalPath, env };
                  localStorage.setItem('draftboard_saved_map', JSON.stringify(finalMap));
-                 onSave(finalPath); // wait, onSave expects Tile[], I'll keep it simple or change it later. Actually, the user's issue says onSave needs to support env.
-                 // let's change onSave below. Wait, I shouldn't break `App.tsx` onSave.
-                 // I will store the whole MapState in localStorage. `App.tsx` will read it.
-                 // But onSave currently takes `Tile[]`. I can pass it. Wait, the env won't be saved if I pass Tile[] to onSave!
+                 onSave(finalPath); 
                } else {
                  alert(t().builder.invalidMap);
                }
@@ -316,7 +318,6 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
                       loadMap(json);
                       alert("Nhập map thành công!");
                     } else if (Array.isArray(json)) {
-                      // Backward compatibility with Tile[]
                       loadMap({ path: json, env: {} });
                       alert("Nhập map thành công (Legacy format)!");
                     } else {
@@ -418,7 +419,6 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
               bgColor = 'bg-rose-500';
               content = <span className="font-black text-white text-[10px]">{t().board.tileOut}</span>;
             } else if (cardId || type === 'MYSTERY') {
-              // Backward compatibility for type === 'MYSTERY'
               const actualCardId = cardId || (type === 'MYSTERY' ? 'MYSTERY' : undefined);
               if (actualCardId) {
                 const def = CARD_DEFINITIONS.get(actualCardId);
@@ -497,6 +497,24 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
             </button>
           </div>
         </div>
+      )}
+
+      {showCardSettings && (
+        <CardSettingsModal
+          cardId={showCardSettings as any}
+          initialConfig={(() => {
+            try {
+              const saved = localStorage.getItem('draftboard_map_settings');
+              if (saved) {
+                const parsed = JSON.parse(saved);
+                if (parsed && parsed.deckConfig) return { ...DEFAULT_DECK, ...parsed.deckConfig };
+              }
+            } catch(e) {}
+            return DEFAULT_DECK;
+          })()}
+          onSave={() => setShowCardSettings(null)}
+          onClose={() => setShowCardSettings(null)}
+        />
       )}
     </div>
   );

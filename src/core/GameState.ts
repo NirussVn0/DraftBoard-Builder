@@ -31,6 +31,7 @@ export type GamePhase =
   | 'EVENT_MOVE_ANIMATION'
   | 'EVENT_TELEPORT_ANIMATION'
   | 'EVENT_SWAP_ANIMATION'
+  | 'EVENT_FROZEN_SKIP'
   | 'VICTORY';
 
 export interface KickEvent {
@@ -53,6 +54,7 @@ export interface GameState {
   activePlayerIndex: number;
   winner: Player | null;
   diceValue: number;
+  diceRolls?: number[];
   map: Tile[] | null;
   envMap: { id: string; x: number; y: number; emoji: string; }[];
   mapSettings: MapSettings;

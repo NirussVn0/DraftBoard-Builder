@@ -4,6 +4,7 @@ import { DiceResultBanner } from './DiceResultBanner';
 
 interface DiceOverlayProps {
   diceValue: number;
+  diceRolls: number[];
   diceCount: number;
   activeColor: string;
   onComplete: () => void;
@@ -15,7 +16,7 @@ interface DiceOverlayProps {
  * pause (200ms) → Banner slides in (300ms) → hold (800ms) → close.
  */
 export const DiceOverlay: React.FC<DiceOverlayProps> = ({
-  diceValue, diceCount, activeColor, onComplete
+  diceValue, diceRolls, diceCount, activeColor, onComplete
 }) => {
   const [showBanner, setShowBanner] = useState(false);
   const landedCount = useRef(0);
@@ -44,7 +45,7 @@ export const DiceOverlay: React.FC<DiceOverlayProps> = ({
             <PhysicalDice
               key={i}
               diceIndex={i}
-              diceValue={diceValue}
+              diceValue={diceRolls[i] || 1}
               activeColor={activeColor}
               onLanded={handleDiceLanded}
             />

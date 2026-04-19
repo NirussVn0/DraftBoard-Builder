@@ -22,6 +22,7 @@ import { WelcomeMenu } from './components/WelcomeMenu'
 import { MapBuilderUI } from './components/MapBuilder/MapBuilderUI'
 import { SettingsPanel } from './components/Settings/SettingsPanel'
 import { KickOverlay } from './components/PlayMenu/KickOverlay'
+import { FrozenSkipOverlay } from './components/PlayMenu/FrozenSkipOverlay'
 import { MapShareService } from './services/MapShareService'
 
 import { Trophy, RefreshCcw, Home, Settings, Dices, SkipForward, Undo2 } from 'lucide-react'
@@ -373,6 +374,7 @@ function App() {
       {showDiceOverlay && (
         <DiceOverlay
           diceValue={gameState.diceValue}
+          diceRolls={gameState.diceRolls || [gameState.diceValue]}
           diceCount={gameState.mapSettings.diceCount || 1}
           activeColor={activePlayer?.color || '#6366f1'}
           onComplete={handleDiceAnimationComplete}
@@ -426,6 +428,14 @@ function App() {
           />
         );
       })()}
+
+      {/* Frozen Skip Overlay */}
+      {gameState.phase === 'EVENT_FROZEN_SKIP' && (
+        <FrozenSkipOverlay
+          player={gameState.players[gameState.activePlayerIndex]}
+          onComplete={() => gameEngine.concludeFrozenSkip()}
+        />
+      )}
 
       {/* Lifebuoy Break Overlay */}
       {gameState.phase === 'EVENT_LIFEBUOY_BREAK' && (
