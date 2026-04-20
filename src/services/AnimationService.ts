@@ -63,8 +63,8 @@ export class AnimationService {
 
       timeline.add({
         targets: tokenElement,
-        translateX: targetLeft,
-        translateY: [
+        left: targetLeft,
+        top: [
           { value: targetTop - 20, duration: 150 / speedFactor, easing: 'easeOutQuad' },
           { value: targetTop, duration: 150 / speedFactor, easing: 'easeInQuad' }
         ],
@@ -74,7 +74,6 @@ export class AnimationService {
         ],
         begin: () => { 
           audioService.playTokenBounce(); 
-          // Center camera on the token as it lands (add half token size to point to center)
           cameraService.panTo('camera-viewport', 'board-container', targetLeft + (tokenPx / 2), targetTop + (tokenPx / 2));
         }
       });
@@ -140,8 +139,8 @@ export class AnimationService {
       targets: tokenElement,
       opacity: [1, 0, 1],
       scale: [1, 0.2, 1.5, 1],
-      translateX: targetLeft,
-      translateY: targetTop,
+      left: targetLeft,
+      top: targetTop,
       duration: 1000,
       easing: 'easeInOutQuad',
       begin: () => {
@@ -210,16 +209,16 @@ export class AnimationService {
     // Swap positions
     tl.add({
        targets: el1,
-       translateX: pos1.left,
-       translateY: pos1.top,
+       left: pos1.left,
+       top: pos1.top,
        duration: 500,
        easing: 'easeInOutBack'
     }, '-=200');
 
     tl.add({
        targets: el2,
-       translateX: pos2.left,
-       translateY: pos2.top,
+       left: pos2.left,
+       top: pos2.top,
        duration: 500,
        easing: 'easeInOutBack'
     }, '-=500');

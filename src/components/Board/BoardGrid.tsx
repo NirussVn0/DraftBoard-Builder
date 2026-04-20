@@ -154,14 +154,13 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map, envMap, biom
         return (
           <div
             key={p.id}
-            id={`token-${p.id}`}
+            id={p.id}
             className={`absolute z-30 rounded-full shadow-lg flex items-center justify-center ring-2 ring-white ${p.buffs.some(b => b.id === 'FROZEN') ? 'grayscale opacity-80' : ''}`}
             style={{
               width: tokenPx,
               height: tokenPx,
-              transform: `translate(${x * TILE_PX + tokenCenter + pxOffsetX}px, ${y * TILE_PX + tokenCenter + pxOffsetY}px)`,
-              left: 0,
-              top: 0,
+              left: x * TILE_PX + tokenCenter + pxOffsetX,
+              top: y * TILE_PX + tokenCenter + pxOffsetY,
               backgroundColor: p.color,
               fontSize: tokenPx * 0.55,
               lineHeight: 1,
