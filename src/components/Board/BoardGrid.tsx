@@ -41,8 +41,10 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map, envMap, biom
 
   return (
     <div
-      className="relative bg-transparent mx-auto"
-      style={{ width: boardPx, height: boardPx, minWidth: boardPx, minHeight: boardPx }}
+      className="relative mx-auto"
+      style={{ 
+        width: boardPx, height: boardPx, minWidth: boardPx, minHeight: boardPx,
+      }}
     >
       <EnvironmentLayer 
         tiles={map || []} 
@@ -58,34 +60,44 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map, envMap, biom
         <div className="w-full h-full relative">
           {map.map((tile) => {
             const { x, y, type, stepIndex } = tile;
-            let bgColor = 'bg-slate-200';
-            let content: React.ReactNode = <span className="text-slate-500 font-bold text-[11px]">{stepIndex}</span>;
+            // Running track color (golden yellow)
+            let bgColor = 'bg-amber-400 text-amber-900';
+            let bgStyle: React.CSSProperties = {};
+            let content: React.ReactNode = <span className="font-bold text-[11px] drop-shadow-sm opacity-60">{stepIndex}</span>;
 
             const actualCardId = tile.cardId || (type === 'MYSTERY' ? 'MYSTERY' : undefined);
 
             if (type === 'START') {
-              bgColor = 'bg-emerald-400';
-              content = <span className="font-black text-emerald-900 text-xs">{t().board.tileIn}</span>;
+              bgColor = 'text-white';
+              bgStyle = { backgroundImage: 'repeating-conic-gradient(#1e293b 0% 25%, #f8fafc 0% 50%)', backgroundSize: '16px 16px' };
+              content = <span className="font-black bg-black/70 px-1 py-0.5 rounded text-[10px] uppercase shadow-sm">{t().board.tileIn}</span>;
             } else if (type === 'END') {
-              bgColor = 'bg-rose-500';
-              content = <span className="font-black text-white text-xs">{t().board.tileOut}</span>;
+              bgColor = 'text-white';
+              bgStyle = { backgroundImage: 'repeating-conic-gradient(#1e293b 0% 25%, #f8fafc 0% 50%)', backgroundSize: '16px 16px' };
+              content = <span className="font-black bg-rose-600/90 px-1 py-0.5 rounded text-[10px] uppercase shadow-sm">{t().board.tileOut}</span>;
             } else if (actualCardId) {
               const def = CARD_DEFINITIONS.get(actualCardId);
               if (def) {
-                bgColor = def.tier === 'PURPLE' ? 'bg-purple-500' : def.tier === 'RED' ? 'bg-rose-500' : 'bg-emerald-500';
-                content = <span className="text-2xl" title={def.name}>{def.icon}</span>;
+                // Keep the running track background, but add a mini card on top
+                const cardColor = def.tier === 'PURPLE' ? 'bg-purple-600' : def.tier === 'RED' ? 'bg-rose-600' : 'bg-emerald-600';
+                content = (
+                  <div className={`flex flex-col items-center justify-center w-3/4 h-3/4 ${cardColor} rounded border border-white/40 shadow-sm shadow-black/30 group cursor-pointer`} title={def.name}>
+                    <span className="text-xl drop-shadow-md group-hover:scale-125 transition-transform leading-none">{def.icon}</span>
+                  </div>
+                );
               }
             }
 
             return (
               <div
                 key={`tile-${stepIndex}`}
-                className={`absolute shadow-sm flex items-center justify-center z-10 ${bgColor} border border-slate-300`}
+                className={`absolute shadow-md flex items-center justify-center z-10 ${bgColor} border-[1.5px] border-white/60`}
                 style={{
                   width: TILE_PX,
                   height: TILE_PX,
                   left: x * TILE_PX,
                   top: y * TILE_PX,
+                  ...bgStyle
                 }}
               >
                 {content}
@@ -142,13 +154,14 @@ export const BoardGrid: React.FC<BoardGridProps> = ({ players, map, envMap, biom
         return (
           <div
             key={p.id}
-            id={p.id}
+            id={`token-${p.id}`}
             className={`absolute z-30 rounded-full shadow-lg flex items-center justify-center ring-2 ring-white ${p.buffs.some(b => b.id === 'FROZEN') ? 'grayscale opacity-80' : ''}`}
             style={{
               width: tokenPx,
               height: tokenPx,
-              left: x * TILE_PX + tokenCenter + pxOffsetX,
-              top: y * TILE_PX + tokenCenter + pxOffsetY,
+              transform: `translate(${x * TILE_PX + tokenCenter + pxOffsetX}px, ${y * TILE_PX + tokenCenter + pxOffsetY}px)`,
+              left: 0,
+              top: 0,
               backgroundColor: p.color,
               fontSize: tokenPx * 0.55,
               lineHeight: 1,

@@ -165,6 +165,21 @@ class GameEngine {
     );
   }
 
+  public forceTurn(playerIndex: number): void {
+    if (playerIndex < 0 || playerIndex >= this.state.players.length) return;
+    this.state = {
+      ...this.state,
+      phase: 'IDLE_TURN',
+      activePlayerIndex: playerIndex,
+      currentCard: null,
+      currentResolution: null,
+      quizState: null,
+      kickEvent: null,
+      eventQueue: [], // clear queue just in case
+    };
+    this.notify();
+  }
+
   // --- Dice & Movement ---
 
   public rollDice(): void {
@@ -191,6 +206,14 @@ class GameEngine {
 
   public skipTurn(): void {
     if (this.state.phase !== 'IDLE_TURN') return;
+    
+    const player = this.state.players[this.state.activePlayerIndex];
+    if (player && player.buffs.some(b => b.id === 'FROZEN')) {
+      this.state = { ...this.state, phase: 'EVENT_FROZEN_SKIP' };
+      this.notify();
+      return;
+    }
+    
     this.advanceTurn();
   }
 
@@ -414,6 +437,15 @@ class GameEngine {
         this.state.eventQueue.shift();
         const p = this.state.players.find(pl => pl.id === event.playerId);
         if (p) {
+           if (event.steps < 0 && p.buffs.some(b => b.id === 'LIFEBUOY')) {
+              this.removeBuff(p.id, 'LIFEBUOY');
+              // Negate the negative points (make them not move backward)
+              // Go to LIFEBUOY_BREAK phase which shows the shield breaking, then UI calls continueQueue
+              this.state = { ...this.state, phase: 'EVENT_LIFEBUOY_BREAK' };
+              this.notify();
+              break;
+           }
+
            const maxLevel = this.state.map ? this.state.map.length - 1 : TOTAL_CELLS - 1;
            let path: number[] = [];
            let curr = p.position;
@@ -661,12 +693,24 @@ class GameEngine {
   public finishEventMove(playerId: string, finalPosition: number): void {
     this.state.players = this.state.players.map(p => p.id === playerId ? { ...p, position: finalPosition } : p);
     this.state.moveAnimation = undefined;
+    const maxLevel = this.state.map ? this.state.map.length - 1 : TOTAL_CELLS - 1;
+    if (finalPosition >= maxLevel) {
+      this.state = { ...this.state, phase: 'VICTORY', winner: this.state.players.find(p => p.id === playerId)! };
+      this.notify();
+      return;
+    }
     this.processQueue();
   }
 
   public finishEventTeleport(playerId: string, finalPosition: number): void {
     this.state.players = this.state.players.map(p => p.id === playerId ? { ...p, position: finalPosition } : p);
     this.state.teleportAnimation = undefined;
+    const maxLevel = this.state.map ? this.state.map.length - 1 : TOTAL_CELLS - 1;
+    if (finalPosition >= maxLevel) {
+      this.state = { ...this.state, phase: 'VICTORY', winner: this.state.players.find(p => p.id === playerId)! };
+      this.notify();
+      return;
+    }
     this.processQueue();
   }
 
@@ -681,6 +725,14 @@ class GameEngine {
           if (p.id === player2Id) return { ...p, position: pos1 };
           return p;
        });
+       
+       const maxLevel = this.state.map ? this.state.map.length - 1 : TOTAL_CELLS - 1;
+       if (pos1 >= maxLevel || pos2 >= maxLevel) {
+          const winnerId = pos1 >= maxLevel ? player2Id : player1Id; // Because positions are swapped
+          this.state = { ...this.state, phase: 'VICTORY', winner: this.state.players.find(p => p.id === winnerId)! };
+          this.notify();
+          return;
+       }
     }
     this.state.swapAnimation = undefined;
     this.processQueue();

@@ -46,11 +46,7 @@ export const PopQuizOverlay: React.FC<PopQuizOverlayProps> = ({ quizState, playe
       }, '-=300');
   }, []);
 
-  const handleWinner = (winnerId: string | null) => {
-    if (winnerId === null) {
-      gameEngine.pushQuizDraw();
-      return;
-    }
+  const handleWinner = (winnerId: string) => {
     const loserId = winnerId === challenger?.id ? opponent?.id : challenger?.id;
     if (!loserId) return;
     gameEngine.pushQuizResult(winnerId, loserId);
@@ -107,15 +103,6 @@ export const PopQuizOverlay: React.FC<PopQuizOverlayProps> = ({ quizState, playe
           )}
         </div>
       </div>
-
-      {quizState.phase === 'WAITING_HOST' && (
-        <button
-          onClick={() => handleWinner(null)}
-          className="mt-12 px-8 py-3 font-bold text-white/80 bg-slate-700 hover:bg-slate-600 hover:text-white rounded-xl backdrop-blur transition-all border border-slate-600 shadow-lg z-10"
-        >
-          Hoà / Không ai trả lời được
-        </button>
-      )}
 
       {quizState.phase === 'VS_SCREEN' && (
         <button

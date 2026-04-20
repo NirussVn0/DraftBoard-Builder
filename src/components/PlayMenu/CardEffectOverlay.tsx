@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import anime from 'animejs';
 import type { CardDefinition, CardResolution } from '../../core/CardTypes';
+import { loadGlobalSettings } from '../../core/SettingsState';
 
 interface CardEffectOverlayProps {
   card: CardDefinition;
@@ -104,6 +105,7 @@ export const CardEffectOverlay: React.FC<CardEffectOverlayProps> = ({ card, reso
             <video 
               src={memeSrc} 
               autoPlay 
+              muted={!loadGlobalSettings().enableVideoAudio}
               playsInline
               onEnded={finishAnimation}
               className="w-auto h-auto max-w-[90vw] max-h-[65vh] object-contain rounded-xl shadow-[0_0_60px_rgba(0,0,0,0.8)] border-[16px] border-white/10 bg-black/50 backdrop-blur-sm" 

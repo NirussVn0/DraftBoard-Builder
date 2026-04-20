@@ -357,7 +357,9 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel, in
       </div>
 
       {/* Main Board Area */}
-      <div className="flex-1 max-w-3xl aspect-square bg-white game-card border-4 border-slate-200 relative overflow-hidden flex items-center justify-center">
+      <div 
+        className="flex-1 max-w-3xl aspect-square game-card border-4 border-slate-200 relative overflow-hidden flex items-center justify-center bg-emerald-400"
+      >
         {/* RANDOM_FILL instructions overlay */}
         {tool === 'RANDOM_FILL' && !showRandomModal && (
           <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-indigo-600 text-white px-6 py-3 rounded-full font-bold shadow-lg animate-bounce pointer-events-none">
@@ -380,7 +382,6 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel, in
           {Array.from({ length: MAP_SIZE * MAP_SIZE }).map((_, i) => {
             const x = i % MAP_SIZE;
             const y = Math.floor(i / MAP_SIZE);
-            const isAlternate = (x + y) % 2 === 0;
 
             return (
               <div
@@ -389,7 +390,7 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel, in
                 onMouseEnter={() => {
                   if (isDragging) handleCellClick(x, y);
                 }}
-                className={`border-[0.5px] border-slate-200/80 cursor-pointer hover:bg-indigo-100/60 transition-colors ${isAlternate ? 'bg-slate-50' : 'bg-white'}`}
+                className="border-[0.5px] border-slate-800/10 cursor-pointer hover:bg-white/40 transition-colors bg-transparent"
               >
               </div>
             );
@@ -425,24 +426,31 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel, in
 
           {path.map((tile, idx) => {
             const { x, y, type, stepIndex, cardId } = tile;
-            let bgColor = 'bg-slate-200';
-            let content: React.ReactNode = <span className="text-slate-500 font-bold text-[10px] opacity-70">{stepIndex}</span>;
+            let bgColor = 'bg-amber-400 text-amber-900';
+            let bgStyle: React.CSSProperties = {};
+            let content: React.ReactNode = <span className="text-amber-700/60 font-bold text-[10px]">{stepIndex}</span>;
 
             const isLastTile = idx === path.length - 1 && path.length > 1;
 
             if (type === 'START') {
-              bgColor = 'bg-emerald-400';
-              content = <span className="font-black text-emerald-900 text-[10px]">{t().board.tileIn}</span>;
+              bgColor = 'text-white';
+              bgStyle = { backgroundImage: 'repeating-conic-gradient(#1e293b 0% 25%, #f8fafc 0% 50%)', backgroundSize: '16px 16px' };
+              content = <span className="font-black bg-black/70 px-1 py-0.5 rounded text-[10px] shadow-sm">{t().board.tileIn}</span>;
             } else if (type === 'END' || isLastTile) {
-              bgColor = 'bg-rose-500';
-              content = <span className="font-black text-white text-[10px]">{t().board.tileOut}</span>;
+              bgColor = 'text-white';
+              bgStyle = { backgroundImage: 'repeating-conic-gradient(#1e293b 0% 25%, #f8fafc 0% 50%)', backgroundSize: '16px 16px' };
+              content = <span className="font-black bg-rose-600/90 px-1 py-0.5 rounded text-[10px] shadow-sm">{t().board.tileOut}</span>;
             } else if (cardId || type === 'MYSTERY') {
               const actualCardId = cardId || (type === 'MYSTERY' ? 'MYSTERY' : undefined);
               if (actualCardId) {
                 const def = CARD_DEFINITIONS.get(actualCardId);
                 if (def) {
-                   bgColor = def.tier === 'PURPLE' ? 'bg-purple-500' : def.tier === 'RED' ? 'bg-rose-500' : 'bg-emerald-500';
-                   content = <span className="text-xl" title={def.name}>{def.icon}</span>;
+                   const cardColor = def.tier === 'PURPLE' ? 'bg-purple-600' : def.tier === 'RED' ? 'bg-rose-600' : 'bg-emerald-600';
+                   content = (
+                     <div className={`flex flex-col items-center justify-center w-3/4 h-3/4 ${cardColor} rounded border border-white/40 shadow-sm`} title={def.name}>
+                       <span className="text-xl drop-shadow-md leading-none">{def.icon}</span>
+                     </div>
+                   );
                 }
               }
             }
@@ -452,12 +460,13 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel, in
                  key={`tile-${stepIndex}`}
                  onClick={() => handleCellClick(x, y)}
                  className={`absolute shadow-lg flex items-center justify-center cursor-pointer transition-transform hover:scale-110 z-10 
-                   ${bgColor} ${tile.stepIndex === path.length - 1 ? 'ring-4 ring-indigo-400 animate-pulse' : 'border-2 border-slate-300'} game-tile`}
+                   ${bgColor} ${tile.stepIndex === path.length - 1 ? 'ring-4 ring-indigo-400 animate-pulse' : 'border-2 border-white/60'} game-tile`}
                  style={{
                     width: `calc(${100 / MAP_SIZE}% - 4px)`,
                     height: `calc(${100 / MAP_SIZE}% - 4px)`,
                     left: `calc(${x * (100 / MAP_SIZE)}% + 2px)`,
                     top: `calc(${y * (100 / MAP_SIZE)}% + 2px)`,
+                    ...bgStyle
                  }}
                >
                  {content}

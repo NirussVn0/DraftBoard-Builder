@@ -20,7 +20,7 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
     resolve: (ctx) => ({
       type: 'BUFF',
       targetPlayerIds: [ctx.activePlayer.id],
-      buff: { id: 'LIFEBUOY', turnsRemaining: -1, sourcePlayerId: ctx.activePlayer.id },
+      buff: { id: 'LIFEBUOY', turnsRemaining: 3, sourcePlayerId: ctx.activePlayer.id },
     }),
   }],
 
@@ -62,18 +62,19 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
     name: 'Bom Deadline',
     description: 'Kéo đứa đầu bảng chết chung! Cả hai lùi về cùng điểm thấp hơn!',
     resolve: (ctx) => {
-      const others = ctx.allPlayers.filter(p => p.id !== ctx.activePlayer.id);
-      if (others.length === 0) {
+      const aheadPlayers = ctx.allPlayers.filter(p => p.id !== ctx.activePlayer.id && p.position > ctx.activePlayer.position);
+      
+      if (aheadPlayers.length === 0) {
         return { type: 'MOVE', targetPlayerIds: [ctx.activePlayer.id], steps: -3 };
       }
-      let top1 = others[0];
-      for (const p of others) if (p.position > top1.position) top1 = p;
+      
+      const targetIds = aheadPlayers.map(p => p.id);
+      
       if (ctx.deckConfig.deadlineBombMode === 'RESET_ZERO') {
-        return { type: 'TELEPORT', targetPlayerIds: [ctx.activePlayer.id, top1.id], newPosition: 0 };
+        return { type: 'TELEPORT', targetPlayerIds: [ctx.activePlayer.id, ...targetIds], newPosition: 0 };
       }
-      // PULL_BACK or MATCH_STEPS: both go to the lower position of the two
-      const lowerPosition = Math.min(ctx.activePlayer.position, top1.position);
-      return { type: 'TELEPORT', targetPlayerIds: [ctx.activePlayer.id, top1.id], newPosition: lowerPosition };
+      
+      return { type: 'TELEPORT', targetPlayerIds: targetIds, newPosition: ctx.activePlayer.position };
     },
   }],
 

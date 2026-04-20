@@ -114,6 +114,13 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose })
           onChange={(v) => update('enableSoundEffects', v)}
         />
 
+        {/* Toggle: Video Audio */}
+        <ToggleRow
+          label="Âm Thanh Video"
+          checked={settings.enableVideoAudio}
+          onChange={(v) => update('enableVideoAudio', v)}
+        />
+
         {/* Toggle: Animations */}
         <ToggleRow
           label={s.animations}

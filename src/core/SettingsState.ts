@@ -2,13 +2,15 @@
 export interface GlobalSettings {
   locale: 'vi' | 'en';
   enableSoundEffects: boolean;
+  enableVideoAudio: boolean;
   enableAnimations: boolean;
   cameraAutoTrack: boolean;
 }
 
 export const DEFAULT_GLOBAL: GlobalSettings = {
   locale: 'vi',
-  enableSoundEffects: false,
+  enableSoundEffects: true, // bật lên để thử
+  enableVideoAudio: true,
   enableAnimations: true,
   cameraAutoTrack: true,
 };
@@ -43,7 +45,7 @@ export interface DeckConfig {
 
 export const DEFAULT_DECK: DeckConfig = {
   enableEureka: true, eurekaRange: [1, 6],
-  enableMindBlank: true, mindBlankRange: [1, 6],
+  enableMindBlank: true, mindBlankRange: [6, 6],
   enableLifebuoy: true,
   enableCounter: true, counterTurns: 3,
   enableParasite: true,

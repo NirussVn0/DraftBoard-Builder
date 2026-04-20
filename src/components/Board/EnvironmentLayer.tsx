@@ -22,7 +22,7 @@ interface EnvironmentLayerProps {
   envMap?: { id: string; x: number; y: number; emoji: string; }[];
 }
 
-export const EnvironmentLayer: React.FC<EnvironmentLayerProps> = ({
+export const EnvironmentLayer: React.FC<EnvironmentLayerProps> = React.memo(({
   tiles,
   gridSize,
   tilePx,
@@ -104,6 +104,6 @@ export const EnvironmentLayer: React.FC<EnvironmentLayerProps> = ({
       ))}
     </div>
   );
-};
+});
 
 export type { BiomeTheme };

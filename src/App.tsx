@@ -328,7 +328,9 @@ function App() {
 
   return (
     <>
-    <div className="w-screen h-screen bg-slate-50 overflow-hidden relative font-sans text-slate-800">
+    <div 
+      className="w-screen h-screen bg-emerald-400 overflow-hidden relative font-sans text-slate-800"
+    >
       <AppHeader onHome={handleGoHome} onSettings={handleSettings} />
 
       {/* Layer 0: Fullscreen Board */}

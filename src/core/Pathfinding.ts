@@ -23,18 +23,12 @@ export function getCoordinatesFromCell(cell: number): { x: number; y: number } {
 export function calculatePath(startCell: number, diceRoll: number, maxCell: number = TOTAL_CELLS): number[] {
   const path: number[] = [];
   let current = startCell;
-  let forward = true;
 
   for (let i = 0; i < diceRoll; i++) {
-    if (forward) {
+    if (current < maxCell) {
       current++;
-      if (current === maxCell) {
-        forward = false;
-      }
-    } else {
-      current--;
+      path.push(current);
     }
-    path.push(current);
   }
   
   return path;

@@ -63,11 +63,10 @@ export class AnimationService {
 
       timeline.add({
         targets: tokenElement,
-        left: targetLeft,
-        top: targetTop,
+        translateX: targetLeft,
         translateY: [
-          { value: -20, duration: 150 / speedFactor, easing: 'easeOutQuad' },
-          { value: 0, duration: 150 / speedFactor, easing: 'easeInQuad' }
+          { value: targetTop - 20, duration: 150 / speedFactor, easing: 'easeOutQuad' },
+          { value: targetTop, duration: 150 / speedFactor, easing: 'easeInQuad' }
         ],
         scale: [
           { value: 1.2, duration: 150 / speedFactor, easing: 'easeOutQuad' },
@@ -141,8 +140,8 @@ export class AnimationService {
       targets: tokenElement,
       opacity: [1, 0, 1],
       scale: [1, 0.2, 1.5, 1],
-      left: targetLeft,
-      top: targetTop,
+      translateX: targetLeft,
+      translateY: targetTop,
       duration: 1000,
       easing: 'easeInOutQuad',
       begin: () => {
@@ -211,16 +210,16 @@ export class AnimationService {
     // Swap positions
     tl.add({
        targets: el1,
-       left: pos1.left,
-       top: pos1.top,
+       translateX: pos1.left,
+       translateY: pos1.top,
        duration: 500,
        easing: 'easeInOutBack'
     }, '-=200');
 
     tl.add({
        targets: el2,
-       left: pos2.left,
-       top: pos2.top,
+       translateX: pos2.left,
+       translateY: pos2.top,
        duration: 500,
        easing: 'easeInOutBack'
     }, '-=500');
