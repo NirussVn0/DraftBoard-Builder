@@ -70,14 +70,19 @@ class GameEngine {
   }
 
   public loadState(savedState: GameState) {
-    const hydratedCard = savedState.currentCard ? CARD_DEFINITIONS.get(savedState.currentCard.id) : null;
-    
+    // Force a clean resumption: always reset to IDLE_TURN with empty queue.
+    // Transient phases (animations, card resolves) can't survive serialization.
     this.state = {
       ...savedState,
-      currentCard: hydratedCard || null,
-      currentResolution: savedState.currentResolution || null,
-      quizState: savedState.quizState || null,
-      eventQueue: savedState.eventQueue || [],
+      phase: 'IDLE_TURN',
+      currentCard: null,
+      currentResolution: null,
+      quizState: null,
+      eventQueue: [],
+      kickEvent: null,
+      moveAnimation: undefined,
+      teleportAnimation: undefined,
+      swapAnimation: undefined,
       players: savedState.players.map(p => ({
         ...p,
         buffs: p.buffs || []
@@ -86,6 +91,7 @@ class GameEngine {
     this.history = [];
     this.state.canUndo = false;
     this.notify();
+    this.processBuffs();
   }
 
   private pushSnapshot(): void {

@@ -24,6 +24,7 @@ import { SettingsPanel } from './components/Settings/SettingsPanel'
 import { KickOverlay } from './components/PlayMenu/KickOverlay'
 import { FrozenSkipOverlay } from './components/PlayMenu/FrozenSkipOverlay'
 import { MapShareService } from './services/MapShareService'
+import { SaveManager } from './services/SaveManager'
 
 import { Trophy, RefreshCcw, Home, Settings, Dices, SkipForward, Undo2 } from 'lucide-react'
 
@@ -225,7 +226,10 @@ function App() {
     const confirmed = window.confirm(t().common.confirmExit);
     if (confirmed) {
       if (appMode === 'PLAYING' && gameState.phase !== 'SETUP') {
-        localStorage.setItem('draftboard_saved_game', JSON.stringify(gameEngine.getState()));
+        const name = prompt('Đặt tên cho ván lưu:', `Ván ${new Date().toLocaleString('vi')}`);
+        if (name !== null) {
+          SaveManager.addGame(name || '', gameEngine.getState());
+        }
       }
       gameEngine.resetGame();
       setAppMode('MENU');
@@ -238,52 +242,32 @@ function App() {
 
   // ── MENU ──
   if (appMode === 'MENU') {
-    return <WelcomeMenu onSelectMode={(mode) => {
-      if (mode === 'RESUME') {
-        const savedGame = localStorage.getItem('draftboard_saved_game');
-        if (savedGame) {
-          try {
-            const parsedState = JSON.parse(savedGame);
-            gameEngine.loadState(parsedState);
-            setPendingMapPath(parsedState.map);
-            setPendingMapEnv(parsedState.envMap || []);
-            setAppMode('PLAYING');
-          } catch {
-            alert(t().common.savedMapError);
-          }
-        }
-      } else if (mode === 'PLAY_SAVED') {
-        const savedData = localStorage.getItem('draftboard_saved_map');
-        if (savedData) {
-          try {
-            const savedMap = JSON.parse(savedData);
-            if (savedMap.path) {
-               setPendingMapPath(savedMap.path);
-               setPendingMapEnv(savedMap.env || []);
-            } else {
-               setPendingMapPath(savedMap);
-               setPendingMapEnv([]);
-            }
-            setAppMode('PLAYING');
-          } catch {
-            alert(t().common.savedMapError);
-            setPendingMapPath(generateZigzagMap());
-            setPendingMapEnv([]);
-            setAppMode('PLAYING');
-          }
-        } else {
-          setPendingMapPath(generateZigzagMap());
-          setPendingMapEnv([]);
-          setAppMode('PLAYING');
-        }
-      } else {
-        setAppMode(mode as AppMode);
+    return <WelcomeMenu
+      onSelectMode={(mode) => {
         if (mode === 'PLAYING') {
           setPendingMapPath(generateZigzagMap());
           setPendingMapEnv([]);
+          setAppMode('PLAYING');
+        } else {
+          setAppMode(mode as AppMode);
         }
-      }
-    }} />;
+      }}
+      onLoadMap={(slot) => {
+        setPendingMapPath(slot.path);
+        setPendingMapEnv(slot.env || []);
+        setAppMode('PLAYING');
+      }}
+      onLoadGame={(slot) => {
+        try {
+          gameEngine.loadState(slot.state);
+          setPendingMapPath(slot.state.map);
+          setPendingMapEnv(slot.state.envMap || []);
+          setAppMode('PLAYING');
+        } catch {
+          alert(t().common.savedMapError);
+        }
+      }}
+    />;
   }
 
   if (appMode === 'BUILDER') {
@@ -292,15 +276,8 @@ function App() {
         <AppHeader onHome={handleGoHome} onSettings={handleSettings} />
         <MapBuilderUI
           onSave={(path) => {
-            const data = localStorage.getItem('draftboard_saved_map');
-            if (data) {
-              const parsed = JSON.parse(data);
-              setPendingMapPath(parsed.path || path);
-              setPendingMapEnv(parsed.env || []);
-            } else {
-              setPendingMapPath(path);
-              setPendingMapEnv([]);
-            }
+            setPendingMapPath(path);
+            setPendingMapEnv([]);
             gameEngine.resetGame();
             setAppMode('PLAYING');
           }}

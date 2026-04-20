@@ -257,12 +257,15 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
             <RefreshCcw size={18} /> {t().builder.clearMap}
           </button>
           <button 
-            onClick={() => {
+            onClick={async () => {
                if (path.length > 5 && path[path.length - 1].type !== 'START') {
                  const finalPath = [...path];
                  finalPath[finalPath.length - 1] = { ...finalPath[finalPath.length - 1], type: 'END' };
-                 const finalMap = { path: finalPath, env };
-                 localStorage.setItem('draftboard_saved_map', JSON.stringify(finalMap));
+                 const name = prompt('Đặt tên map:', `Map ${new Date().toLocaleString('vi')}`);
+                 if (name !== null) {
+                   const { SaveManager } = await import('../../services/SaveManager');
+                   SaveManager.addMap(name || '', finalPath, env);
+                 }
                  onSave(finalPath); 
                } else {
                  alert(t().builder.invalidMap);
@@ -274,20 +277,13 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
           </button>
           <div className="grid grid-cols-2 gap-2">
             <button 
-              onClick={() => {
+              onClick={async () => {
                  if (path.length > 5) {
                    const finalPath = [...path];
                    finalPath[finalPath.length - 1] = { ...finalPath[finalPath.length - 1], type: 'END' as const };
-                   const finalMap = { path: finalPath, env };
-                   localStorage.setItem('draftboard_saved_map', JSON.stringify(finalMap));
-                   
-                   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(finalMap));
-                   const downloadNode = document.createElement('a');
-                   downloadNode.setAttribute("href", dataStr);
-                   downloadNode.setAttribute("download", "draftboard_map.json");
-                   document.body.appendChild(downloadNode);
-                   downloadNode.click();
-                   downloadNode.remove();
+                   const { SaveManager } = await import('../../services/SaveManager');
+                   const slot = SaveManager.addMap(`Map ${new Date().toLocaleString('vi')}`, finalPath, env);
+                   SaveManager.exportMapAsJSON(slot);
                  } else {
                    alert(t().builder.tooShort);
                  }
