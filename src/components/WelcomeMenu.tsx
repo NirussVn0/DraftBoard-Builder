@@ -147,21 +147,21 @@ export const WelcomeMenu: React.FC<WelcomeMenuProps> = ({ onSelectMode, onLoadMa
                   </div>
                   <button
                     onClick={() => { onEditMap?.(m); setDrawer(null); }}
-                    className="p-2 text-slate-400 hover:text-amber-600 transition opacity-0 group-hover:opacity-100"
+                    className="p-2 text-slate-400 hover:text-amber-600 transition"
                     title="Chỉnh sửa map"
                   >
                     <Pencil size={16} />
                   </button>
                   <button
                     onClick={() => { SaveManager.exportMapAsJSON(m); }}
-                    className="p-2 text-slate-400 hover:text-indigo-500 transition opacity-0 group-hover:opacity-100"
+                    className="p-2 text-slate-400 hover:text-indigo-500 transition"
                     title="Xuất JSON"
                   >
                     <Download size={16} />
                   </button>
                   <button
                     onClick={() => handleDeleteMap(m.id)}
-                    className="p-2 text-slate-400 hover:text-rose-500 transition opacity-0 group-hover:opacity-100"
+                    className="p-2 text-slate-400 hover:text-rose-500 transition"
                     title="Xoá"
                   >
                     <Trash2 size={16} />
@@ -206,14 +206,14 @@ export const WelcomeMenu: React.FC<WelcomeMenuProps> = ({ onSelectMode, onLoadMa
                   </div>
                   <button
                     onClick={() => { SaveManager.exportGameAsJSON(g); }}
-                    className="p-2 text-slate-400 hover:text-indigo-500 transition opacity-0 group-hover:opacity-100"
+                    className="p-2 text-slate-400 hover:text-indigo-500 transition"
                     title="Xuất JSON"
                   >
                     <Download size={16} />
                   </button>
                   <button
                     onClick={() => handleDeleteGame(g.id)}
-                    className="p-2 text-slate-400 hover:text-rose-500 transition opacity-0 group-hover:opacity-100"
+                    className="p-2 text-slate-400 hover:text-rose-500 transition"
                     title="Xoá"
                   >
                     <Trash2 size={16} />

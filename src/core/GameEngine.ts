@@ -70,28 +70,10 @@ class GameEngine {
   }
 
   public loadState(savedState: GameState) {
-    // Force a clean resumption: always reset to IDLE_TURN with empty queue.
-    // Transient phases (animations, card resolves) can't survive serialization.
-    this.state = {
-      ...savedState,
-      phase: 'IDLE_TURN',
-      currentCard: null,
-      currentResolution: null,
-      quizState: null,
-      eventQueue: [],
-      kickEvent: null,
-      moveAnimation: undefined,
-      teleportAnimation: undefined,
-      swapAnimation: undefined,
-      players: savedState.players.map(p => ({
-        ...p,
-        buffs: p.buffs || []
-      }))
-    };
+    this.state = savedState;
     this.history = [];
     this.state.canUndo = false;
     this.notify();
-    this.processBuffs();
   }
 
   private pushSnapshot(): void {
@@ -134,11 +116,8 @@ class GameEngine {
 
     this.state = { ...this.state, players: newPlayers };
 
-    if (wasFrozen) {
-      this.state = { ...this.state, phase: 'EVENT_FROZEN_SKIP' };
-      this.notify();
-      return;
-    }
+    // If frozen, player stays in IDLE_TURN but cannot roll dice. They must manually use the Skip button.
+    // (UI will disable the Roll button based on the FROZEN buff)
 
     const hasDetention = newPlayers[this.state.activePlayerIndex].buffs.some(b => b.id === 'DETENTION');
     if (hasDetention) {
@@ -190,6 +169,8 @@ class GameEngine {
 
   public rollDice(): void {
     if (this.state.phase !== 'IDLE_TURN' && this.state.phase !== 'EVENT_DETENTION_ROLL') return;
+    const player = this.state.players[this.state.activePlayerIndex];
+    if (player && player.buffs.some(b => b.id === 'FROZEN')) return; // Block rolling if frozen
     this.pushSnapshot();
     const count = this.state.mapSettings.diceCount || 1;
     let total = 0;
@@ -501,7 +482,7 @@ class GameEngine {
         const kicker = this.state.players.find(p => p.id === event.kickerId);
         const kicked = this.state.players.find(p => p.id === event.kickedId);
         
-        if (kicker && kicked) {
+        if (kicker && kicked && kicker.position === kicked.position) {
            const hasShield = kicked.buffs.some(b => b.id === 'LIFEBUOY');
            const hasReflect = kicked.buffs.some(b => b.id === 'COUNTER_ARGUMENT');
 
@@ -523,23 +504,31 @@ class GameEngine {
               };
               this.state = { ...this.state, phase: 'EVENT_KICK', kickEvent };
               
-              // After kick, evaluate mystery if needed
-              if (this.state.map) {
-                 const tile = this.state.map[kicker.position];
-                 const actualCardId = tile?.cardId || (tile?.type === 'MYSTERY' ? 'MYSTERY' : undefined);
-                 if (actualCardId) {
-                    this.state.eventQueue.unshift({ type: 'TRIGGER_TILE_CARD', cardId: actualCardId });
+              // After kick, evaluate mystery only if this is the LAST kick for this position
+              const hasMoreKicks = this.state.eventQueue.some(e => e.type === 'KICK_COLLISION');
+              if (!hasMoreKicks) {
+                 if (this.state.map) {
+                    const tile = this.state.map[kicker.position];
+                    const actualCardId = tile?.cardId || (tile?.type === 'MYSTERY' ? 'MYSTERY' : undefined);
+                    if (actualCardId) {
+                       this.state.eventQueue.unshift({ type: 'TRIGGER_TILE_CARD', cardId: actualCardId });
+                    } else {
+                       this.state.eventQueue.unshift({ type: 'ADVANCE_TURN' });
+                    }
                  } else {
                     this.state.eventQueue.unshift({ type: 'ADVANCE_TURN' });
                  }
-              } else {
-                 this.state.eventQueue.unshift({ type: 'ADVANCE_TURN' });
               }
 
               this.notify();
               // UI calls resolveKick() which will now just be continueQueue()
            }
         } else {
+           // Skip if positions mismatch (e.g. got reflected away)
+           const hasMoreKicks = this.state.eventQueue.some(e => e.type === 'KICK_COLLISION');
+           if (!hasMoreKicks) {
+              this.state.eventQueue.unshift({ type: 'ADVANCE_TURN' });
+           }
            this.processQueue();
         }
         break;
@@ -551,16 +540,19 @@ class GameEngine {
         this.state = { ...this.state, phase: 'EVENT_LIFEBUOY_BREAK' };
         
         const kicker = this.state.players.find(p => p.id === event.attackerId);
-        if (kicker && this.state.map) {
-           const tile = this.state.map[kicker.position];
-           const actualCardId = tile?.cardId || (tile?.type === 'MYSTERY' ? 'MYSTERY' : undefined);
-           if (actualCardId) {
-              this.state.eventQueue.unshift({ type: 'TRIGGER_TILE_CARD', cardId: actualCardId });
+        const hasMoreKicks = this.state.eventQueue.some(e => e.type === 'KICK_COLLISION');
+        if (!hasMoreKicks) {
+           if (kicker && this.state.map) {
+              const tile = this.state.map[kicker.position];
+              const actualCardId = tile?.cardId || (tile?.type === 'MYSTERY' ? 'MYSTERY' : undefined);
+              if (actualCardId) {
+                 this.state.eventQueue.unshift({ type: 'TRIGGER_TILE_CARD', cardId: actualCardId });
+              } else {
+                 this.state.eventQueue.unshift({ type: 'ADVANCE_TURN' });
+              }
            } else {
               this.state.eventQueue.unshift({ type: 'ADVANCE_TURN' });
            }
-        } else {
-           this.state.eventQueue.unshift({ type: 'ADVANCE_TURN' });
         }
 
         this.notify();
@@ -570,6 +562,10 @@ class GameEngine {
       case 'CHECK_COUNTER_ARGUMENT': {
         this.state.eventQueue.shift();
         const attacker = this.state.players.find(p => p.id === event.attackerId);
+        
+        // Reflected: attacker leaves the tile, so cancel any remaining kicks they had
+        this.state.eventQueue = this.state.eventQueue.filter(e => e.type !== 'KICK_COLLISION');
+
         if (attacker) {
            this.state.eventQueue.unshift(
               { type: 'TELEPORT_PLAYER', playerId: attacker.id, position: Math.max(0, attacker.position - event.damage) },
@@ -699,6 +695,17 @@ class GameEngine {
     };
     this.notify();
     setTimeout(() => this.processQueue(), 1200); // allow winner VFX
+  }
+
+  /** Neither player answered → no reward, no penalty, just continue */
+  public pushQuizDraw(): void {
+    if (this.state.phase !== 'EVENT_QUIZ') return;
+    this.state = {
+      ...this.state,
+      quizState: this.state.quizState ? { ...this.state.quizState, phase: 'RESOLVED' } : null,
+    };
+    this.notify();
+    setTimeout(() => this.processQueue(), 1200);
   }
 
   public resolveDetentionRoll(value: number): void {

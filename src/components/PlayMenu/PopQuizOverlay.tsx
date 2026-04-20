@@ -46,7 +46,11 @@ export const PopQuizOverlay: React.FC<PopQuizOverlayProps> = ({ quizState, playe
       }, '-=300');
   }, []);
 
-  const handleWinner = (winnerId: string) => {
+  const handleWinner = (winnerId: string | null) => {
+    if (winnerId === null) {
+      gameEngine.pushQuizDraw();
+      return;
+    }
     const loserId = winnerId === challenger?.id ? opponent?.id : challenger?.id;
     if (!loserId) return;
     gameEngine.pushQuizResult(winnerId, loserId);
@@ -80,8 +84,8 @@ export const PopQuizOverlay: React.FC<PopQuizOverlayProps> = ({ quizState, playe
         </div>
 
         {/* VS badge */}
-        <div ref={vsRef} className="shrink-0 opacity-0">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 to-orange-600 flex items-center justify-center shadow-[0_0_40px_rgba(251,191,36,0.6)]">
+        <div ref={vsRef} className="shrink-0 opacity-0 flex flex-col items-center">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 to-orange-600 flex items-center justify-center shadow-[0_0_40px_rgba(251,191,36,0.6)] z-10 relative">
             <span className="text-white font-black text-2xl">VS</span>
           </div>
         </div>
@@ -104,6 +108,15 @@ export const PopQuizOverlay: React.FC<PopQuizOverlayProps> = ({ quizState, playe
         </div>
       </div>
 
+      {quizState.phase === 'WAITING_HOST' && (
+        <button
+          onClick={() => handleWinner(null)}
+          className="mt-12 px-8 py-3 font-bold text-white/80 bg-slate-700 hover:bg-slate-600 hover:text-white rounded-xl backdrop-blur transition-all border border-slate-600 shadow-lg z-10"
+        >
+          Hoà / Không ai trả lời được
+        </button>
+      )}
+
       {quizState.phase === 'VS_SCREEN' && (
         <button
           onClick={() => gameEngine.advanceQuizPhase()}
@@ -124,6 +137,15 @@ export const PopQuizOverlay: React.FC<PopQuizOverlayProps> = ({ quizState, playe
             Sẵn sàng →
           </button>
         </div>
+      )}
+
+      {quizState.phase === 'WAITING_HOST' && (
+        <button
+          onClick={() => gameEngine.pushQuizDraw()}
+          className="mt-6 z-10 px-8 py-3 game-card bg-slate-600 hover:bg-slate-500 text-white font-black text-base transition-all hover:scale-105 active:scale-95 border-2 border-slate-400/30"
+        >
+          🤝 Hoà — Không ai trả lời được
+        </button>
       )}
     </div>
   );

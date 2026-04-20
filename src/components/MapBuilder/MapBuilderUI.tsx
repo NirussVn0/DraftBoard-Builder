@@ -331,6 +331,9 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel, in
                     const json = JSON.parse(evt.target?.result as string);
                     if (json.path && Array.isArray(json.path)) {
                       loadMap(json);
+                      if (json.mapSettings) {
+                        localStorage.setItem('draftboard_map_settings', JSON.stringify(json.mapSettings));
+                      }
                       alert("Nhập map thành công!");
                     } else if (Array.isArray(json)) {
                       loadMap({ path: json, env: {} });

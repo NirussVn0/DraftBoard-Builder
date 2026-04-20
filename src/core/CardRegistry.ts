@@ -60,7 +60,7 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
   ['DEADLINE_BOMB', {
     id: 'DEADLINE_BOMB', tier: 'RED', icon: '💣',
     name: 'Bom Deadline',
-    description: 'Kéo đứa đầu bảng chết chung! Cả hai lùi về cùng điểm!',
+    description: 'Kéo đứa đầu bảng chết chung! Cả hai lùi về cùng điểm thấp hơn!',
     resolve: (ctx) => {
       const others = ctx.allPlayers.filter(p => p.id !== ctx.activePlayer.id);
       if (others.length === 0) {
@@ -71,7 +71,9 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
       if (ctx.deckConfig.deadlineBombMode === 'RESET_ZERO') {
         return { type: 'TELEPORT', targetPlayerIds: [ctx.activePlayer.id, top1.id], newPosition: 0 };
       }
-      return { type: 'TELEPORT', targetPlayerIds: [top1.id], newPosition: ctx.activePlayer.position };
+      // PULL_BACK or MATCH_STEPS: both go to the lower position of the two
+      const lowerPosition = Math.min(ctx.activePlayer.position, top1.position);
+      return { type: 'TELEPORT', targetPlayerIds: [ctx.activePlayer.id, top1.id], newPosition: lowerPosition };
     },
   }],
 

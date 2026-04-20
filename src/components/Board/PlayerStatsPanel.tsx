@@ -30,15 +30,15 @@ export const PlayerStatsPanel: React.FC<PlayerStatsPanelProps> = ({
         return (
           <div
             key={player.id}
-            className={`flex items-center gap-3 p-3 border transition-colors ${
+            className={`flex items-center gap-3 p-3 border transition-all ${
               isActive ? 'bg-slate-50 border-l-4' : 'border-slate-100 border-l-4 border-l-transparent'
-            }`}
+            } ${player.buffs.some(b => b.id === 'FROZEN') ? 'grayscale opacity-50' : ''}`}
             style={{
               borderLeftColor: isActive ? player.color : undefined,
             }}
           >
             <div
-              className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-base ${player.buffs.some(b => b.id === 'FROZEN') ? 'grayscale' : ''}`}
+              className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-base"
               style={{ backgroundColor: player.color }}
             >
               {player.emoji || player.name.charAt(0).toUpperCase()}

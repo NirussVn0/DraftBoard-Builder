@@ -8,6 +8,7 @@ interface LifebuoyBreakOverlayProps {
 export const LifebuoyBreakOverlay: React.FC<LifebuoyBreakOverlayProps> = ({ onComplete }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const shardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const imgRef = useRef<HTMLImageElement>(null);
   const hasAnimated = useRef(false);
 
   // 8 shards exploding outward
@@ -42,14 +43,45 @@ export const LifebuoyBreakOverlay: React.FC<LifebuoyBreakOverlayProps> = ({ onCo
         duration: 800,
         easing: 'easeOutQuad',
         delay: 50,
-        complete: i === 0 ? () => setTimeout(onComplete, 400) : undefined,
       });
     });
+
+    if (imgRef.current) {
+      anime({
+        targets: imgRef.current,
+        scale: [0.5, 1],
+        opacity: [0, 1],
+        duration: 400,
+        easing: 'easeOutBack',
+        complete: () => {
+          setTimeout(() => {
+            anime({
+              targets: imgRef.current,
+              opacity: 0,
+              duration: 300,
+              easing: 'easeInQuad'
+            });
+          }, 3000);
+        }
+      });
+    } else {
+      setTimeout(onComplete, 4000);
+    }
   }, [onComplete, SHARDS]);
+
+  const finishAnimation = () => {
+    anime.remove(imgRef.current);
+    onComplete();
+  };
 
   return (
     <div ref={containerRef} className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-      <div className="relative w-64 h-64 flex items-center justify-center">
+      <div 
+        className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-0 pointer-events-auto cursor-pointer" 
+        onClick={finishAnimation}
+        title="Bấm để bỏ qua"
+      />
+      <div className="relative z-10 w-64 h-64 flex items-center justify-center pointer-events-none">
         <span className="text-8xl opacity-0 animate-none">💥</span>
         {SHARDS.map((shard, i) => (
           <div
@@ -65,7 +97,7 @@ export const LifebuoyBreakOverlay: React.FC<LifebuoyBreakOverlayProps> = ({ onCo
             }}
           />
         ))}
-        <p className="absolute text-blue-200 font-black text-2xl drop-shadow-[0_0_10px_rgba(147,210,255,1)]">
+        <p ref={imgRef} className="absolute text-blue-200 font-black text-4xl drop-shadow-[0_0_10px_rgba(147,210,255,1)] z-20 opacity-0 pointer-events-auto">
           🛟 PHAO CỨU SINH VỠ!
         </p>
       </div>

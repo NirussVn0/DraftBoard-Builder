@@ -284,6 +284,9 @@ function App() {
         }
       }}
       onEditMap={(slot) => {
+        if (slot.mapSettings) {
+          localStorage.setItem('draftboard_map_settings', JSON.stringify(slot.mapSettings));
+        }
         setEditingMap({ path: slot.path, env: slot.env || [] });
         setAppMode('BUILDER');
       }}
@@ -343,31 +346,43 @@ function App() {
       />
 
       {/* Bottom-center action buttons */}
-      {gameState.phase === 'IDLE_TURN' && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3">
-          {gameState.canUndo && (
+      {gameState.phase === 'IDLE_TURN' && (() => {
+        const isFrozen = activePlayer?.buffs.some(b => b.id === 'FROZEN');
+        return (
+          <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3">
+            {gameState.canUndo && (
+              <button
+                onClick={() => gameEngine.undo()}
+                className="flex items-center gap-2 px-6 py-5 bg-amber-100 text-amber-700 font-bold text-sm game-card hover:bg-amber-200 hover:scale-105 active:scale-95 transition-all uppercase tracking-wider border border-amber-200"
+              >
+                <Undo2 size={18} /> {t().dice.undoButton}
+              </button>
+            )}
             <button
-              onClick={() => gameEngine.undo()}
-              className="flex items-center gap-2 px-6 py-5 bg-amber-100 text-amber-700 font-bold text-sm game-card hover:bg-amber-200 hover:scale-105 active:scale-95 transition-all uppercase tracking-wider border border-amber-200"
+              onClick={() => gameEngine.skipTurn()}
+              className={`flex items-center gap-2 px-6 py-5 font-bold text-sm game-card transition-all uppercase tracking-wider ${
+                isFrozen 
+                  ? 'bg-cyan-400 text-white hover:bg-cyan-500 shadow-[0_0_20px_rgba(34,211,238,0.6)] animate-pulse'
+                  : 'bg-slate-200 text-slate-600 hover:bg-slate-300 hover:scale-105 active:scale-95'
+              }`}
             >
-              <Undo2 size={18} /> {t().dice.undoButton}
+              <SkipForward size={18} /> {isFrozen ? 'Bỏ lượt' : t().dice.skipButton}
             </button>
-          )}
-          <button
-            onClick={() => gameEngine.skipTurn()}
-            className="flex items-center gap-2 px-6 py-5 bg-slate-200 text-slate-600 font-bold text-sm game-card hover:bg-slate-300 hover:scale-105 active:scale-95 transition-all uppercase tracking-wider"
-          >
-            <SkipForward size={18} /> {t().dice.skipButton}
-          </button>
-          <button
-            onClick={handleRollDice}
-            className="flex items-center gap-3 px-10 py-5 bg-indigo-600 text-white font-black text-xl game-card hover:bg-indigo-500 hover:scale-105 active:scale-95 transition-all uppercase tracking-wider"
-            style={{ borderColor: activePlayer?.color }}
-          >
-            <Dices size={28} /> {t().dice.rollButton}
-          </button>
-        </div>
-      )}
+            <button
+              onClick={handleRollDice}
+              disabled={isFrozen}
+              className={`flex items-center gap-3 px-10 py-5 font-black text-xl game-card uppercase tracking-wider transition-all ${
+                isFrozen 
+                  ? 'bg-slate-300 text-slate-500 opacity-70 grayscale cursor-not-allowed border-slate-400' 
+                  : 'bg-indigo-600 text-white hover:bg-indigo-500 hover:scale-105 active:scale-95'
+              }`}
+              style={{ borderColor: !isFrozen && activePlayer ? activePlayer.color : undefined }}
+            >
+              <Dices size={28} /> {isFrozen ? '❄️ BỊ ĐÓNG BĂNG' : t().dice.rollButton}
+            </button>
+          </div>
+        );
+      })()}
 
       {/* Sky-drop Dice Overlay */}
       {showDiceOverlay && (
@@ -431,6 +446,7 @@ function App() {
       {/* Frozen Skip Overlay */}
       {gameState.phase === 'EVENT_FROZEN_SKIP' && (
         <FrozenSkipOverlay
+          key={`frozen-skip-${gameState.activePlayerIndex}`}
           player={gameState.players[gameState.activePlayerIndex]}
           onComplete={() => gameEngine.concludeFrozenSkip()}
         />

@@ -17,7 +17,6 @@ export const CardEffectOverlay: React.FC<CardEffectOverlayProps> = ({ card, reso
   if (card.id === 'DEADLINE_BOMB') memeSrc = '/assets/memes/megumin-explosion.gif';
   if (card.id === 'ZA_WARUDO') memeSrc = '/assets/memes/dio-zawarudo.mp4';
   if (card.id === 'AMENOTEJIKARA') memeSrc = '/assets/memes/isekai.gif';
-  if (card.id === 'COUNTER_ARGUMENT') memeSrc = '/assets/memes/meliodas-counter.gif';
   if (card.id === 'BLACKOUT') memeSrc = '/assets/memes/blackout.gif';
   if (card.id === 'POP_QUIZ') memeSrc = '/assets/memes/domain-expansion.gif';
 
@@ -91,7 +90,11 @@ export const CardEffectOverlay: React.FC<CardEffectOverlayProps> = ({ card, reso
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
        {/* Background dimmer */}
-       <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-0" />
+       <div 
+          className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-0 pointer-events-auto cursor-pointer" 
+          onClick={finishAnimation}
+          title="Bấm để bỏ qua"
+       />
 
        {/* Centered Wrapper */}
        <div ref={wrapperRef} className="pointer-events-auto relative z-10 flex flex-col items-center justify-center w-full max-w-5xl px-4 gap-6 opacity-0">
@@ -103,15 +106,13 @@ export const CardEffectOverlay: React.FC<CardEffectOverlayProps> = ({ card, reso
               autoPlay 
               playsInline
               onEnded={finishAnimation}
-              className="max-w-full max-h-[60vh] object-contain rounded-2xl shadow-2xl border-4 border-white/20" 
-              style={{ minWidth: '40vw', minHeight: '30vh' }}
+              className="w-auto h-auto max-w-[90vw] max-h-[65vh] object-contain rounded-xl shadow-[0_0_60px_rgba(0,0,0,0.8)] border-[16px] border-white/10 bg-black/50 backdrop-blur-sm" 
             />
           ) : memeSrc ? (
             <img 
               src={memeSrc} 
               alt={card.name} 
-              className="max-w-full max-h-[60vh] object-contain rounded-2xl shadow-2xl border-4 border-white/20" 
-              style={{ minWidth: '40vw', minHeight: '30vh' }}
+              className="w-auto h-auto max-w-[90vw] max-h-[65vh] object-contain rounded-xl shadow-[0_0_60px_rgba(0,0,0,0.8)] border-[16px] border-white/10 bg-black/50 backdrop-blur-sm" 
             />
           ) : null}
 
