@@ -7,7 +7,7 @@ import { CARD_DEFINITIONS } from '../../core/CardRegistry';
 import type { CardId } from '../../core/CardTypes';
 import EmojiPicker from 'emoji-picker-react';
 import { CardSettingsModal } from './CardSettingsModal';
-import { DEFAULT_DECK } from '../../core/SettingsState';
+import { DEFAULT_DECK, DEFAULT_MAP, type MapSettings } from '../../core/SettingsState';
 
 interface MapBuilderUIProps {
   onSave: (path: Tile[]) => void;
@@ -53,6 +53,15 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel, in
       loadMap({ path: initialMap.path, env: initialMap.env || [] });
     }
   }, [initialMap, loadMap]);
+
+  /** Read the map settings from localStorage (includes deckConfig set via CardSettingsModal) */
+  const getCurrentMapSettings = (): MapSettings => {
+    try {
+      const saved = localStorage.getItem('draftboard_map_settings');
+      if (saved) return { ...DEFAULT_MAP, ...JSON.parse(saved) };
+    } catch {}
+    return DEFAULT_MAP;
+  };
 
   const handleCellClick = (x: number, y: number) => {
     const tilesAtCell = path.filter(t => t.x === x && t.y === y);
@@ -274,7 +283,7 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel, in
                  const name = prompt('Đặt tên map:', `Map ${new Date().toLocaleString('vi')}`);
                  if (name !== null) {
                    const { SaveManager } = await import('../../services/SaveManager');
-                   SaveManager.addMap(name || '', finalPath, env);
+                   SaveManager.addMap(name || '', finalPath, env, getCurrentMapSettings());
                  }
                  onSave(finalPath); 
                } else {
@@ -292,7 +301,7 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel, in
                    const finalPath = [...path];
                    finalPath[finalPath.length - 1] = { ...finalPath[finalPath.length - 1], type: 'END' as const };
                    const { SaveManager } = await import('../../services/SaveManager');
-                   const slot = SaveManager.addMap(`Map ${new Date().toLocaleString('vi')}`, finalPath, env);
+                   const slot = SaveManager.addMap(`Map ${new Date().toLocaleString('vi')}`, finalPath, env, getCurrentMapSettings());
                    SaveManager.exportMapAsJSON(slot);
                  } else {
                    alert(t().builder.tooShort);

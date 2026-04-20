@@ -244,10 +244,21 @@ function App() {
   // ── MENU ──
   if (appMode === 'MENU') {
     return <WelcomeMenu
-      onSelectMode={(mode) => {
+      onSelectMode={async (mode) => {
         if (mode === 'PLAYING') {
-          setPendingMapPath(generateZigzagMap());
-          setPendingMapEnv([]);
+          // Load bundled default map
+          try {
+            const res = await fetch('/assets/default_map.json');
+            const data = await res.json();
+            setPendingMapPath(data.path || generateZigzagMap());
+            setPendingMapEnv(data.env || []);
+            if (data.mapSettings) {
+              localStorage.setItem('draftboard_map_settings', JSON.stringify(data.mapSettings));
+            }
+          } catch {
+            setPendingMapPath(generateZigzagMap());
+            setPendingMapEnv([]);
+          }
           setAppMode('PLAYING');
         } else {
           setAppMode(mode as AppMode);
@@ -256,6 +267,10 @@ function App() {
       onLoadMap={(slot) => {
         setPendingMapPath(slot.path);
         setPendingMapEnv(slot.env || []);
+        // Pre-apply map settings so HomeMenu picks them up
+        if (slot.mapSettings) {
+          localStorage.setItem('draftboard_map_settings', JSON.stringify(slot.mapSettings));
+        }
         setAppMode('PLAYING');
       }}
       onLoadGame={(slot) => {
