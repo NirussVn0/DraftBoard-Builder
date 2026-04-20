@@ -14,18 +14,18 @@ class CameraService {
    */
   public panTo(
     targetId: string,
-    containerId: string,
+    _containerId: string,
     targetX: number,
     targetY: number
   ) {
     const el = document.getElementById(targetId);
-    const container = document.getElementById(containerId);
-    if (!el || !container) return;
+    if (!el) return;
 
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    // Use window dimensions as the visible viewport
+    const width = window.innerWidth;
+    const height = window.innerHeight;
 
-    // Calculate translation needed to center the target
+    // Center the target in the viewport
     const tx = (width / 2) - targetX;
     const ty = (height / 2) - targetY;
 
@@ -33,7 +33,7 @@ class CameraService {
       targets: el,
       translateX: tx,
       translateY: ty,
-      duration: 300, // Make it match the per-step animation duration for smooth tracking
+      duration: 300,
       easing: 'easeOutCubic'
     });
   }

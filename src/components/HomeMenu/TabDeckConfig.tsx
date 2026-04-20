@@ -1,5 +1,6 @@
 import React from 'react';
-import type { MapSettings } from '../../core/SettingsState';
+import type { MapSettings, DeckConfig } from '../../core/SettingsState';
+import { DEFAULT_DECK } from '../../core/SettingsState';
 import { t } from '../../locales';
 
 interface TabDeckConfigProps {
@@ -16,10 +17,23 @@ export const TabDeckConfig: React.FC<TabDeckConfigProps> = ({ mapSettings, patch
     patchSettings({ deckConfig: { ...deck, ...patch } });
   };
 
-  const ToggleItem = ({ label, desc, checked, onChange }: { label: string; desc: string; checked: boolean; onChange: (v: boolean) => void }) => (
-    <div className="flex items-center justify-between p-3 bg-slate-50 game-card hover:bg-slate-100 transition-colors">
+  /** Check if a specific deck key has been modified from default */
+  const isModified = (key: keyof DeckConfig): boolean => {
+    const current = deck[key];
+    const def = DEFAULT_DECK[key];
+    if (Array.isArray(current) && Array.isArray(def)) {
+      return current[0] !== def[0] || current[1] !== def[1];
+    }
+    return current !== def;
+  };
+
+  const ToggleItem = ({ label, desc, checked, onChange, modified }: { label: string; desc: string; checked: boolean; onChange: (v: boolean) => void; modified?: boolean }) => (
+    <div className={`flex items-center justify-between p-3 game-card hover:bg-slate-100 transition-colors ${modified ? 'bg-amber-50 border-l-2 border-l-amber-400' : 'bg-slate-50'}`}>
       <div className="flex flex-col">
-        <span className="text-sm font-bold text-slate-700">{label}</span>
+        <span className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
+          {label}
+          {modified && <span className="w-2 h-2 rounded-full bg-red-500 inline-block shrink-0" title="Đã chỉnh sửa" />}
+        </span>
         <span className="text-xs font-medium text-slate-500">{desc}</span>
       </div>
       <button
@@ -42,7 +56,10 @@ export const TabDeckConfig: React.FC<TabDeckConfigProps> = ({ mapSettings, patch
       {/* Rarity Bias */}
       <div className="space-y-2">
         <div className="flex justify-between items-center">
-          <label className="text-sm font-bold text-purple-600 uppercase tracking-wider">{dt.rarityBias}</label>
+          <label className="text-sm font-bold text-purple-600 uppercase tracking-wider flex items-center gap-1.5">
+            {dt.rarityBias}
+            {isModified('rarityBias') && <span className="w-2 h-2 rounded-full bg-red-500 inline-block" />}
+          </label>
           <span className="text-sm font-black text-purple-600">{deck.rarityBias}%</span>
         </div>
         <p className="text-xs font-medium text-slate-500 mb-2">{dt.rarityHelp}</p>
@@ -64,12 +81,14 @@ export const TabDeckConfig: React.FC<TabDeckConfigProps> = ({ mapSettings, patch
           desc={cards.eureka.desc}
           checked={deck.enableEureka}
           onChange={(v) => patchDeck({ enableEureka: v })}
+          modified={isModified('enableEureka')}
         />
         <ToggleItem
           label={cards.mindBlank.name}
           desc={cards.mindBlank.desc}
           checked={deck.enableMindBlank}
           onChange={(v) => patchDeck({ enableMindBlank: v })}
+          modified={isModified('enableMindBlank')}
         />
       </div>
 
@@ -81,36 +100,42 @@ export const TabDeckConfig: React.FC<TabDeckConfigProps> = ({ mapSettings, patch
           desc={cards.lifebuoy.desc}
           checked={deck.enableLifebuoy}
           onChange={(v) => patchDeck({ enableLifebuoy: v })}
+          modified={isModified('enableLifebuoy')}
         />
         <ToggleItem
           label={cards.counter.name}
           desc={cards.counter.desc}
           checked={deck.enableCounter}
           onChange={(v) => patchDeck({ enableCounter: v })}
+          modified={isModified('enableCounter')}
         />
         <ToggleItem
           label={cards.parasite.name}
           desc={cards.parasite.desc}
           checked={deck.enableParasite}
           onChange={(v) => patchDeck({ enableParasite: v })}
+          modified={isModified('enableParasite')}
         />
         <ToggleItem
           label={cards.deadlineBomb.name}
           desc={cards.deadlineBomb.desc}
           checked={deck.enableDeadlineBomb}
           onChange={(v) => patchDeck({ enableDeadlineBomb: v })}
+          modified={isModified('enableDeadlineBomb')}
         />
         <ToggleItem
           label={cards.blackout.name}
           desc={cards.blackout.desc}
           checked={deck.enableBlackout}
           onChange={(v) => patchDeck({ enableBlackout: v })}
+          modified={isModified('enableBlackout')}
         />
         <ToggleItem
           label={cards.detention.name}
           desc={cards.detention.desc}
           checked={deck.enableDetention}
           onChange={(v) => patchDeck({ enableDetention: v })}
+          modified={isModified('enableDetention')}
         />
       </div>
 
@@ -122,24 +147,28 @@ export const TabDeckConfig: React.FC<TabDeckConfigProps> = ({ mapSettings, patch
           desc={cards.supervisorHand.desc}
           checked={deck.enableSupervisorHand}
           onChange={(v) => patchDeck({ enableSupervisorHand: v })}
+          modified={isModified('enableSupervisorHand')}
         />
         <ToggleItem
           label={cards.ninjaCopy.name}
           desc={cards.ninjaCopy.desc}
           checked={deck.enableNinjaCopy}
           onChange={(v) => patchDeck({ enableNinjaCopy: v })}
+          modified={isModified('enableNinjaCopy')}
         />
         <ToggleItem
           label={cards.amenotejikara.name}
           desc={cards.amenotejikara.desc}
           checked={deck.enableAmenotejikara}
           onChange={(v) => patchDeck({ enableAmenotejikara: v })}
+          modified={isModified('enableAmenotejikara')}
         />
         <ToggleItem
           label={cards.zaWarudo.name}
           desc={cards.zaWarudo.desc}
           checked={deck.enableZaWarudo}
           onChange={(v) => patchDeck({ enableZaWarudo: v })}
+          modified={isModified('enableZaWarudo')}
         />
         {deck.hostMode && (
           <ToggleItem
@@ -147,6 +176,7 @@ export const TabDeckConfig: React.FC<TabDeckConfigProps> = ({ mapSettings, patch
             desc={cards.popQuiz.desc}
             checked={deck.enablePopQuiz}
             onChange={(v) => patchDeck({ enablePopQuiz: v })}
+            modified={isModified('enablePopQuiz')}
           />
         )}
       </div>

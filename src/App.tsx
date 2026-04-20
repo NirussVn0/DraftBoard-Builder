@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { gameEngine } from './core/GameEngine'
 import type { GameState } from './core/GameState'
 import { AnimationService } from './services/AnimationService'
-import { TOTAL_CELLS, getCoordinatesFromCell, getPlayerOffset } from './core/Pathfinding'
+import { TOTAL_CELLS, getCoordinatesFromCell } from './core/Pathfinding'
 import { cameraService } from './services/CameraService'
 import { audioService } from './services/AudioService'
 
@@ -25,14 +25,14 @@ import { KickOverlay } from './components/PlayMenu/KickOverlay'
 import { FrozenSkipOverlay } from './components/PlayMenu/FrozenSkipOverlay'
 import { MapShareService } from './services/MapShareService'
 import { SaveManager } from './services/SaveManager'
+import { CreatorTag } from './components/CreatorTag'
 
 import { Trophy, RefreshCcw, Home, Settings, Dices, SkipForward, Undo2 } from 'lucide-react'
 
 import { t } from './locales'
 
 import type { Tile } from './core/MapBuilderState'
-import { generateZigzagMap, MAP_SIZE } from './core/MapBuilderState'
-import { BOARD_SIZE } from './core/Pathfinding'
+import { generateZigzagMap } from './core/MapBuilderState'
 import type { MapSettings } from './core/SettingsState'
 
 type AppMode = 'MENU' | 'BUILDER' | 'PLAYING';
@@ -117,7 +117,6 @@ function App() {
       if (!activePlayer) return;
 
       const TILE_PX = 64; // Same as BoardGrid
-      const tokenPx = TILE_PX * 0.7;
 
       let gridX = 0, gridY = 0;
       if (gameState.map && gameState.map.length > 0) {
@@ -128,16 +127,9 @@ function App() {
         gridX = coords.x; gridY = coords.y;
       }
 
-      const cellSizePct = gameState.map ? (100 / MAP_SIZE) : (100 / BOARD_SIZE);
-      const { offsetX, offsetY } = getPlayerOffset(gameState.activePlayerIndex, cellSizePct);
-      const boardPx = (gameState.map ? MAP_SIZE : BOARD_SIZE) * TILE_PX;
-      
-      const pxOffsetX = (offsetX / 100) * boardPx;
-      const pxOffsetY = (offsetY / 100) * boardPx;
-      const tokenCenter = (TILE_PX - tokenPx) / 2;
-
-      const targetX = gridX * TILE_PX + tokenCenter + pxOffsetX + (tokenPx / 2);
-      const targetY = gridY * TILE_PX + tokenCenter + pxOffsetY + (tokenPx / 2);
+      // Center camera on grid cell center (not offset token position)
+      const targetX = gridX * TILE_PX + (TILE_PX / 2);
+      const targetY = gridY * TILE_PX + (TILE_PX / 2);
 
       cameraService.panTo('camera-viewport', 'board-container', targetX, targetY);
     }, 100);
@@ -499,6 +491,8 @@ function App() {
 
     {/* Settings Drawer */}
     <SettingsPanel isOpen={showSettings} onClose={() => setShowSettings(false)} />
+    
+    <CreatorTag />
     </>
   );
 }

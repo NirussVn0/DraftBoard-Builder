@@ -1,7 +1,7 @@
 {
-  "id": "6a9d5144-b757-4a1e-80a8-f20469dde973",
-  "name": "Map final setup study",
-  "savedAt": 1776649062179,
+  "id": "84dfff10-f4c3-453d-b791-404dfd661e70",
+  "name": "map final 2",
+  "savedAt": 1776728028981,
   "path": [
     {
       "stepIndex": 0,
@@ -21,7 +21,7 @@
       "x": 2,
       "y": 0,
       "type": "NORMAL",
-      "cardId": "POP_QUIZ"
+      "cardId": "EUREKA"
     },
     {
       "stepIndex": 3,
@@ -133,13 +133,14 @@
       "x": 12,
       "y": 3,
       "type": "NORMAL",
-      "cardId": "EUREKA"
+      "cardId": "SUPERVISOR_HAND"
     },
     {
       "stepIndex": 20,
       "x": 11,
       "y": 3,
-      "type": "NORMAL"
+      "type": "NORMAL",
+      "cardId": "BLACKOUT"
     },
     {
       "stepIndex": 21,
@@ -375,7 +376,8 @@
       "stepIndex": 56,
       "x": 9,
       "y": 9,
-      "type": "NORMAL"
+      "type": "NORMAL",
+      "cardId": "POP_QUIZ"
     },
     {
       "stepIndex": 57,
@@ -1053,5 +1055,45 @@
       "y": 13.022282772126573,
       "emoji": "🎒"
     }
-  ]
+  ],
+  "mapSettings": {
+    "diceCount": 1,
+    "kickDistance": 3,
+    "exactLanding": true,
+    "mysteryRange": 6,
+    "biome": "OFF",
+    "deckConfig": {
+      "enableEureka": true,
+      "eurekaRange": [
+        1,
+        6
+      ],
+      "enableMindBlank": true,
+      "mindBlankRange": [
+        1,
+        6
+      ],
+      "enableLifebuoy": true,
+      "enableCounter": true,
+      "counterTurns": 3,
+      "enableParasite": true,
+      "enableDeadlineBomb": true,
+      "deadlineBombMode": "MATCH_STEPS",
+      "enableBlackout": true,
+      "blackoutSteps": 2,
+      "enableDetention": true,
+      "detentionEscapeValue": 6,
+      "enablePopQuiz": false,
+      "quizReward": 4,
+      "quizPenalty": 4,
+      "enableSupervisorHand": true,
+      "enableNinjaCopy": true,
+      "ninjaCopyTarget": "RANDOM",
+      "enableAmenotejikara": true,
+      "enableZaWarudo": true,
+      "zaWarudoMode": "FREEZE_ALL",
+      "rarityBias": 30,
+      "hostMode": false
+    }
+  }
 }
