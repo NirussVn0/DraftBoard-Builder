@@ -250,14 +250,16 @@ function App() {
           try {
             const res = await fetch('/assets/default_map.json');
             const data = await res.json();
-            setPendingMapPath(data.path || generateZigzagMap());
-            setPendingMapEnv(data.env || []);
+            const fallbackMap = generateZigzagMap();
+            setPendingMapPath(data.path || fallbackMap.path);
+            setPendingMapEnv(data.env || fallbackMap.env);
             if (data.mapSettings) {
               localStorage.setItem('draftboard_map_settings', JSON.stringify(data.mapSettings));
             }
           } catch {
-            setPendingMapPath(generateZigzagMap());
-            setPendingMapEnv([]);
+            const fallbackMap = generateZigzagMap();
+            setPendingMapPath(fallbackMap.path);
+            setPendingMapEnv(fallbackMap.env);
           }
           setAppMode('PLAYING');
         } else {

@@ -1,5 +1,5 @@
 import LZString from 'lz-string';
-import type { Tile } from '../core/MapBuilderState';
+
 
 const URL_PARAM = 'map';
 

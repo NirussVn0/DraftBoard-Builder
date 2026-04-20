@@ -43,7 +43,7 @@ export function generateZigzagMap(): MapState {
   for (let x = 1; x <= 4; x++) tiles.push({ stepIndex: step++, x, y: 10, type: 'NORMAL' });
 
   tiles.push({ stepIndex: step++, x: 5, y: 10, type: 'END' });
-  return { path: tiles, env: {} };
+  return { path: tiles, env: [] };
 }
 
 export function useMapBuilder() {

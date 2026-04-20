@@ -9,7 +9,7 @@ export interface GlobalSettings {
 
 export const DEFAULT_GLOBAL: GlobalSettings = {
   locale: 'vi',
-  enableSoundEffects: true, // bật lên để thử
+  enableSoundEffects: true,
   enableVideoAudio: true,
   enableAnimations: true,
   cameraAutoTrack: true,

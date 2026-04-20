@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import anime from 'animejs';
 import type { Player } from '../../core/GameState';
 import { audioService } from '../../services/AudioService';
@@ -18,7 +18,7 @@ export const FrozenSkipOverlay: React.FC<FrozenSkipOverlayProps> = ({ player, on
 
     if (!containerRef.current) return;
 
-    audioService.playBuzzer();
+    audioService.playMysteryFlip();
 
     const tl = anime.timeline({
       complete: () => {

@@ -1,7 +1,7 @@
 import type { GameState } from '../core/GameState';
 import type { Tile } from '../core/MapBuilderState';
 import type { MapSettings } from '../core/SettingsState';
-import { MapShareService } from './MapShareService';
+
 
 export interface SavedMapSlot {
   id: string;

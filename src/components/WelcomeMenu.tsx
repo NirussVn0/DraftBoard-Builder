@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Play, PenTool, FolderOpen, History, Trash2, Download, Upload, X, Plus, Pencil } from 'lucide-react';
+import { Play, PenTool, FolderOpen, History, Trash2, Download, Upload, X, Pencil } from 'lucide-react';
 import { t } from '../locales';
 import { SaveManager, type SavedMapSlot, type SavedGameSlot } from '../services/SaveManager';
 
