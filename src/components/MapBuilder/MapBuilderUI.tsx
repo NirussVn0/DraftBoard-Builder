@@ -12,10 +12,12 @@ import { DEFAULT_DECK } from '../../core/SettingsState';
 interface MapBuilderUIProps {
   onSave: (path: Tile[]) => void;
   onCancel: () => void;
+  initialMap?: { path: Tile[]; env?: any[] };
 }
 
-export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) => {
+export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel, initialMap }) => {
   const { path, env, addNode, eraseFrom, setCard, randomFill, clearMap, loadMap, addEnvItem, removeEnvItem, undo, redo, canUndo, canRedo } = useMapBuilder();
+  const hasLoadedInitial = React.useRef(false);
   const [tool, setTool] = React.useState<'DRAW' | 'ERASE' | 'CARD_PAINT' | 'ERASE_CARD' | 'RANDOM_FILL' | 'PAINT_ENV' | 'ERASE_ENV'>('DRAW');
   const [selectedCard, setSelectedCard] = React.useState<CardId>('MYSTERY');
   const [selectedEmoji, setSelectedEmoji] = React.useState<string>('🌲');
@@ -43,6 +45,14 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel }) 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [undo, redo, canUndo, canRedo]);
+
+  // Load initial map for editing
+  React.useEffect(() => {
+    if (initialMap && !hasLoadedInitial.current) {
+      hasLoadedInitial.current = true;
+      loadMap({ path: initialMap.path, env: initialMap.env || [] });
+    }
+  }, [initialMap, loadMap]);
 
   const handleCellClick = (x: number, y: number) => {
     const tilesAtCell = path.filter(t => t.x === x && t.y === y);

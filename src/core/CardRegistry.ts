@@ -62,8 +62,12 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
     name: 'Bom Deadline',
     description: 'Kéo đứa đầu bảng chết chung! Cả hai lùi về cùng điểm!',
     resolve: (ctx) => {
-      let top1 = ctx.allPlayers[0];
-      for (const p of ctx.allPlayers) if (p.position > top1.position) top1 = p;
+      const others = ctx.allPlayers.filter(p => p.id !== ctx.activePlayer.id);
+      if (others.length === 0) {
+        return { type: 'MOVE', targetPlayerIds: [ctx.activePlayer.id], steps: -3 };
+      }
+      let top1 = others[0];
+      for (const p of others) if (p.position > top1.position) top1 = p;
       if (ctx.deckConfig.deadlineBombMode === 'RESET_ZERO') {
         return { type: 'TELEPORT', targetPlayerIds: [ctx.activePlayer.id, top1.id], newPosition: 0 };
       }

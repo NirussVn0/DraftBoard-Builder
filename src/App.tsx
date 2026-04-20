@@ -62,6 +62,7 @@ function App() {
   const [appMode, setAppMode] = useState<AppMode>('MENU')
   const [pendingMapPath, setPendingMapPath] = useState<Tile[] | null>(null)
   const [pendingMapEnv, setPendingMapEnv] = useState<{ id: string; x: number; y: number; emoji: string; }[]>([])
+  const [editingMap, setEditingMap] = useState<{ path: Tile[]; env?: any[] } | null>(null)
   const [gameState, setGameState] = useState<GameState>(gameEngine.getState())
   const [showDiceOverlay, setShowDiceOverlay] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
@@ -267,6 +268,10 @@ function App() {
           alert(t().common.savedMapError);
         }
       }}
+      onEditMap={(slot) => {
+        setEditingMap({ path: slot.path, env: slot.env || [] });
+        setAppMode('BUILDER');
+      }}
     />;
   }
 
@@ -275,13 +280,15 @@ function App() {
       <>
         <AppHeader onHome={handleGoHome} onSettings={handleSettings} />
         <MapBuilderUI
+          initialMap={editingMap || undefined}
           onSave={(path) => {
             setPendingMapPath(path);
             setPendingMapEnv([]);
+            setEditingMap(null);
             gameEngine.resetGame();
             setAppMode('PLAYING');
           }}
-          onCancel={() => setAppMode('MENU')}
+          onCancel={() => { setEditingMap(null); setAppMode('MENU'); }}
         />
       </>
     );

@@ -1,5 +1,6 @@
 import type { GameState } from '../core/GameState';
 import type { Tile } from '../core/MapBuilderState';
+import type { MapSettings } from '../core/SettingsState';
 import { MapShareService } from './MapShareService';
 
 export interface SavedMapSlot {
@@ -8,6 +9,7 @@ export interface SavedMapSlot {
   savedAt: number;
   path: Tile[];
   env: { id: string; x: number; y: number; emoji: string }[];
+  mapSettings?: MapSettings;
 }
 
 export interface SavedGameSlot {
@@ -54,7 +56,7 @@ export const SaveManager = {
     localStorage.setItem(MAPS_KEY, JSON.stringify(maps));
   },
 
-  addMap(name: string, path: Tile[], env: { id: string; x: number; y: number; emoji: string }[] = []): SavedMapSlot {
+  addMap(name: string, path: Tile[], env: { id: string; x: number; y: number; emoji: string }[] = [], mapSettings?: MapSettings): SavedMapSlot {
     const maps = SaveManager.getMaps();
     const slot: SavedMapSlot = {
       id: crypto.randomUUID?.() || `map-${Date.now()}`,
@@ -62,6 +64,7 @@ export const SaveManager = {
       savedAt: Date.now(),
       path,
       env,
+      mapSettings,
     };
     maps.push(slot);
     SaveManager.saveMaps(maps);

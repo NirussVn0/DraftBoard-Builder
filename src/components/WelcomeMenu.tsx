@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Play, PenTool, FolderOpen, History, Trash2, Download, Upload, X, Plus } from 'lucide-react';
+import { Play, PenTool, FolderOpen, History, Trash2, Download, Upload, X, Plus, Pencil } from 'lucide-react';
 import { t } from '../locales';
 import { SaveManager, type SavedMapSlot, type SavedGameSlot } from '../services/SaveManager';
 
@@ -7,11 +7,12 @@ interface WelcomeMenuProps {
   onSelectMode: (mode: 'PLAYING' | 'BUILDER' | 'PLAY_SAVED' | 'RESUME') => void;
   onLoadMap?: (map: SavedMapSlot) => void;
   onLoadGame?: (game: SavedGameSlot) => void;
+  onEditMap?: (map: SavedMapSlot) => void;
 }
 
 type DrawerMode = null | 'maps' | 'games';
 
-export const WelcomeMenu: React.FC<WelcomeMenuProps> = ({ onSelectMode, onLoadMap, onLoadGame }) => {
+export const WelcomeMenu: React.FC<WelcomeMenuProps> = ({ onSelectMode, onLoadMap, onLoadGame, onEditMap }) => {
   const s = t().welcome;
   const [drawer, setDrawer] = useState<DrawerMode>(null);
   const [maps, setMaps] = useState<SavedMapSlot[]>(() => SaveManager.getMaps());
@@ -142,8 +143,15 @@ export const WelcomeMenu: React.FC<WelcomeMenuProps> = ({ onSelectMode, onLoadMa
                 <div key={m.id} className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-amber-300 transition group">
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-slate-800 truncate">{m.name}</p>
-                    <p className="text-xs text-slate-400">{m.path.length} ô • {formatDate(m.savedAt)}</p>
+                    <p className="text-xs text-slate-400">{m.path.length} ô • {formatDate(m.savedAt)}{m.mapSettings ? ' • ⚙️' : ''}</p>
                   </div>
+                  <button
+                    onClick={() => { onEditMap?.(m); setDrawer(null); }}
+                    className="p-2 text-slate-400 hover:text-amber-600 transition opacity-0 group-hover:opacity-100"
+                    title="Chỉnh sửa map"
+                  >
+                    <Pencil size={16} />
+                  </button>
                   <button
                     onClick={() => { SaveManager.exportMapAsJSON(m); }}
                     className="p-2 text-slate-400 hover:text-indigo-500 transition opacity-0 group-hover:opacity-100"
