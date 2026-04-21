@@ -5,12 +5,11 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
   ['EUREKA', {
     id: 'EUREKA', tier: 'GREEN', icon: '💡',
     name: 'Eureka! Sáng Kiến',
-    description: 'Tiến lên hoặc lùi xuống ngẫu nhiên!',
+    description: 'Tiến lên ngẫu nhiên!',
     resolve: (ctx) => {
       const [min, max] = ctx.deckConfig.eurekaRange;
       const steps = Math.floor(Math.random() * (max - min + 1)) + min;
-      const sign = Math.random() > 0.5 ? 1 : -1;
-      return { type: 'MOVE', targetPlayerIds: [ctx.activePlayer.id], steps: steps * sign };
+      return { type: 'MOVE', targetPlayerIds: [ctx.activePlayer.id], steps };
     },
   }],
 
