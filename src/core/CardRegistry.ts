@@ -37,7 +37,7 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
   }],
 
   ['PARASITE', {
-    id: 'PARASITE', tier: 'GREEN', icon: '/assets/an_truc.gif',
+    id: 'PARASITE', tier: 'GREEN', icon: '/assets/an_truc.png',
     name: 'Ăn Trực (Khô Gà)',
     description: 'Lượt sau, người kế tiếp bị chia đôi số bước, phần đó cộng cho bạn.',
     resolve: (ctx) => ({
