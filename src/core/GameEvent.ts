@@ -16,5 +16,5 @@ export type GameEvent =
   | { type: 'QUIZ_START'; challengerId: string; opponentId: string }
   | { type: 'QUIZ_RESOLVE'; winnerId: string; loserId: string }
   | { type: 'DETENTION_CHECK'; playerId: string }
-  | { type: 'FREEZE_PLAYER'; playerId: string; turns: number }
+  | { type: 'FREEZE_PLAYERS'; playerIds: string[]; turns: number }
   | { type: 'ADVANCE_TURN' };

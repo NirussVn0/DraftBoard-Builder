@@ -34,6 +34,7 @@ export interface DeckConfig {
   quizReward: number;
   quizPenalty: number;
   enableSupervisorHand: boolean;
+  supervisorHandMode?: 'PULL_TOP_TO_ME' | 'PULL_ALL_TO_LAST';
   enableNinjaCopy: boolean;
   ninjaCopyTarget: 'TOP1' | 'RANDOM';
   enableAmenotejikara: boolean;
@@ -45,7 +46,7 @@ export interface DeckConfig {
 
 export const DEFAULT_DECK: DeckConfig = {
   enableEureka: true, eurekaRange: [1, 6],
-  enableMindBlank: true, mindBlankRange: [6, 6],
+  enableMindBlank: true, mindBlankRange: [1, 6],
   enableLifebuoy: true,
   enableCounter: true, counterTurns: 3,
   enableParasite: true,
@@ -53,10 +54,10 @@ export const DEFAULT_DECK: DeckConfig = {
   enableBlackout: true, blackoutSteps: 3,
   enableDetention: true, detentionEscapeValue: 6,
   enablePopQuiz: false, quizReward: 3, quizPenalty: 3,
-  enableSupervisorHand: true,
+  enableSupervisorHand: true, supervisorHandMode: 'PULL_ALL_TO_LAST',
   enableNinjaCopy: true, ninjaCopyTarget: 'TOP1',
   enableAmenotejikara: true,
-  enableZaWarudo: true, zaWarudoMode: 'FREEZE_ALL',
+  enableZaWarudo: true, zaWarudoMode: 'FREEZE_ONE',
   rarityBias: 30,
   hostMode: false,
 };

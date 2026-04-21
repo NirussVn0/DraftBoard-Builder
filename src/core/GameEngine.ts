@@ -387,7 +387,7 @@ class GameEngine {
         } else if (res.type === 'BUFF') {
            res.targetPlayerIds.forEach(id => eventsToInsert.push({ type: 'APPLY_BUFF', targetId: id, buff: res.buff! }));
         } else if (res.type === 'FREEZE') {
-           res.targetPlayerIds.forEach(id => eventsToInsert.push({ type: 'FREEZE_PLAYER', playerId: id, turns: res.freezeTurns! }));
+           eventsToInsert.push({ type: 'FREEZE_PLAYERS', playerIds: res.targetPlayerIds, turns: res.freezeTurns! });
         } else if (res.type === 'DETENTION') {
            res.targetPlayerIds.forEach(id => eventsToInsert.push({ type: 'APPLY_BUFF', targetId: id, buff: { id: 'DETENTION', turnsRemaining: -1, sourcePlayerId: this.state.players[this.state.activePlayerIndex].id } }));
         } else if (res.type === 'QUIZ') {
@@ -644,15 +644,17 @@ class GameEngine {
         break;
       }
 
-      case 'FREEZE_PLAYER': {
+      case 'FREEZE_PLAYERS': {
         // Apply FROZEN buff directly — do NOT use queue, because continueQueue()
         // will shift the next item when the UI animation ends, which would eat the APPLY_BUFF.
-        const freezeTarget = this.state.players.find(p => p.id === event.playerId);
-        if (freezeTarget) {
-          const newBuffs = freezeTarget.buffs.filter(b => b.id !== 'FROZEN');
-          newBuffs.push({ id: 'FROZEN', turnsRemaining: event.turns, sourcePlayerId: this.state.players[this.state.activePlayerIndex].id });
-          this.state.players = this.state.players.map(p => p.id === event.playerId ? { ...p, buffs: newBuffs } : p);
-        }
+        event.playerIds.forEach(id => {
+          const freezeTarget = this.state.players.find(p => p.id === id);
+          if (freezeTarget) {
+            const newBuffs = freezeTarget.buffs.filter(b => b.id !== 'FROZEN');
+            newBuffs.push({ id: 'FROZEN', turnsRemaining: event.turns, sourcePlayerId: this.state.players[this.state.activePlayerIndex].id });
+            this.state.players = this.state.players.map(p => p.id === id ? { ...p, buffs: newBuffs } : p);
+          }
+        });
         // Don't shift — let continueQueue() handle it when UI calls back
         this.state = { ...this.state, phase: 'EVENT_FREEZE' };
         this.notify();

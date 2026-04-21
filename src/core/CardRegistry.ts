@@ -5,11 +5,12 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
   ['EUREKA', {
     id: 'EUREKA', tier: 'GREEN', icon: '💡',
     name: 'Eureka! Sáng Kiến',
-    description: 'Có ý tưởng hay. Tiến thẳng về phía trước!',
+    description: 'Tiến lên hoặc lùi xuống ngẫu nhiên!',
     resolve: (ctx) => {
       const [min, max] = ctx.deckConfig.eurekaRange;
       const steps = Math.floor(Math.random() * (max - min + 1)) + min;
-      return { type: 'MOVE', targetPlayerIds: [ctx.activePlayer.id], steps };
+      const sign = Math.random() > 0.5 ? 1 : -1;
+      return { type: 'MOVE', targetPlayerIds: [ctx.activePlayer.id], steps: steps * sign };
     },
   }],
 
@@ -49,11 +50,12 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
   ['MIND_BLANK', {
     id: 'MIND_BLANK', tier: 'RED', icon: '😶‍🌫️',
     name: 'Mất Não (Blank)',
-    description: 'Quên sạch kiến thức đã học. Đi lùi!',
+    description: 'Tiến lên hoặc lùi xuống ngẫu nhiên!',
     resolve: (ctx) => {
       const [min, max] = ctx.deckConfig.mindBlankRange;
       const steps = Math.floor(Math.random() * (max - min + 1)) + min;
-      return { type: 'MOVE', targetPlayerIds: [ctx.activePlayer.id], steps: -steps };
+      const sign = Math.random() > 0.5 ? 1 : -1;
+      return { type: 'MOVE', targetPlayerIds: [ctx.activePlayer.id], steps: steps * sign };
     },
   }],
 
