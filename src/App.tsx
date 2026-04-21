@@ -450,12 +450,12 @@ function App() {
 
       {/* Lifebuoy Break Overlay */}
       {gameState.phase === 'EVENT_LIFEBUOY_BREAK' && (
-        <LifebuoyBreakOverlay onComplete={() => gameEngine.continueQueue()} />
+        <LifebuoyBreakOverlay onComplete={() => gameEngine.resumeFromOverlay()} />
       )}
 
       {/* Counter Overlay */}
       {gameState.phase === 'EVENT_COUNTER' && (
-        <CounterOverlay onComplete={() => gameEngine.continueQueue()} />
+        <CounterOverlay onComplete={() => gameEngine.resumeFromOverlay()} />
       )}
 
       {/* Kick Overlay */}
