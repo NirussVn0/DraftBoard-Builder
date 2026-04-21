@@ -20,6 +20,7 @@ export const CardEffectOverlay: React.FC<CardEffectOverlayProps> = ({ card, reso
   if (card.id === 'AMENOTEJIKARA') memeSrc = '/assets/memes/isekai.gif';
   if (card.id === 'BLACKOUT') memeSrc = '/assets/memes/blackout.gif';
   if (card.id === 'POP_QUIZ') memeSrc = '/assets/memes/domain-expansion.gif';
+  if (card.id === 'PARASITE') memeSrc = '/assets/an_truc.png';
 
   const isVideo = memeSrc ? !!memeSrc.match(/\.(mp4|webm)$/i) : false;
 
