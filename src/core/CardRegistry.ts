@@ -37,8 +37,8 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
   }],
 
   ['PARASITE', {
-    id: 'PARASITE', tier: 'GREEN', icon: '🦠',
-    name: 'Ăn Bám (Parasite)',
+    id: 'PARASITE', tier: 'GREEN', icon: '/assets/an_truc.gif',
+    name: 'Ăn Trực (Khô Gà)',
     description: 'Lượt sau, người kế tiếp bị chia đôi số bước, phần đó cộng cho bạn.',
     resolve: (ctx) => ({
       type: 'BUFF',
@@ -48,9 +48,9 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
   }],
 
   ['MIND_BLANK', {
-    id: 'MIND_BLANK', tier: 'RED', icon: '😶‍🌫️',
-    name: 'Mất Não (Blank)',
-    description: 'Tiến lên hoặc lùi xuống ngẫu nhiên!',
+    id: 'MIND_BLANK', tier: 'RED', icon: '📱',
+    name: 'Cám Dỗ',
+    description: 'Tất cả là do cái điện thoại 😡! Tiến lên hoặc lùi xuống ngẫu nhiên!',
     resolve: (ctx) => {
       const [min, max] = ctx.deckConfig.mindBlankRange;
       const steps = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -114,13 +114,17 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
   ['SUPERVISOR_HAND', {
     id: 'SUPERVISOR_HAND', tier: 'PURPLE', icon: '🖐️',
     name: 'Bàn Tay Giám Thị',
-    description: 'Giám thị tóm cổ một đứa ngẫu nhiên ném về bét bảng!',
+    description: 'Bàn tay tàn nhẫn của giám thị, kéo người chơi về đúng vị trí!',
     resolve: (ctx) => {
-      const others = ctx.allPlayers.filter(p => p.id !== ctx.activePlayer.id);
-      const target = others[Math.floor(Math.random() * others.length)];
-      let last = ctx.allPlayers[0];
-      for (const p of ctx.allPlayers) if (p.position < last.position) last = p;
-      return { type: 'TELEPORT', targetPlayerIds: [target?.id || ctx.activePlayer.id], newPosition: last.position };
+      if (ctx.deckConfig.supervisorHandMode === 'PULL_TOP_TO_ME') {
+        let top = ctx.allPlayers[0];
+        for (const p of ctx.allPlayers) if (p.position > top.position) top = p;
+        return { type: 'TELEPORT', targetPlayerIds: [top.id], newPosition: ctx.activePlayer.position };
+      } else {
+        let last = ctx.allPlayers[0];
+        for (const p of ctx.allPlayers) if (p.position < last.position) last = p;
+        return { type: 'TELEPORT', targetPlayerIds: ctx.allPlayers.map(p => p.id), newPosition: last.position };
+      }
     },
   }],
 
@@ -167,7 +171,7 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
 
   ['MYSTERY', {
     id: 'MYSTERY', tier: 'PURPLE', icon: '❓',
-    name: 'Mystery Box',
+    name: 'Ôn Tủ',
     description: 'Hộp bí ẩn. Hên xui lùi hoặc tiến từ 3 đến 6 bước!',
     resolve: (ctx) => {
       // random +3 to +6 OR -3 to -6

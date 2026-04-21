@@ -221,6 +221,19 @@ class GameEngine {
     if (this.state.phase !== 'ROLLING_DICE') return null;
 
     const player = this.state.players[this.state.activePlayerIndex];
+
+    // PARASITE check
+    const parasites = this.state.players.filter(p => p.id !== player.id && p.buffs.some(b => b.id === 'PARASITE'));
+    if (parasites.length > 0 && this.state.diceValue > 0) {
+      const parasite = parasites[0];
+      const stolen = Math.floor(this.state.diceValue / 2);
+      if (stolen > 0) {
+        this.state.diceValue -= stolen;
+        this.state.eventQueue.push({ type: 'MOVE_PLAYER', playerId: parasite.id, steps: stolen });
+      }
+      this.removeBuff(parasite.id, 'PARASITE');
+    }
+
     const isDungeon = player.buffs.some(b => b.id === 'DETENTION');
     if (isDungeon) {
       if (this.state.diceValue >= this.state.mapSettings.deckConfig.detentionEscapeValue) {

@@ -120,8 +120,13 @@ export const CardEffectOverlay: React.FC<CardEffectOverlayProps> = ({ card, reso
 
           {/* Card Info Banner */}
           <div ref={containerRef} className={`w-full max-w-2xl backdrop-blur-md p-6 rounded-3xl text-center border-4 shadow-2xl animate-bounce-slight ${bannerColor}`}>
-             <h3 className="text-3xl font-black uppercase mb-2">
-               {card.icon} {card.name} Kích Hoạt!
+             <h3 className="text-3xl font-black uppercase mb-2 flex items-center justify-center gap-3">
+               {card.icon.includes('.') ? (
+                 <img src={card.icon} alt={card.name} className="w-10 h-10 object-contain" />
+               ) : (
+                 <span>{card.icon}</span>
+               )}
+               {card.name} Kích Hoạt!
              </h3>
              <div className="text-xl font-bold opacity-90">
                 {resolution.type === 'MOVE' && (

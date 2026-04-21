@@ -221,7 +221,11 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel, in
                     onClick={() => setSelectedCard(card.id)}
                     className={`flex-1 flex items-center gap-2 p-2 game-card font-bold transition-colors text-left text-sm ${selectedCard === card.id ? 'bg-amber-100 border-amber-400 text-amber-900' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
                   >
-                    <span className="text-xl">{card.icon}</span>
+                    {card.icon.includes('.') ? (
+                      <img src={card.icon} alt={card.name} className="w-5 h-5 object-contain" />
+                    ) : (
+                      <span className="text-xl">{card.icon}</span>
+                    )}
                     <span className="truncate">{card.name}</span>
                   </button>
                   <button 

@@ -74,7 +74,11 @@ export const CardPrecastOverlay: React.FC<CardPrecastOverlayProps> = ({ card, on
       >
         {showFront ? (
           <div className={`w-full h-full flex flex-col items-center gap-4 ${tierColor} p-6 text-center`}>
-            <span className="text-6xl mt-4">{card.icon}</span>
+            {card.icon.includes('.') ? (
+              <img src={card.icon} alt={card.name} className="w-16 h-16 mt-4 object-contain" />
+            ) : (
+              <span className="text-6xl mt-4">{card.icon}</span>
+            )}
             <span className={`text-3xl font-black ${tierText} leading-tight`}>
               {card.name}
             </span>

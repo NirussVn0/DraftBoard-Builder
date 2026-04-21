@@ -1087,11 +1087,12 @@
       "quizReward": 4,
       "quizPenalty": 4,
       "enableSupervisorHand": true,
+      "supervisorHandMode": "PULL_ALL_TO_LAST",
       "enableNinjaCopy": true,
       "ninjaCopyTarget": "RANDOM",
       "enableAmenotejikara": true,
       "enableZaWarudo": true,
-      "zaWarudoMode": "FREEZE_ALL",
+      "zaWarudoMode": "FREEZE_ONE",
       "rarityBias": 30,
       "hostMode": false
     }

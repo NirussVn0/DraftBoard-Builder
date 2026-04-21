@@ -158,6 +158,18 @@ export const CardSettingsModal: React.FC<CardSettingsModalProps> = ({ cardId, in
             </div>
           </div>
         );
+      case 'SUPERVISOR_HAND':
+        return (
+          <div className="space-y-4">
+            <h4 className="font-bold text-slate-700">Tùy chỉnh: Chế độ tóm cổ</h4>
+            <div>
+              <select value={config.supervisorHandMode} onChange={(e) => setConfig({ ...config, supervisorHandMode: e.target.value as any })} className="w-full p-2 border-2 border-slate-200 rounded font-bold text-slate-700">
+                <option value="PULL_ALL_TO_LAST">Kéo mọi người về kẻ bét bảng (PULL_ALL_TO_LAST)</option>
+                <option value="PULL_TOP_TO_ME">Kéo kẻ top 1 về vị trí của mình (PULL_TOP_TO_ME)</option>
+              </select>
+            </div>
+          </div>
+        );
       default:
         return (
           <div className="p-4 bg-slate-100 rounded text-slate-500 font-bold italic text-center">
@@ -172,7 +184,11 @@ export const CardSettingsModal: React.FC<CardSettingsModalProps> = ({ cardId, in
       <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl border-4 border-slate-200 overflow-hidden flex flex-col">
         <div className="bg-slate-100 p-4 border-b-2 border-slate-200 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <span className="text-3xl">{card.icon}</span>
+            {card.icon.includes('.') ? (
+              <img src={card.icon} alt={card.name} className="w-8 h-8 object-contain" />
+            ) : (
+              <span className="text-3xl">{card.icon}</span>
+            )}
             <h2 className="text-xl font-black text-slate-800">Cài đặt: {card.name}</h2>
           </div>
           <button onClick={onClose} className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors">
