@@ -63,6 +63,30 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel, in
     return DEFAULT_MAP;
   };
 
+  const isCardModified = (cardId: CardId): boolean => {
+    const deckConfig = getCurrentMapSettings().deckConfig || DEFAULT_DECK;
+    switch (cardId) {
+      case 'LIFEBUOY':
+        return deckConfig.lifebuoyTurns !== DEFAULT_DECK.lifebuoyTurns;
+      case 'COUNTER_ARGUMENT':
+        return deckConfig.counterTurns !== DEFAULT_DECK.counterTurns;
+      case 'POP_QUIZ':
+        return deckConfig.quizReward !== DEFAULT_DECK.quizReward || deckConfig.quizPenalty !== DEFAULT_DECK.quizPenalty;
+      case 'ZA_WARUDO':
+        return deckConfig.zaWarudoMode !== DEFAULT_DECK.zaWarudoMode;
+      case 'DEADLINE_BOMB':
+        return deckConfig.deadlineBombMode !== DEFAULT_DECK.deadlineBombMode;
+      case 'NINJA_COPY':
+        return deckConfig.ninjaCopyTarget !== DEFAULT_DECK.ninjaCopyTarget;
+      case 'SUPERVISOR_HAND':
+        return deckConfig.supervisorHandMode !== DEFAULT_DECK.supervisorHandMode;
+      case 'MYSTERY':
+        return deckConfig.mysteryRange[0] !== DEFAULT_DECK.mysteryRange[0] || deckConfig.mysteryRange[1] !== DEFAULT_DECK.mysteryRange[1];
+      default:
+        return false;
+    }
+  };
+
   const handleCellClick = (x: number, y: number) => {
     const tilesAtCell = path.filter(t => t.x === x && t.y === y);
     const hasTile = tilesAtCell.length > 0;
@@ -224,9 +248,14 @@ export const MapBuilderUI: React.FC<MapBuilderUIProps> = ({ onSave, onCancel, in
                     {card.icon.includes('.') ? (
                       <img src={card.icon} alt={card.name} className="w-5 h-5 object-contain" />
                     ) : (
-                      <span className="text-xl">{card.icon}</span>
+                      <span className="text-xl relative">
+                        {card.icon}
+                      </span>
                     )}
-                    <span className="truncate">{card.name}</span>
+                    <span className="truncate flex items-center gap-2">
+                      {card.name}
+                      {isCardModified(card.id) && <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" title="Đã chỉnh sửa" />}
+                    </span>
                   </button>
                   <button 
                     onClick={() => setShowCardSettings(card.id)}

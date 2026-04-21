@@ -1,7 +1,7 @@
 {
-  "id": "84dfff10-f4c3-453d-b791-404dfd661e70",
-  "name": "map final 2",
-  "savedAt": 1776728028981,
+  "id": "c6ff9325-b4ef-440a-ae64-99623bfa0331",
+  "name": "Map 11:24:39 21/4/2026",
+  "savedAt": 1776745479371,
   "path": [
     {
       "stepIndex": 0,
@@ -13,41 +13,40 @@
       "stepIndex": 1,
       "x": 1,
       "y": 0,
-      "type": "NORMAL",
-      "cardId": "DEADLINE_BOMB"
+      "type": "NORMAL"
     },
     {
       "stepIndex": 2,
       "x": 2,
       "y": 0,
-      "type": "NORMAL",
-      "cardId": "EUREKA"
+      "type": "NORMAL"
     },
     {
       "stepIndex": 3,
       "x": 3,
       "y": 0,
       "type": "NORMAL",
-      "cardId": "MIND_BLANK"
+      "cardId": "MYSTERY"
     },
     {
       "stepIndex": 4,
       "x": 4,
       "y": 0,
-      "type": "NORMAL"
+      "type": "NORMAL",
+      "cardId": "EUREKA"
     },
     {
       "stepIndex": 5,
       "x": 5,
       "y": 0,
-      "type": "NORMAL",
-      "cardId": "ZA_WARUDO"
+      "type": "NORMAL"
     },
     {
       "stepIndex": 6,
       "x": 6,
       "y": 0,
-      "type": "NORMAL"
+      "type": "NORMAL",
+      "cardId": "NINJA_COPY"
     },
     {
       "stepIndex": 7,
@@ -59,21 +58,21 @@
       "stepIndex": 8,
       "x": 8,
       "y": 0,
-      "type": "NORMAL",
-      "cardId": "LIFEBUOY"
+      "type": "NORMAL"
     },
     {
       "stepIndex": 9,
       "x": 9,
       "y": 0,
       "type": "NORMAL",
-      "cardId": "MIND_BLANK"
+      "cardId": "ZA_WARUDO"
     },
     {
       "stepIndex": 10,
       "x": 10,
       "y": 0,
-      "type": "NORMAL"
+      "type": "NORMAL",
+      "cardId": "MIND_BLANK"
     },
     {
       "stepIndex": 11,
@@ -86,974 +85,1181 @@
       "x": 12,
       "y": 0,
       "type": "NORMAL",
-      "cardId": "NINJA_COPY"
+      "cardId": "PARASITE"
     },
     {
       "stepIndex": 13,
       "x": 13,
       "y": 0,
-      "type": "NORMAL",
-      "cardId": "EUREKA"
+      "type": "NORMAL"
     },
     {
       "stepIndex": 14,
-      "x": 14,
-      "y": 0,
-      "type": "NORMAL"
-    },
-    {
-      "stepIndex": 15,
-      "x": 14,
-      "y": 1,
-      "type": "NORMAL",
-      "cardId": "SUPERVISOR_HAND"
-    },
-    {
-      "stepIndex": 16,
-      "x": 14,
-      "y": 2,
-      "type": "NORMAL",
-      "cardId": "PARASITE"
-    },
-    {
-      "stepIndex": 17,
-      "x": 14,
-      "y": 3,
-      "type": "NORMAL",
-      "cardId": "SUPERVISOR_HAND"
-    },
-    {
-      "stepIndex": 18,
       "x": 13,
-      "y": 3,
-      "type": "NORMAL"
-    },
-    {
-      "stepIndex": 19,
-      "x": 12,
-      "y": 3,
-      "type": "NORMAL",
-      "cardId": "SUPERVISOR_HAND"
-    },
-    {
-      "stepIndex": 20,
-      "x": 11,
-      "y": 3,
+      "y": 1,
       "type": "NORMAL",
       "cardId": "BLACKOUT"
     },
     {
-      "stepIndex": 21,
-      "x": 10,
-      "y": 3,
-      "type": "NORMAL"
-    },
-    {
-      "stepIndex": 22,
-      "x": 9,
-      "y": 3,
-      "type": "NORMAL",
-      "cardId": "NINJA_COPY"
-    },
-    {
-      "stepIndex": 23,
-      "x": 8,
-      "y": 3,
-      "type": "NORMAL",
-      "cardId": "COUNTER_ARGUMENT"
-    },
-    {
-      "stepIndex": 24,
-      "x": 7,
-      "y": 3,
+      "stepIndex": 15,
+      "x": 13,
+      "y": 2,
       "type": "NORMAL",
       "cardId": "AMENOTEJIKARA"
     },
     {
-      "stepIndex": 25,
-      "x": 6,
-      "y": 3,
-      "type": "NORMAL"
-    },
-    {
-      "stepIndex": 26,
-      "x": 5,
-      "y": 3,
-      "type": "NORMAL",
-      "cardId": "EUREKA"
-    },
-    {
-      "stepIndex": 27,
-      "x": 4,
+      "stepIndex": 16,
+      "x": 13,
       "y": 3,
       "type": "NORMAL",
       "cardId": "DEADLINE_BOMB"
     },
     {
-      "stepIndex": 28,
-      "x": 3,
-      "y": 3,
-      "type": "NORMAL"
-    },
-    {
-      "stepIndex": 29,
-      "x": 2,
-      "y": 3,
-      "type": "NORMAL"
-    },
-    {
-      "stepIndex": 30,
-      "x": 1,
-      "y": 3,
-      "type": "NORMAL"
-    },
-    {
-      "stepIndex": 31,
-      "x": 0,
-      "y": 3,
-      "type": "NORMAL",
-      "cardId": "AMENOTEJIKARA"
-    },
-    {
-      "stepIndex": 32,
-      "x": 0,
+      "stepIndex": 17,
+      "x": 13,
       "y": 4,
       "type": "NORMAL"
     },
     {
-      "stepIndex": 33,
-      "x": 0,
+      "stepIndex": 18,
+      "x": 13,
       "y": 5,
-      "type": "NORMAL",
-      "cardId": "PARASITE"
-    },
-    {
-      "stepIndex": 34,
-      "x": 0,
-      "y": 6,
-      "type": "NORMAL",
-      "cardId": "SUPERVISOR_HAND"
-    },
-    {
-      "stepIndex": 35,
-      "x": 1,
-      "y": 6,
       "type": "NORMAL"
     },
     {
-      "stepIndex": 36,
-      "x": 2,
+      "stepIndex": 19,
+      "x": 13,
       "y": 6,
+      "type": "NORMAL",
+      "cardId": "EUREKA"
+    },
+    {
+      "stepIndex": 20,
+      "x": 13,
+      "y": 7,
+      "type": "NORMAL",
+      "cardId": "NINJA_COPY"
+    },
+    {
+      "stepIndex": 21,
+      "x": 13,
+      "y": 8,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 22,
+      "x": 13,
+      "y": 9,
       "type": "NORMAL",
       "cardId": "BLACKOUT"
     },
     {
-      "stepIndex": 37,
-      "x": 3,
+      "stepIndex": 23,
+      "x": 12,
+      "y": 9,
+      "type": "NORMAL",
+      "cardId": "DEADLINE_BOMB"
+    },
+    {
+      "stepIndex": 24,
+      "x": 11,
+      "y": 9,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 25,
+      "x": 10,
+      "y": 9,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 26,
+      "x": 10,
+      "y": 8,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 27,
+      "x": 10,
+      "y": 7,
+      "type": "NORMAL",
+      "cardId": "ZA_WARUDO"
+    },
+    {
+      "stepIndex": 28,
+      "x": 10,
       "y": 6,
       "type": "NORMAL",
       "cardId": "LIFEBUOY"
     },
     {
-      "stepIndex": 38,
-      "x": 4,
-      "y": 6,
-      "type": "NORMAL",
-      "cardId": "COUNTER_ARGUMENT"
-    },
-    {
-      "stepIndex": 39,
-      "x": 5,
-      "y": 6,
+      "stepIndex": 29,
+      "x": 10,
+      "y": 5,
       "type": "NORMAL"
     },
     {
-      "stepIndex": 40,
-      "x": 6,
-      "y": 6,
+      "stepIndex": 30,
+      "x": 10,
+      "y": 4,
       "type": "NORMAL",
-      "cardId": "DEADLINE_BOMB"
+      "cardId": "MYSTERY"
     },
     {
-      "stepIndex": 41,
+      "stepIndex": 31,
+      "x": 10,
+      "y": 3,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 32,
+      "x": 9,
+      "y": 3,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 33,
+      "x": 8,
+      "y": 3,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 34,
+      "x": 7,
+      "y": 3,
+      "type": "NORMAL",
+      "cardId": "LIFEBUOY"
+    },
+    {
+      "stepIndex": 35,
+      "x": 7,
+      "y": 4,
+      "type": "NORMAL",
+      "cardId": "PARASITE"
+    },
+    {
+      "stepIndex": 36,
+      "x": 7,
+      "y": 5,
+      "type": "NORMAL",
+      "cardId": "NINJA_COPY"
+    },
+    {
+      "stepIndex": 37,
       "x": 7,
       "y": 6,
       "type": "NORMAL"
     },
     {
-      "stepIndex": 42,
-      "x": 8,
-      "y": 6,
-      "type": "NORMAL",
-      "cardId": "ZA_WARUDO"
-    },
-    {
-      "stepIndex": 43,
-      "x": 9,
-      "y": 6,
-      "type": "NORMAL",
-      "cardId": "LIFEBUOY"
-    },
-    {
-      "stepIndex": 44,
-      "x": 10,
-      "y": 6,
-      "type": "NORMAL"
-    },
-    {
-      "stepIndex": 45,
-      "x": 11,
-      "y": 6,
-      "type": "NORMAL"
-    },
-    {
-      "stepIndex": 46,
-      "x": 12,
-      "y": 6,
-      "type": "NORMAL",
-      "cardId": "BLACKOUT"
-    },
-    {
-      "stepIndex": 47,
-      "x": 13,
-      "y": 6,
-      "type": "NORMAL",
-      "cardId": "POP_QUIZ"
-    },
-    {
-      "stepIndex": 48,
-      "x": 14,
-      "y": 6,
-      "type": "NORMAL"
-    },
-    {
-      "stepIndex": 49,
-      "x": 14,
+      "stepIndex": 38,
+      "x": 7,
       "y": 7,
-      "type": "NORMAL",
-      "cardId": "PARASITE"
-    },
-    {
-      "stepIndex": 50,
-      "x": 14,
-      "y": 8,
-      "type": "NORMAL"
-    },
-    {
-      "stepIndex": 51,
-      "x": 14,
-      "y": 9,
-      "type": "NORMAL",
-      "cardId": "DEADLINE_BOMB"
-    },
-    {
-      "stepIndex": 52,
-      "x": 13,
-      "y": 9,
-      "type": "NORMAL"
-    },
-    {
-      "stepIndex": 53,
-      "x": 12,
-      "y": 9,
-      "type": "NORMAL"
-    },
-    {
-      "stepIndex": 54,
-      "x": 11,
-      "y": 9,
       "type": "NORMAL",
       "cardId": "MIND_BLANK"
     },
     {
-      "stepIndex": 55,
-      "x": 10,
-      "y": 9,
+      "stepIndex": 39,
+      "x": 7,
+      "y": 8,
       "type": "NORMAL",
-      "cardId": "ZA_WARUDO"
+      "cardId": "SUPERVISOR_HAND"
+    },
+    {
+      "stepIndex": 40,
+      "x": 7,
+      "y": 9,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 41,
+      "x": 7,
+      "y": 10,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 42,
+      "x": 7,
+      "y": 11,
+      "type": "NORMAL",
+      "cardId": "SUPERVISOR_HAND"
+    },
+    {
+      "stepIndex": 43,
+      "x": 7,
+      "y": 12,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 44,
+      "x": 8,
+      "y": 12,
+      "type": "NORMAL",
+      "cardId": "DEADLINE_BOMB"
+    },
+    {
+      "stepIndex": 45,
+      "x": 9,
+      "y": 12,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 46,
+      "x": 10,
+      "y": 12,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 47,
+      "x": 11,
+      "y": 12,
+      "type": "NORMAL",
+      "cardId": "PARASITE"
+    },
+    {
+      "stepIndex": 48,
+      "x": 12,
+      "y": 12,
+      "type": "NORMAL",
+      "cardId": "MIND_BLANK"
+    },
+    {
+      "stepIndex": 49,
+      "x": 13,
+      "y": 12,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 50,
+      "x": 14,
+      "y": 12,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 51,
+      "x": 15,
+      "y": 12,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 52,
+      "x": 16,
+      "y": 12,
+      "type": "NORMAL",
+      "cardId": "COUNTER_ARGUMENT"
+    },
+    {
+      "stepIndex": 53,
+      "x": 16,
+      "y": 11,
+      "type": "NORMAL",
+      "cardId": "MYSTERY"
+    },
+    {
+      "stepIndex": 54,
+      "x": 16,
+      "y": 10,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 55,
+      "x": 16,
+      "y": 9,
+      "type": "NORMAL"
     },
     {
       "stepIndex": 56,
-      "x": 9,
-      "y": 9,
+      "x": 16,
+      "y": 8,
       "type": "NORMAL",
       "cardId": "POP_QUIZ"
     },
     {
       "stepIndex": 57,
-      "x": 8,
-      "y": 9,
-      "type": "NORMAL"
+      "x": 16,
+      "y": 7,
+      "type": "NORMAL",
+      "cardId": "DEADLINE_BOMB"
     },
     {
       "stepIndex": 58,
-      "x": 7,
-      "y": 9,
-      "type": "NORMAL",
-      "cardId": "COUNTER_ARGUMENT"
+      "x": 16,
+      "y": 6,
+      "type": "NORMAL"
     },
     {
       "stepIndex": 59,
-      "x": 6,
-      "y": 9,
-      "type": "NORMAL",
-      "cardId": "MYSTERY"
+      "x": 16,
+      "y": 5,
+      "type": "NORMAL"
     },
     {
       "stepIndex": 60,
-      "x": 5,
-      "y": 9,
-      "type": "NORMAL"
+      "x": 16,
+      "y": 4,
+      "type": "NORMAL",
+      "cardId": "ZA_WARUDO"
     },
     {
       "stepIndex": 61,
-      "x": 4,
-      "y": 9,
-      "type": "NORMAL",
-      "cardId": "MIND_BLANK"
-    },
-    {
-      "stepIndex": 62,
-      "x": 3,
-      "y": 9,
+      "x": 16,
+      "y": 3,
       "type": "NORMAL"
     },
     {
+      "stepIndex": 62,
+      "x": 16,
+      "y": 2,
+      "type": "NORMAL",
+      "cardId": "PARASITE"
+    },
+    {
       "stepIndex": 63,
-      "x": 2,
-      "y": 9,
+      "x": 16,
+      "y": 1,
       "type": "NORMAL",
       "cardId": "BLACKOUT"
     },
     {
       "stepIndex": 64,
-      "x": 1,
-      "y": 9,
+      "x": 16,
+      "y": 0,
       "type": "NORMAL",
-      "cardId": "AMENOTEJIKARA"
+      "cardId": "POP_QUIZ"
     },
     {
       "stepIndex": 65,
-      "x": 0,
-      "y": 9,
-      "type": "NORMAL",
-      "cardId": "NINJA_COPY"
+      "x": 17,
+      "y": 0,
+      "type": "NORMAL"
     },
     {
       "stepIndex": 66,
-      "x": 0,
-      "y": 10,
-      "type": "NORMAL"
+      "x": 18,
+      "y": 0,
+      "type": "NORMAL",
+      "cardId": "MIND_BLANK"
     },
     {
       "stepIndex": 67,
-      "x": 0,
-      "y": 11,
-      "type": "NORMAL"
+      "x": 19,
+      "y": 0,
+      "type": "NORMAL",
+      "cardId": "ZA_WARUDO"
     },
     {
       "stepIndex": 68,
-      "x": 0,
-      "y": 12,
+      "x": 19,
+      "y": 1,
       "type": "NORMAL",
       "cardId": "COUNTER_ARGUMENT"
     },
     {
       "stepIndex": 69,
-      "x": 1,
-      "y": 12,
+      "x": 19,
+      "y": 2,
       "type": "NORMAL"
     },
     {
       "stepIndex": 70,
-      "x": 2,
-      "y": 12,
+      "x": 19,
+      "y": 3,
       "type": "NORMAL",
       "cardId": "AMENOTEJIKARA"
     },
     {
       "stepIndex": 71,
-      "x": 3,
-      "y": 12,
+      "x": 19,
+      "y": 4,
       "type": "NORMAL",
-      "cardId": "DEADLINE_BOMB"
+      "cardId": "EUREKA"
     },
     {
       "stepIndex": 72,
-      "x": 4,
-      "y": 12,
+      "x": 19,
+      "y": 5,
       "type": "NORMAL"
     },
     {
       "stepIndex": 73,
-      "x": 5,
-      "y": 12,
-      "type": "NORMAL"
+      "x": 19,
+      "y": 6,
+      "type": "NORMAL",
+      "cardId": "NINJA_COPY"
     },
     {
       "stepIndex": 74,
-      "x": 6,
-      "y": 12,
-      "type": "NORMAL",
-      "cardId": "POP_QUIZ"
-    },
-    {
-      "stepIndex": 75,
-      "x": 7,
-      "y": 12,
-      "type": "NORMAL"
-    },
-    {
-      "stepIndex": 76,
-      "x": 8,
-      "y": 12,
-      "type": "NORMAL",
-      "cardId": "MYSTERY"
-    },
-    {
-      "stepIndex": 77,
-      "x": 9,
-      "y": 12,
-      "type": "NORMAL",
-      "cardId": "MIND_BLANK"
-    },
-    {
-      "stepIndex": 78,
-      "x": 10,
-      "y": 12,
-      "type": "NORMAL"
-    },
-    {
-      "stepIndex": 79,
-      "x": 11,
-      "y": 12,
-      "type": "NORMAL",
-      "cardId": "POP_QUIZ"
-    },
-    {
-      "stepIndex": 80,
-      "x": 12,
-      "y": 12,
+      "x": 19,
+      "y": 7,
       "type": "NORMAL",
       "cardId": "DEADLINE_BOMB"
     },
     {
-      "stepIndex": 81,
-      "x": 13,
-      "y": 12,
+      "stepIndex": 75,
+      "x": 19,
+      "y": 8,
       "type": "NORMAL"
     },
     {
-      "stepIndex": 82,
-      "x": 14,
+      "stepIndex": 76,
+      "x": 19,
+      "y": 9,
+      "type": "NORMAL",
+      "cardId": "MIND_BLANK"
+    },
+    {
+      "stepIndex": 77,
+      "x": 19,
+      "y": 10,
+      "type": "NORMAL",
+      "cardId": "LIFEBUOY"
+    },
+    {
+      "stepIndex": 78,
+      "x": 19,
+      "y": 11,
+      "type": "NORMAL",
+      "cardId": "SUPERVISOR_HAND"
+    },
+    {
+      "stepIndex": 79,
+      "x": 19,
       "y": 12,
+      "type": "NORMAL",
+      "cardId": "ZA_WARUDO"
+    },
+    {
+      "stepIndex": 80,
+      "x": 19,
+      "y": 13,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 81,
+      "x": 19,
+      "y": 14,
+      "type": "NORMAL",
+      "cardId": "MIND_BLANK"
+    },
+    {
+      "stepIndex": 82,
+      "x": 19,
+      "y": 15,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 83,
+      "x": 18,
+      "y": 15,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 84,
+      "x": 17,
+      "y": 15,
+      "type": "NORMAL",
+      "cardId": "POP_QUIZ"
+    },
+    {
+      "stepIndex": 85,
+      "x": 16,
+      "y": 15,
+      "type": "NORMAL",
+      "cardId": "AMENOTEJIKARA"
+    },
+    {
+      "stepIndex": 86,
+      "x": 15,
+      "y": 15,
+      "type": "NORMAL",
+      "cardId": "EUREKA"
+    },
+    {
+      "stepIndex": 87,
+      "x": 14,
+      "y": 15,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 88,
+      "x": 13,
+      "y": 15,
+      "type": "NORMAL",
+      "cardId": "BLACKOUT"
+    },
+    {
+      "stepIndex": 89,
+      "x": 12,
+      "y": 15,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 90,
+      "x": 11,
+      "y": 15,
+      "type": "NORMAL",
+      "cardId": "POP_QUIZ"
+    },
+    {
+      "stepIndex": 91,
+      "x": 10,
+      "y": 15,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 92,
+      "x": 9,
+      "y": 15,
+      "type": "NORMAL",
+      "cardId": "MIND_BLANK"
+    },
+    {
+      "stepIndex": 93,
+      "x": 8,
+      "y": 15,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 94,
+      "x": 7,
+      "y": 15,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 95,
+      "x": 6,
+      "y": 15,
+      "type": "NORMAL",
+      "cardId": "COUNTER_ARGUMENT"
+    },
+    {
+      "stepIndex": 96,
+      "x": 5,
+      "y": 15,
+      "type": "NORMAL",
+      "cardId": "NINJA_COPY"
+    },
+    {
+      "stepIndex": 97,
+      "x": 4,
+      "y": 15,
+      "type": "NORMAL",
+      "cardId": "SUPERVISOR_HAND"
+    },
+    {
+      "stepIndex": 98,
+      "x": 4,
+      "y": 14,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 99,
+      "x": 4,
+      "y": 13,
+      "type": "NORMAL",
+      "cardId": "MYSTERY"
+    },
+    {
+      "stepIndex": 100,
+      "x": 4,
+      "y": 12,
+      "type": "NORMAL",
+      "cardId": "LIFEBUOY"
+    },
+    {
+      "stepIndex": 101,
+      "x": 4,
+      "y": 11,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 102,
+      "x": 4,
+      "y": 10,
+      "type": "NORMAL",
+      "cardId": "POP_QUIZ"
+    },
+    {
+      "stepIndex": 103,
+      "x": 4,
+      "y": 9,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 104,
+      "x": 4,
+      "y": 8,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 105,
+      "x": 4,
+      "y": 7,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 106,
+      "x": 4,
+      "y": 6,
+      "type": "NORMAL",
+      "cardId": "EUREKA"
+    },
+    {
+      "stepIndex": 107,
+      "x": 4,
+      "y": 5,
+      "type": "NORMAL",
+      "cardId": "POP_QUIZ"
+    },
+    {
+      "stepIndex": 108,
+      "x": 4,
+      "y": 4,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 109,
+      "x": 4,
+      "y": 3,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 110,
+      "x": 3,
+      "y": 3,
+      "type": "NORMAL",
+      "cardId": "MIND_BLANK"
+    },
+    {
+      "stepIndex": 111,
+      "x": 2,
+      "y": 3,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 112,
+      "x": 1,
+      "y": 3,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 113,
+      "x": 1,
+      "y": 4,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 114,
+      "x": 1,
+      "y": 5,
+      "type": "NORMAL",
+      "cardId": "DEADLINE_BOMB"
+    },
+    {
+      "stepIndex": 115,
+      "x": 1,
+      "y": 6,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 116,
+      "x": 1,
+      "y": 7,
+      "type": "NORMAL",
+      "cardId": "POP_QUIZ"
+    },
+    {
+      "stepIndex": 117,
+      "x": 1,
+      "y": 8,
+      "type": "NORMAL"
+    },
+    {
+      "stepIndex": 118,
+      "x": 1,
+      "y": 9,
+      "type": "NORMAL",
+      "cardId": "MIND_BLANK"
+    },
+    {
+      "stepIndex": 119,
+      "x": 1,
+      "y": 10,
+      "type": "NORMAL",
+      "cardId": "MYSTERY"
+    },
+    {
+      "stepIndex": 120,
+      "x": 1,
+      "y": 11,
+      "type": "NORMAL",
+      "cardId": "DEADLINE_BOMB"
+    },
+    {
+      "stepIndex": 121,
+      "x": 1,
+      "y": 12,
+      "type": "NORMAL",
+      "cardId": "COUNTER_ARGUMENT"
+    },
+    {
+      "stepIndex": 122,
+      "x": 1,
+      "y": 13,
+      "type": "NORMAL",
+      "cardId": "DEADLINE_BOMB"
+    },
+    {
+      "stepIndex": 123,
+      "x": 1,
+      "y": 14,
+      "type": "NORMAL",
+      "cardId": "POP_QUIZ"
+    },
+    {
+      "stepIndex": 124,
+      "x": 1,
+      "y": 15,
       "type": "END"
     }
   ],
   "env": [
     {
-      "id": "432bb7a7-2529-4eee-95df-b6f065da0bfd",
-      "x": 7.520893170417077,
-      "y": 8.669915269095533,
+      "id": "62615f85-33ba-4262-b08f-ca27238f5966",
+      "x": 4.118327550394096,
+      "y": 8.062644504887185,
       "emoji": "🎒"
     },
     {
-      "id": "470f38c7-f86d-4892-b4cc-077eafda3568",
-      "x": 13.266018274418045,
-      "y": 13.196377472247814,
+      "id": "81de4b05-4139-4611-9184-2b3963c562e7",
+      "x": 9.686772828891238,
+      "y": 12.23897846376004,
       "emoji": "🎒"
     },
     {
-      "id": "dfdec440-af67-4291-8dff-581061a81afa",
-      "x": 5.431756768962179,
-      "y": 11.977714571399122,
-      "emoji": "📗"
-    },
-    {
-      "id": "4764cc7c-6362-4a59-b2ea-0da234e3bda7",
-      "x": 32.41643528775461,
-      "y": 10.41086227030795,
-      "emoji": "📗"
-    },
-    {
-      "id": "c4b28a38-a5e0-42f5-af62-e4ea8f9f19ed",
-      "x": 32.41643528775461,
-      "y": 10.584956970429191,
-      "emoji": "📗"
-    },
-    {
-      "id": "8335dd75-ba14-4701-bd35-d3dc99e5bcea",
-      "x": 22.841226781086327,
-      "y": 11.977714571399122,
-      "emoji": "📗"
-    },
-    {
-      "id": "be1b9081-c61f-4a71-a965-0c3fa2effa02",
-      "x": 63.05710250909311,
-      "y": 11.455430471035397,
-      "emoji": "📗"
-    },
-    {
-      "id": "60153e42-1af2-4496-84b3-c075957cb818",
-      "x": 55.048746303516005,
-      "y": 14.415040373096502,
-      "emoji": "🏫"
-    },
-    {
-      "id": "6f1278e4-2c4b-40cd-bafd-777c0bb2e3e8",
-      "x": 78.37743611976236,
-      "y": 10.236767570186707,
-      "emoji": "🏫"
-    },
-    {
-      "id": "b59946c0-8c53-4402-a4f0-bd45ef8812da",
-      "x": 82.7298036227934,
-      "y": 14.240945672975261,
-      "emoji": "🏫"
-    },
-    {
-      "id": "19f517a3-2e4f-44d7-aa16-3e56f4712b1b",
-      "x": 88.30083402667313,
-      "y": 11.803619871277881,
-      "emoji": "🏫"
-    },
-    {
-      "id": "9939e00b-8ec8-410d-8fa1-031c22ad2731",
-      "x": 66.88718591176043,
-      "y": 15.633703273945192,
-      "emoji": "🏫"
-    },
-    {
-      "id": "bec578e5-8686-4f53-9ae0-af0486283da3",
-      "x": 43.03621199515034,
-      "y": 16.33008207443016,
-      "emoji": "🏫"
-    },
-    {
-      "id": "1624f7dc-6d98-4081-b60d-664a456b1818",
-      "x": 62.012534308365666,
-      "y": 76.04456421601598,
-      "emoji": "🏅"
-    },
-    {
-      "id": "e4fdfb0c-84e8-42c6-a994-c3f41831796d",
-      "x": 61.83843960824442,
-      "y": 76.39275361625847,
-      "emoji": "🏅"
-    },
-    {
-      "id": "29116bd3-0d25-4602-866a-a12d15586645",
-      "x": 50,
-      "y": 77.08913241674344,
-      "emoji": "🏅"
-    },
-    {
-      "id": "25167706-4ed4-48c1-848d-bf3d59502284",
-      "x": 58.35654560581959,
-      "y": 90.66851902620027,
-      "emoji": "🏅"
-    },
-    {
-      "id": "c1922f02-6903-45e0-8841-d5d66ce511c6",
-      "x": 41.64345439418041,
-      "y": 92.40946602741269,
-      "emoji": "🏅"
-    },
-    {
-      "id": "415db659-180d-4a22-b273-c90e8cc0e750",
-      "x": 41.99164379442289,
-      "y": 73.60723841431862,
-      "emoji": "🏆"
-    },
-    {
-      "id": "0525d9b9-3a07-44e5-a8ea-5404af1472f8",
-      "x": 52.089136401454894,
-      "y": 91.88718192704897,
-      "emoji": "🏆"
-    },
-    {
-      "id": "8627d7e7-f713-421d-ad3e-0d4fe25bcdcf",
-      "x": 80.98885662158098,
-      "y": 92.0612766271702,
-      "emoji": "🏆"
-    },
-    {
-      "id": "c9d7d9bb-6fed-420d-9068-2f9688b90fe7",
-      "x": 69.32451171345781,
-      "y": 75.87046951589474,
-      "emoji": "🏆"
-    },
-    {
-      "id": "39861a7a-87ec-423d-a232-c08d9240e050",
-      "x": 72.80640571588263,
-      "y": 92.58356072753394,
-      "emoji": "🏆"
-    },
-    {
-      "id": "c0b60c2e-4e06-4bbb-8df2-79bf6d811aa5",
-      "x": 65.66852301091174,
-      "y": 88.23119322450289,
-      "emoji": "🏆"
-    },
-    {
-      "id": "c090794f-0fae-4615-92df-5c6901c5eefa",
-      "x": 83.77437182352084,
-      "y": 76.39275361625847,
-      "emoji": "🏆"
-    },
-    {
-      "id": "486aef73-c284-4ae9-9d68-55eefe8a3683",
-      "x": 91.78272802909795,
-      "y": 91.01670842644276,
-      "emoji": "🏆"
-    },
-    {
-      "id": "3ea11233-172c-4297-a76b-5cbc33105adc",
-      "x": 95.61281143176527,
-      "y": 77.08913241674344,
-      "emoji": "🏆"
-    },
-    {
-      "id": "4629625e-203f-46f8-a08c-0a9b58faedf5",
-      "x": 95.26462203152278,
-      "y": 77.08913241674344,
-      "emoji": "🏆"
-    },
-    {
-      "id": "bf18c7bc-c3e9-444f-a182-ab0b46351580",
-      "x": 76.4623944184287,
-      "y": 94.49860242886758,
-      "emoji": "🏅"
-    },
-    {
-      "id": "0312d330-a3ae-4d03-82dd-0c355e6c0a42",
-      "x": 16.05153347635791,
-      "y": 76.39275361625847,
-      "emoji": "📗"
-    },
-    {
-      "id": "8e6cabe5-22e7-42a9-8dfa-ea387e917b07",
-      "x": 9.087745471508251,
-      "y": 68.03620801043888,
-      "emoji": "📗"
-    },
-    {
-      "id": "3c3906ca-dae1-4eba-84d8-e93c0b081fb1",
-      "x": 20.403900979388947,
-      "y": 70.6476285122575,
-      "emoji": "📗"
-    },
-    {
-      "id": "442f043b-83e8-4bc3-9c1d-3b588cc37cf4",
-      "x": 7.520893170417077,
-      "y": 90.84261372632152,
-      "emoji": "📗"
-    },
-    {
-      "id": "6a2cc90a-21aa-4bb6-b5ea-4430190d337c",
-      "x": 18.31476457793405,
-      "y": 94.84679182911006,
-      "emoji": "📗"
-    },
-    {
-      "id": "0c84eaf2-2f4b-46e1-b197-31e5b3746623",
-      "x": 31.19777238690592,
-      "y": 89.1016667251091,
-      "emoji": "📗"
-    },
-    {
-      "id": "2601ac27-958b-4dbb-adcb-a0986be8ed53",
-      "x": 31.19777238690592,
-      "y": 89.1016667251091,
-      "emoji": "📗"
-    },
-    {
-      "id": "85fc5611-dc9a-4163-9992-c16a7c96e36d",
-      "x": 15.355154675872946,
-      "y": 88.92757202498785,
-      "emoji": "📗"
-    },
-    {
-      "id": "03b13128-9e15-4e1d-b348-7ff8b6ed00d6",
-      "x": 31.19777238690592,
-      "y": 74.8259013151673,
-      "emoji": "📗"
-    },
-    {
-      "id": "85d2d311-ea2d-4fbd-bb92-9ded2302ce99",
-      "x": 8.565461371144526,
-      "y": 77.61141651710717,
-      "emoji": "🏅"
-    },
-    {
-      "id": "2e275918-c9ac-4da1-8241-f9c458945451",
-      "x": 15.00696527563046,
-      "y": 70.6476285122575,
-      "emoji": "🏅"
-    },
-    {
-      "id": "a5a19ab4-2bf3-4f26-b1f2-d4e95c86f18c",
-      "x": 22.144847980601362,
-      "y": 77.95960591734965,
-      "emoji": "🏅"
-    },
-    {
-      "id": "267241d5-c32a-4458-8835-da51d084b9a1",
-      "x": 22.318942680722603,
-      "y": 78.48189001771337,
-      "emoji": "🏅"
-    },
-    {
-      "id": "bec6824f-b751-44b9-8d8d-08d8c08a291a",
-      "x": 25.626741983026193,
-      "y": 90.49442432607904,
-      "emoji": "🏅"
-    },
-    {
-      "id": "a2a6cd0d-05b7-4715-a99c-0b959692405e",
-      "x": 25.452647282904948,
-      "y": 90.49442432607904,
-      "emoji": "🏅"
-    },
-    {
-      "id": "b897a618-e4e0-4ce8-a549-681af317c693",
-      "x": 9.261840171629492,
-      "y": 37.39554078910038,
-      "emoji": "🏫"
-    },
-    {
-      "id": "76fd4f51-8c50-4e5d-b0e6-1300da91c41a",
-      "x": 18.140669877812808,
-      "y": 30.43175278425072,
-      "emoji": "🏫"
-    },
-    {
-      "id": "dcfbeb08-f096-4983-b38e-e75b497b5030",
-      "x": 18.140669877812808,
-      "y": 30.605847484371964,
-      "emoji": "🏫"
-    },
-    {
-      "id": "6eae3ee8-6b00-448d-a4ba-b1aec59cfec6",
-      "x": 23.363510881450054,
-      "y": 37.9178248894641,
-      "emoji": "🏫"
-    },
-    {
-      "id": "ec95d35d-415c-4a7b-bf32-3bdacb46a4d7",
-      "x": 43.90668549575655,
-      "y": 33.56545738643307,
-      "emoji": "🏫"
-    },
-    {
-      "id": "6b0f66a1-bae7-40cd-8bc9-bc942cb28f7c",
-      "x": 28.760446585208538,
-      "y": 29.213089883402034,
-      "emoji": "🏫"
-    },
-    {
-      "id": "4a049f48-6e26-4d0b-82c0-f6e7a2dffd56",
-      "x": 36.24651869042192,
-      "y": 37.56963548922162,
-      "emoji": "🏫"
-    },
-    {
-      "id": "9632d56b-7657-4fb6-a59e-27f531d30928",
-      "x": 53.48189400242484,
-      "y": 28.34261638279582,
-      "emoji": "🏫"
-    },
-    {
-      "id": "7845e08d-c98f-43f0-9add-cf75a4fd98d1",
-      "x": 62.88300780897187,
-      "y": 34.43593088703928,
-      "emoji": "🏫"
-    },
-    {
-      "id": "badcd48e-c438-4214-ae27-e2e89fb1c569",
-      "x": 86.21169762521824,
-      "y": 31.82451038522065,
-      "emoji": "🏫"
-    },
-    {
-      "id": "58107c83-b533-4be9-95b8-35635af6726f",
-      "x": 9.784124271993216,
-      "y": 31.998605085341893,
-      "emoji": "🎯"
-    },
-    {
-      "id": "7b3fcdb6-2f1a-475d-b60e-268ff54f22aa",
-      "x": 18.48885927805529,
-      "y": 37.0473513888579,
-      "emoji": "🎯"
-    },
-    {
-      "id": "d2291ca7-cbf4-49e1-9a99-fee4b46c2a30",
-      "x": 24.4080790821775,
-      "y": 30.43175278425072,
-      "emoji": "🎯"
-    },
-    {
-      "id": "3c34ae57-6d74-4ca6-92d1-aab9680723a6",
-      "x": 29.10863598545102,
-      "y": 35.30640438764548,
-      "emoji": "🎯"
-    },
-    {
-      "id": "8810d32c-b56d-42ef-85eb-f3b9d690c3a4",
-      "x": 38.335655091876816,
-      "y": 29.038995183280786,
-      "emoji": "🎯"
-    },
-    {
-      "id": "01631050-c517-4d1d-8648-26d73e922707",
-      "x": 44.77715899636275,
-      "y": 37.221446088979135,
-      "emoji": "🎯"
-    },
-    {
-      "id": "18231d74-710b-4a01-b12c-e7366932b7d3",
-      "x": 54.526462203152285,
-      "y": 33.91364678667555,
-      "emoji": "🎯"
-    },
-    {
-      "id": "30dbde03-ac0c-43ed-a8d5-d8d306f095d3",
-      "x": 67.06128061188167,
-      "y": 36.17687788825169,
-      "emoji": "🎯"
-    },
-    {
-      "id": "2b2214b4-6c34-4748-9275-b612f9a87899",
-      "x": 80.46657252121726,
-      "y": 34.78412028728176,
-      "emoji": "🎯"
-    },
-    {
-      "id": "c8339598-89a1-481b-bd3e-6b1ebf852167",
-      "x": 80.29247782109601,
-      "y": 34.78412028728176,
-      "emoji": "🎯"
-    },
-    {
-      "id": "9636f989-064a-476b-b77b-ca00ef2f5bc0",
-      "x": 8.739556071265769,
-      "y": 54.97910550134577,
-      "emoji": "📚"
-    },
-    {
-      "id": "5d6a2e78-33cf-4bed-8bd7-c7410f4b7dea",
-      "x": 25.27855258278371,
-      "y": 51.49721149892093,
-      "emoji": "📚"
-    },
-    {
-      "id": "2dfff68f-ed93-4181-a5ba-d6a34b2e1c02",
-      "x": 33.28690878836082,
-      "y": 56.02367370207322,
-      "emoji": "📚"
-    },
-    {
-      "id": "55786099-ee0a-4681-8691-3171774a23ab",
-      "x": 65.146238910548,
-      "y": 56.545957802436945,
-      "emoji": "📚"
-    },
-    {
-      "id": "1f89f3bb-cbf8-4b81-a306-cb6241e25d41",
-      "x": 75.41782621770126,
-      "y": 51.14902209867845,
-      "emoji": "📚"
-    },
-    {
-      "id": "4218234b-1876-4bca-9e60-8eb210df4653",
-      "x": 90.2158757280068,
-      "y": 54.10863200073956,
-      "emoji": "📚"
-    },
-    {
-      "id": "e0012e8b-15d2-41d4-985c-0dbc5810dac8",
-      "x": 47.9108635985451,
-      "y": 51.14902209867845,
-      "emoji": "📚"
-    },
-    {
-      "id": "4256896e-67ef-44bd-85dc-b995ed6d40c4",
-      "x": 28.760446585208538,
-      "y": 70.29943911201502,
-      "emoji": "📚"
-    },
-    {
-      "id": "6dc11def-c457-42f8-b068-2f8c118b9e28",
-      "x": 53.83008340266732,
-      "y": 69.42896561140881,
-      "emoji": "📚"
-    },
-    {
-      "id": "989b9e6b-358c-4307-b346-a556253e1287",
-      "x": 76.63648911854995,
-      "y": 68.73258681092385,
-      "emoji": "📚"
-    },
-    {
-      "id": "d06c4f5d-4758-40f8-9011-a3bac3da7ffc",
-      "x": 2.6462415670223156,
-      "y": 49.40807509746604,
-      "emoji": "💡"
-    },
-    {
-      "id": "51303517-37c6-4c09-9c5c-cdcb76b2fab8",
-      "x": 15.529249375994187,
-      "y": 56.72005250255818,
-      "emoji": "💡"
-    },
-    {
-      "id": "9b6707e3-8035-4b6d-a6ce-53c0773c2d6f",
-      "x": 45.821727197090205,
-      "y": 55.675484301830735,
-      "emoji": "💡"
-    },
-    {
-      "id": "615d1baf-d8c4-437b-9c07-a144868f1d37",
-      "x": 34.50557168920951,
-      "y": 50.62673799831473,
-      "emoji": "💡"
-    },
-    {
-      "id": "013db1b5-5f63-4e62-af39-4ab339530971",
-      "x": 54.526462203152285,
-      "y": 55.84957900195198,
-      "emoji": "💡"
-    },
-    {
-      "id": "0f302320-d7bd-4f48-896f-3b10bf2ab9e1",
-      "x": 62.36072370860815,
-      "y": 50.62673799831473,
-      "emoji": "💡"
-    },
-    {
-      "id": "6dd14280-cee7-48b9-b2f1-5de1f4e37fd0",
-      "x": 62.70891310885063,
-      "y": 50.62673799831473,
-      "emoji": "💡"
-    },
-    {
-      "id": "0cbccdeb-7aea-43d7-b72a-2c1c01f2a0e7",
-      "x": 79.7701937207323,
-      "y": 55.84957900195198,
-      "emoji": "💡"
-    },
-    {
-      "id": "8c924527-2dd6-4f22-b5cf-f56d8adf355c",
-      "x": 42.16573849454413,
-      "y": 9.888578169944225,
+      "id": "fbec16ce-ec42-4ef8-a360-845dae85856a",
+      "x": 16.299301597106595,
+      "y": 8.062644504887185,
       "emoji": "🎒"
     },
     {
-      "id": "131c3e09-0b62-4461-a221-cf4e8b5df1e5",
-      "x": 76.11420501818623,
-      "y": 13.022282772126573,
+      "id": "0eeb1161-50c5-40f1-98ba-0800a269eca6",
+      "x": 27.784219984006945,
+      "y": 10.150811484323613,
       "emoji": "🎒"
+    },
+    {
+      "id": "af0fc914-0680-4998-9717-9a57444bd14c",
+      "x": 36.65892964661177,
+      "y": 7.714616674981113,
+      "emoji": "🎒"
+    },
+    {
+      "id": "6848a67a-4ae2-4ced-831c-e10f7684f06c",
+      "x": 52.49419590733802,
+      "y": 8.062644504887185,
+      "emoji": "🎒"
+    },
+    {
+      "id": "e1161c4b-f0c9-47a2-8dd2-7621b047cf80",
+      "x": 61.542919484895876,
+      "y": 12.412992378713076,
+      "emoji": "🎒"
+    },
+    {
+      "id": "f5a6c0dc-f506-404b-be5f-30ff98d167c0",
+      "x": 61.542919484895876,
+      "y": 12.58700629366611,
+      "emoji": "🎒"
+    },
+    {
+      "id": "3b36ae1c-ebeb-4df1-af0b-d21ad468f7b9",
+      "x": 57.540599440976045,
+      "y": 22.67981336094218,
+      "emoji": "🎒"
+    },
+    {
+      "id": "fb93d04f-1ab2-4470-919b-b8871a043f55",
+      "x": 64.67516995405052,
+      "y": 33.816703917936465,
+      "emoji": "🎒"
+    },
+    {
+      "id": "2cf418e2-5abf-4c62-9eaf-a6e7ef06beb3",
+      "x": 60.49883599517766,
+      "y": 39.90719094129271,
+      "emoji": "🎒"
+    },
+    {
+      "id": "64c1ea03-0cb8-4fb9-ad04-95b4e22b8b1d",
+      "x": 60.324822080224614,
+      "y": 39.90719094129271,
+      "emoji": "🎒"
+    },
+    {
+      "id": "fde50870-f682-4e57-baa0-a8db075cbad7",
+      "x": 16.299301597106595,
+      "y": 75.92807133657111,
+      "emoji": "🏆"
+    },
+    {
+      "id": "76d8b0c2-3615-4300-b093-cd8ca52f5714",
+      "x": 11.948953723280702,
+      "y": 69.1415286534027,
+      "emoji": "🏆"
+    },
+    {
+      "id": "bfe1daba-b9dc-43d0-8904-7c999ef83e9c",
+      "x": 16.299301597106595,
+      "y": 62.18097205528128,
+      "emoji": "🏆"
+    },
+    {
+      "id": "507fb603-9dd2-43e2-a2f3-de2a93582965",
+      "x": 11.774939808327666,
+      "y": 50.69605366838093,
+      "emoji": "🏆"
+    },
+    {
+      "id": "0c8136fc-089c-4b03-bd0b-c4e084745928",
+      "x": 1.8561466560046325,
+      "y": 76.4501130814302,
+      "emoji": "🏅"
+    },
+    {
+      "id": "60027482-1c30-4cff-8b13-c24421c49a06",
+      "x": 0.2900214214273113,
+      "y": 61.83294422537521,
+      "emoji": "🏅"
+    },
+    {
+      "id": "cff9b8ff-0191-4440-878f-7c825d82d3ed",
+      "x": 12.819023298045881,
+      "y": 56.96055460669021,
+      "emoji": "🏅"
+    },
+    {
+      "id": "745fe8da-596c-499d-9e48-05bb7c3f7b59",
+      "x": 17.517399001777846,
+      "y": 40.95127443101092,
+      "emoji": "🏅"
+    },
+    {
+      "id": "28308b32-7f34-4dda-bd27-7f82a88f4566",
+      "x": 13.515078957858023,
+      "y": 34.338745662795574,
+      "emoji": "🏅"
+    },
+    {
+      "id": "c736475b-dce9-4139-8862-8a3a2597fc89",
+      "x": 17.865426831683916,
+      "y": 24.941994255331647,
+      "emoji": "🏅"
+    },
+    {
+      "id": "393eb24a-4009-436b-a6f2-1ccfba7f0174",
+      "x": 0.986077081239454,
+      "y": 25.986077745049858,
+      "emoji": "🏅"
+    },
+    {
+      "id": "d7cad0e4-2736-4468-91a6-bff37f07e50e",
+      "x": 1.508118826098561,
+      "y": 42.69141358054129,
+      "emoji": "🏅"
+    },
+    {
+      "id": "730005fc-d354-4414-8af7-403c3c6d4589",
+      "x": 27.784219984006945,
+      "y": 70.70765388798003,
+      "emoji": "🏅"
+    },
+    {
+      "id": "0edb9d5d-1d23-48dd-85a2-bb0a0e81e74a",
+      "x": 29.176331303631237,
+      "y": 51.21809541324003,
+      "emoji": "🏅"
+    },
+    {
+      "id": "dc2d710f-eacb-4954-8f65-e3c6b01a42c3",
+      "x": 30.22041479334945,
+      "y": 28.944314299251467,
+      "emoji": "🏅"
+    },
+    {
+      "id": "6f84eb26-372b-43d4-ac1d-676489052873",
+      "x": 2.5522023158167753,
+      "y": 53.480276307629495,
+      "emoji": "🏆"
+    },
+    {
+      "id": "4a658dd5-b60a-41a7-aef8-96ea16db2c12",
+      "x": 0.2900214214273113,
+      "y": 32.59860651326522,
+      "emoji": "🏆"
+    },
+    {
+      "id": "edef6f52-5c31-4812-952a-6302cb86666b",
+      "x": 42.749416669968014,
+      "y": 11.020881059088792,
+      "emoji": "🏫"
+    },
+    {
+      "id": "98ebb860-3d3d-493a-9200-3b61171dc1dd",
+      "x": 57.88862727088212,
+      "y": 7.714616674981113,
+      "emoji": "🏫"
+    },
+    {
+      "id": "d6bc1957-1fb8-4082-bf09-00a350ef951e",
+      "x": 63.6310864643323,
+      "y": 24.071924680566468,
+      "emoji": "🏫"
+    },
+    {
+      "id": "4c888f03-e888-4db2-ac56-5097f0214332",
+      "x": 55.974474206398725,
+      "y": 33.29466217307736,
+      "emoji": "🏫"
+    },
+    {
+      "id": "a3e78169-f6d8-4822-934b-a8e206a140a4",
+      "x": 41.7053331802498,
+      "y": 27.20417514972111,
+      "emoji": "🏫"
+    },
+    {
+      "id": "9b17000a-8c14-401c-a346-f420828d7145",
+      "x": 46.92575062884087,
+      "y": 40.77726051605789,
+      "emoji": "🏫"
+    },
+    {
+      "id": "0e1047f6-0186-4709-929d-337d76724f45",
+      "x": 43.097444499874086,
+      "y": 54.87238762725378,
+      "emoji": "🏫"
+    },
+    {
+      "id": "35d9d153-18f8-467a-a2f0-d53aebad4935",
+      "x": 57.19257161106997,
+      "y": 52.95823456277039,
+      "emoji": "🏫"
+    },
+    {
+      "id": "9c833666-02d2-49cf-87c1-99e3f04b7a5e",
+      "x": 72.33178221198409,
+      "y": 56.612526776784144,
+      "emoji": "🏫"
+    },
+    {
+      "id": "ceb48292-ee2f-4f85-9121-7e0afc696513",
+      "x": 75.63804659609175,
+      "y": 40.08120485624575,
+      "emoji": "🏫"
+    },
+    {
+      "id": "e9039df0-2ba3-4db1-9cb6-ad60c621d972",
+      "x": 30.742456538208558,
+      "y": 17.63340982730415,
+      "emoji": "📗"
+    },
+    {
+      "id": "2c7b2593-bfa8-40d7-b450-9ab79babb02f",
+      "x": 57.366585526023016,
+      "y": 17.285381997398076,
+      "emoji": "📗"
+    },
+    {
+      "id": "a901eb76-6e84-4ae6-901a-3cbffc95bc49",
+      "x": 47.44779237369998,
+      "y": 23.027841190848253,
+      "emoji": "📗"
+    },
+    {
+      "id": "b215033f-a684-4357-8277-14c121aa056d",
+      "x": 41.18329143539069,
+      "y": 36.07888481232593,
+      "emoji": "📗"
+    },
+    {
+      "id": "54560ad5-61f0-4fd8-84e3-e5b7a97b03af",
+      "x": 48.31786194846516,
+      "y": 52.61020673286432,
+      "emoji": "📗"
+    },
+    {
+      "id": "9e202b4a-21d2-42ed-aa81-4ce7496a55d3",
+      "x": 67.98143433815818,
+      "y": 51.5661232431461,
+      "emoji": "📗"
+    },
+    {
+      "id": "d599e4fd-8e68-4779-821f-18fa0118d0a4",
+      "x": 71.80974046712497,
+      "y": 32.59860651326522,
+      "emoji": "📗"
+    },
+    {
+      "id": "0caa5450-81c2-4838-92b6-227966dd5dec",
+      "x": 76.50811617085694,
+      "y": 23.89791076561343,
+      "emoji": "📗"
+    },
+    {
+      "id": "ab4bc280-b00a-4884-92fb-81cf79d5b44c",
+      "x": 71.4617126372189,
+      "y": 16.415312422632898,
+      "emoji": "📗"
+    },
+    {
+      "id": "ebeea8f2-2e17-4ea0-8dc2-23166ee7a808",
+      "x": 76.50811617085694,
+      "y": 4.408352290873435,
+      "emoji": "📗"
+    },
+    {
+      "id": "ecd284c9-01a1-4813-af34-a588286aff45",
+      "x": 72.67981004189016,
+      "y": 10.324825399276648,
+      "emoji": "📚"
+    },
+    {
+      "id": "2fcebd16-da56-4d73-b6cc-25a77ff6d7f0",
+      "x": 76.85614400076301,
+      "y": 16.06728459272683,
+      "emoji": "📚"
+    },
+    {
+      "id": "05eac8ec-42c6-4856-b5b4-72bc4cdd9f4f",
+      "x": 88.86310413252248,
+      "y": 10.150811484323613,
+      "emoji": "📚"
+    },
+    {
+      "id": "548d901a-8c49-42aa-8ea2-4e2c96356791",
+      "x": 91.64732677177105,
+      "y": 20.24361855159968,
+      "emoji": "📚"
+    },
+    {
+      "id": "aff88d68-2cef-4942-b2fa-099ebc5c2cae",
+      "x": 87.81902064280426,
+      "y": 34.338745662795574,
+      "emoji": "📚"
+    },
+    {
+      "id": "9489fe8b-1629-469a-8155-b7a7f4034bf6",
+      "x": 92.16936851663014,
+      "y": 44.77958055997771,
+      "emoji": "📚"
+    },
+    {
+      "id": "7cbb6709-bb51-451a-939b-f5d05b7405f0",
+      "x": 86.25289540822693,
+      "y": 62.70301380014038,
+      "emoji": "📚"
+    },
+    {
+      "id": "c92c632a-1180-4578-9d94-117560fa1880",
+      "x": 92.16936851663014,
+      "y": 70.35962605807396,
+      "emoji": "📚"
+    },
+    {
+      "id": "13c4b8d3-e6b9-4b56-b572-53a715b332db",
+      "x": 77.55219966057516,
+      "y": 71.92575129265127,
+      "emoji": "📚"
+    },
+    {
+      "id": "e666350f-2999-4e50-bbd8-22b25aacc521",
+      "x": 77.55219966057516,
+      "y": 71.92575129265127,
+      "emoji": "📚"
+    },
+    {
+      "id": "9ada85ea-dc55-49aa-b3d2-97574d49629e",
+      "x": 60.49883599517766,
+      "y": 68.44547299359056,
+      "emoji": "📚"
+    },
+    {
+      "id": "0fe4f80f-e3f8-4c75-93cc-9fb386fb9358",
+      "x": 41.7053331802498,
+      "y": 73.14384869732254,
+      "emoji": "📚"
+    },
+    {
+      "id": "84fe9093-3706-4edf-9318-a8d0da4245a5",
+      "x": 34.74477658212838,
+      "y": 66.7053338440602,
+      "emoji": "📚"
+    },
+    {
+      "id": "0b0b240b-2a13-4801-b653-ee3e7c31ff53",
+      "x": 26.740136494288734,
+      "y": 59.39674941603271,
+      "emoji": "📚"
+    },
+    {
+      "id": "66a7f492-3f0b-408f-bf5b-3dba71094b41",
+      "x": 33.00463743259802,
+      "y": 42.69141358054129,
+      "emoji": "📚"
+    },
+    {
+      "id": "8e2429bc-7bca-4b58-8111-2e3a82a1fc4a",
+      "x": 26.39210866438266,
+      "y": 37.12296830204414,
+      "emoji": "📚"
+    },
+    {
+      "id": "2ac6399e-8d81-40dc-805d-be93310db217",
+      "x": 47.62180628865302,
+      "y": 67.92343124873146,
+      "emoji": "💡"
+    },
+    {
+      "id": "307ed6a1-a5b5-42c5-bf88-1bfca004131e",
+      "x": 71.63572655217195,
+      "y": 66.7053338440602,
+      "emoji": "💡"
+    },
+    {
+      "id": "6c94580d-7a28-45e6-9582-d15d68f204a7",
+      "x": 91.47331285681801,
+      "y": 54.002318052488604,
+      "emoji": "💡"
+    },
+    {
+      "id": "04c40601-3574-4ed8-be61-a5a6f117f752",
+      "x": 86.600923238133,
+      "y": 39.55916311138664,
+      "emoji": "💡"
+    },
+    {
+      "id": "ff86749d-ac9b-4fd0-91e7-8f4f0263d183",
+      "x": 92.86542417644229,
+      "y": 26.33410557495593,
+      "emoji": "💡"
+    },
+    {
+      "id": "5c668e82-f081-4e17-9df4-29eab00314f1",
+      "x": 84.86078408860264,
+      "y": 23.375869020754326,
+      "emoji": "📗"
+    },
+    {
+      "id": "bb2930d0-7ef4-4a7a-99e5-1081fb5820ee",
+      "x": 93.90950766616051,
+      "y": 8.062644504887185,
+      "emoji": "📗"
+    },
+    {
+      "id": "2fed91ba-d024-49fe-aec7-44dcca41dae8",
+      "x": 67.45939259329909,
+      "y": 72.62180695246342,
+      "emoji": "📗"
     }
   ],
   "mapSettings": {
@@ -1084,10 +1290,10 @@
       "enableDetention": true,
       "detentionEscapeValue": 6,
       "enablePopQuiz": false,
-      "quizReward": 4,
-      "quizPenalty": 4,
+      "quizReward": 3,
+      "quizPenalty": 3,
       "enableSupervisorHand": true,
-      "supervisorHandMode": "PULL_ALL_TO_LAST",
+      "supervisorHandMode": "PULL_TOP_TO_ME",
       "enableNinjaCopy": true,
       "ninjaCopyTarget": "RANDOM",
       "enableAmenotejikara": true,

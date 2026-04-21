@@ -346,6 +346,14 @@ class GameEngine {
     this.processQueue();
   }
 
+  public resumeFromOverlay(): void {
+    if (this.state.eventQueue.length === 0) {
+       this.advanceTurn();
+    } else {
+       this.processQueue();
+    }
+  }
+
   public processQueue(): void {
     if (this.state.eventQueue.length === 0) return;
 
@@ -367,6 +375,7 @@ class GameEngine {
            activePlayerIndex: this.state.activePlayerIndex,
            mapLength: this.state.map ? this.state.map.length : TOTAL_CELLS,
            deckConfig: this.state.mapSettings.deckConfig,
+           diceValue: this.state.diceValue,
         };
         const res = card.resolve(ctx);
         this.state.eventQueue.unshift(

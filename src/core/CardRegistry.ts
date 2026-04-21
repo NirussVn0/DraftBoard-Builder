@@ -21,7 +21,7 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
     resolve: (ctx) => ({
       type: 'BUFF',
       targetPlayerIds: [ctx.activePlayer.id],
-      buff: { id: 'LIFEBUOY', turnsRemaining: 3, sourcePlayerId: ctx.activePlayer.id },
+      buff: { id: 'LIFEBUOY', turnsRemaining: ctx.deckConfig.lifebuoyTurns, sourcePlayerId: ctx.activePlayer.id },
     }),
   }],
 
@@ -50,12 +50,11 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
   ['MIND_BLANK', {
     id: 'MIND_BLANK', tier: 'RED', icon: '📱',
     name: 'Cám Dỗ',
-    description: 'Tất cả là do cái điện thoại 😡! Tiến lên hoặc lùi xuống ngẫu nhiên!',
+    description: 'Tất cả là do cái điện thoại 😡! Lùi xuống ngẫu nhiên!',
     resolve: (ctx) => {
       const [min, max] = ctx.deckConfig.mindBlankRange;
       const steps = Math.floor(Math.random() * (max - min + 1)) + min;
-      const sign = Math.random() > 0.5 ? 1 : -1;
-      return { type: 'MOVE', targetPlayerIds: [ctx.activePlayer.id], steps: steps * sign };
+      return { type: 'MOVE', targetPlayerIds: [ctx.activePlayer.id], steps: -steps };
     },
   }],
 
@@ -66,8 +65,13 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
     resolve: (ctx) => {
       const aheadPlayers = ctx.allPlayers.filter(p => p.id !== ctx.activePlayer.id && p.position > ctx.activePlayer.position);
       
+      const newPosMatchSteps = Math.max(0, ctx.activePlayer.position - Math.abs(ctx.diceValue));
+
       if (aheadPlayers.length === 0) {
-        return { type: 'MOVE', targetPlayerIds: [ctx.activePlayer.id], steps: -3 };
+        if (ctx.deckConfig.deadlineBombMode === 'RESET_ZERO') {
+           return { type: 'TELEPORT', targetPlayerIds: [ctx.activePlayer.id], newPosition: 0 };
+        }
+        return { type: 'TELEPORT', targetPlayerIds: [ctx.activePlayer.id], newPosition: newPosMatchSteps };
       }
       
       const targetIds = aheadPlayers.map(p => p.id);
@@ -76,7 +80,7 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
         return { type: 'TELEPORT', targetPlayerIds: [ctx.activePlayer.id, ...targetIds], newPosition: 0 };
       }
       
-      return { type: 'TELEPORT', targetPlayerIds: targetIds, newPosition: ctx.activePlayer.position };
+      return { type: 'TELEPORT', targetPlayerIds: [ctx.activePlayer.id, ...targetIds], newPosition: newPosMatchSteps };
     },
   }],
 
@@ -172,12 +176,11 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
   ['MYSTERY', {
     id: 'MYSTERY', tier: 'PURPLE', icon: '❓',
     name: 'Ôn Tủ',
-    description: 'Hộp bí ẩn. Hên xui lùi hoặc tiến từ 3 đến 6 bước!',
+    description: 'Hộp bí ẩn. Hên xui lùi hoặc tiến!',
     resolve: (ctx) => {
-      // random +3 to +6 OR -3 to -6
-      const steps = Math.floor(Math.random() * 4) + 3; // 3, 4, 5, 6
-      const sign = Math.random() > 0.5 ? 1 : -1;
-      return { type: 'MOVE', targetPlayerIds: [ctx.activePlayer.id], steps: steps * sign };
+      const [min, max] = ctx.deckConfig.mysteryRange;
+      const steps = Math.floor(Math.random() * (max - min + 1)) + min;
+      return { type: 'MOVE', targetPlayerIds: [ctx.activePlayer.id], steps };
     },
   }]
 ]);

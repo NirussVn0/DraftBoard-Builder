@@ -21,6 +21,7 @@ export interface DeckConfig {
   enableMindBlank: boolean;
   mindBlankRange: [number, number];
   enableLifebuoy: boolean;
+  lifebuoyTurns: number;
   enableCounter: boolean;
   counterTurns: number;
   enableParasite: boolean;
@@ -40,6 +41,8 @@ export interface DeckConfig {
   enableAmenotejikara: boolean;
   enableZaWarudo: boolean;
   zaWarudoMode: 'FREEZE_ALL' | 'FREEZE_ONE';
+  enableMystery: boolean;
+  mysteryRange: [number, number];
   rarityBias: number;
   hostMode: boolean;
 }
@@ -47,7 +50,7 @@ export interface DeckConfig {
 export const DEFAULT_DECK: DeckConfig = {
   enableEureka: true, eurekaRange: [1, 6],
   enableMindBlank: true, mindBlankRange: [1, 6],
-  enableLifebuoy: true,
+  enableLifebuoy: true, lifebuoyTurns: 3,
   enableCounter: true, counterTurns: 3,
   enableParasite: true,
   enableDeadlineBomb: true, deadlineBombMode: 'MATCH_STEPS',
@@ -58,6 +61,7 @@ export const DEFAULT_DECK: DeckConfig = {
   enableNinjaCopy: true, ninjaCopyTarget: 'TOP1',
   enableAmenotejikara: true,
   enableZaWarudo: true, zaWarudoMode: 'FREEZE_ONE',
+  enableMystery: true, mysteryRange: [-6, 6],
   rarityBias: 30,
   hostMode: false,
 };

@@ -47,16 +47,26 @@ export const CardSettingsModal: React.FC<CardSettingsModalProps> = ({ cardId, in
       case 'EUREKA':
         return (
           <div className="space-y-4">
-            <h4 className="font-bold text-slate-700">Tùy chỉnh: Bước tiến</h4>
+            <h4 className="font-bold text-slate-700">Tùy chỉnh: Giới hạn (Bước)</h4>
             <div className="flex gap-4">
               <div>
                 <label className="block text-sm font-bold text-slate-500 mb-1">Tối thiểu</label>
-                <input type="number" min="1" max={config.eurekaRange[1]} value={config.eurekaRange[0]} onChange={(e) => setConfig({ ...config, eurekaRange: [parseInt(e.target.value) || 1, config.eurekaRange[1]] })} className="w-24 p-2 border-2 border-slate-200 rounded" />
+                <input type="number" value={config.eurekaRange[0]} onChange={(e) => setConfig({ ...config, eurekaRange: [parseInt(e.target.value) || 1, config.eurekaRange[1]] })} className="w-24 p-2 border-2 border-slate-200 rounded" />
               </div>
               <div>
                 <label className="block text-sm font-bold text-slate-500 mb-1">Tối đa</label>
-                <input type="number" min={config.eurekaRange[0]} value={config.eurekaRange[1]} onChange={(e) => setConfig({ ...config, eurekaRange: [config.eurekaRange[0], parseInt(e.target.value) || 6] })} className="w-24 p-2 border-2 border-slate-200 rounded" />
+                <input type="number" value={config.eurekaRange[1]} onChange={(e) => setConfig({ ...config, eurekaRange: [config.eurekaRange[0], parseInt(e.target.value) || 6] })} className="w-24 p-2 border-2 border-slate-200 rounded" />
               </div>
+            </div>
+          </div>
+        );
+      case 'LIFEBUOY':
+        return (
+          <div className="space-y-4">
+            <h4 className="font-bold text-slate-700">Tùy chỉnh: Số lượt tồn tại</h4>
+            <div>
+              <label className="block text-sm font-bold text-slate-500 mb-1">Lượt</label>
+              <input type="number" min="1" max="10" value={config.lifebuoyTurns} onChange={(e) => setConfig({ ...config, lifebuoyTurns: parseInt(e.target.value) || 3 })} className="w-24 p-2 border-2 border-slate-200 rounded" />
             </div>
           </div>
         );
@@ -167,6 +177,22 @@ export const CardSettingsModal: React.FC<CardSettingsModalProps> = ({ cardId, in
                 <option value="PULL_ALL_TO_LAST">Kéo mọi người về kẻ bét bảng (PULL_ALL_TO_LAST)</option>
                 <option value="PULL_TOP_TO_ME">Kéo kẻ top 1 về vị trí của mình (PULL_TOP_TO_ME)</option>
               </select>
+            </div>
+          </div>
+        );
+      case 'MYSTERY':
+        return (
+          <div className="space-y-4">
+            <h4 className="font-bold text-slate-700">Tùy chỉnh: Khoảng hên xui (Âm là lùi, Dương là tiến)</h4>
+            <div className="flex gap-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-500 mb-1">Từ (vd: -6)</label>
+                <input type="number" value={config.mysteryRange?.[0] ?? -6} onChange={(e) => setConfig({ ...config, mysteryRange: [parseInt(e.target.value) || 0, config.mysteryRange?.[1] ?? 6] })} className="w-24 p-2 border-2 border-slate-200 rounded" />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-500 mb-1">Đến (vd: 6)</label>
+                <input type="number" value={config.mysteryRange?.[1] ?? 6} onChange={(e) => setConfig({ ...config, mysteryRange: [config.mysteryRange?.[0] ?? -6, parseInt(e.target.value) || 0] })} className="w-24 p-2 border-2 border-slate-200 rounded" />
+              </div>
             </div>
           </div>
         );

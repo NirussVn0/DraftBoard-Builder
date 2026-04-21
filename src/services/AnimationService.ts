@@ -27,7 +27,7 @@ export class AnimationService {
       return;
     }
 
-    const gridSize = customMap ? 15 : 10;
+    const gridSize = customMap ? 20 : 10;
     const cellSizePct = 100 / gridSize;
     const { offsetX, offsetY } = getPlayerOffset(playerIndex, cellSizePct);
     const boardPx = gridSize * TILE_PX;
@@ -114,7 +114,7 @@ export class AnimationService {
       return;
     }
 
-    const gridSize = customMap ? 15 : 10;
+    const gridSize = customMap ? 20 : 10;
     const cellSizePct = 100 / gridSize;
     const { offsetX, offsetY } = getPlayerOffset(playerIndex, cellSizePct);
     const boardPx = gridSize * TILE_PX;
@@ -168,7 +168,7 @@ export class AnimationService {
       return;
     }
 
-    const gridSize = customMap ? 15 : 10;
+    const gridSize = customMap ? 20 : 10;
     const cellSizePct = 100 / gridSize;
     const offset1 = getPlayerOffset(player1Index, cellSizePct);
     const offset2 = getPlayerOffset(player2Index, cellSizePct);

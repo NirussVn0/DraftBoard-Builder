@@ -59,9 +59,10 @@ export const LifebuoyBreakOverlay: React.FC<LifebuoyBreakOverlayProps> = ({ onCo
               targets: imgRef.current,
               opacity: 0,
               duration: 300,
-              easing: 'easeInQuad'
+              easing: 'easeInQuad',
+              complete: onComplete
             });
-          }, 3000);
+          }, 2000); // 3 seconds is a bit too long, let's make it 2s
         }
       });
     } else {

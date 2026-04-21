@@ -28,7 +28,7 @@ export interface MapState {
   env: EnvironmentMap;
 }
 
-export const MAP_SIZE = 15;
+export const MAP_SIZE = 20;
 
 export function generateZigzagMap(): MapState {
   const tiles: Tile[] = [];

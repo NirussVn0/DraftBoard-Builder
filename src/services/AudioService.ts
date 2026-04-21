@@ -14,7 +14,6 @@ import { loadGlobalSettings } from '../core/SettingsState';
 class AudioService {
   private sounds: Map<string, Howl | null> = new Map();
   private failedSounds: Set<string> = new Set();
-  private unlocked = false;
 
   private static SOUND_CONFIG: Record<string, { src: string; volume: number }> = {
     dice:    { src: '/audio/dice.mp3',    volume: 0.7 },
@@ -27,27 +26,6 @@ class AudioService {
   constructor() {
     const settings = loadGlobalSettings();
     Howler.mute(!settings.enableSoundEffects);
-
-    // Unlock AudioContext on first user interaction (browser autoplay policy)
-    const unlock = () => {
-      if (this.unlocked) return;
-      this.unlocked = true;
-
-      // Resume the AudioContext Howler created
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const ctx = (Howler as any).ctx as AudioContext | undefined;
-      if (ctx && ctx.state === 'suspended') {
-        ctx.resume();
-      }
-
-      document.removeEventListener('click', unlock);
-      document.removeEventListener('keydown', unlock);
-      document.removeEventListener('touchstart', unlock);
-    };
-
-    document.addEventListener('click', unlock);
-    document.addEventListener('keydown', unlock);
-    document.addEventListener('touchstart', unlock);
   }
 
   /**
@@ -66,11 +44,17 @@ class AudioService {
         src: [config.src],
         volume: config.volume,
         preload: true,
-        html5: false, // Use Web Audio API (not <audio> tag) for lower latency
-        onloaderror: () => {
+        onloaderror: (_, err) => {
+          console.error(`[AudioService] Error loading ${key}:`, err);
           this.failedSounds.add(key);
           this.sounds.delete(key);
         },
+        onplayerror: (_, err) => {
+          console.error(`[AudioService] Error playing ${key}:`, err);
+          howl?.once('unlock', () => {
+            howl?.play();
+          });
+        }
       });
       this.sounds.set(key, howl);
     }

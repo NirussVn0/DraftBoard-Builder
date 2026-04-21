@@ -32,6 +32,7 @@ export interface CardContext {
   activePlayerIndex: number;
   mapLength: number;
   deckConfig: DeckConfig;
+  diceValue: number;
 }
 
 export interface CardResolution {
