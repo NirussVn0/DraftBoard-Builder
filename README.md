@@ -126,6 +126,6 @@ See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-Built with SOV. ✦ 2026
+Built by NirussVn0. ✦ 2026
 
 </div>
