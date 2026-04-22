@@ -1,73 +1,131 @@
-# React + TypeScript + Vite
+# DraftBoard Builder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<div align="center">
 
-Currently, two official plugins are available:
+![DraftBoard Builder](https://img.shields.io/badge/DraftBoard-Builder-v0.2--beta-6366f1?style=for-the-badge&logo=react&logoColor=white)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-Build-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)](LICENSE)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+</div>
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+> 🎯 **Build your own adventures.** DraftBoard Builder is a dynamic, customizable mini board game engine and map builder, allowing you to design tracks, set rules, and play right in the browser.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## ✨ What It Does
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+DraftBoard is organized around a dual experience: **Building** and **Playing**.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+DESIGN MAP  →  SET RULES  →  PLAY GAME  →  SHARE
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+| Zone | Features |
+|---|---|
+| 🗺️ **Map Builder** | Draw paths, place special tiles, configure "Exact Landing" rules, full Undo/Redo state management. |
+| 🎲 **Play Mode** | Roll dice, move tokens with Anime.js smooth animations, trigger tile events (Duel, Dungeon, etc.). |
+| 🛠️ **System** | Built strictly on Clean Code, SOLID, and OOP principles for robust, scalable architecture. |
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🛠️ Tech Stack
+
+### Frontend Showcase
+- ![React](https://img.shields.io/badge/React-18-000?style=flat&logo=react) **Core UI** — React components, Tailwind CSS styling
+- ![TypeScript](https://img.shields.io/badge/TypeScript-Strict-000?style=flat&logo=typescript) **Language** — Strict TypeScript for absolute type safety
+- ![Anime.js](https://img.shields.io/badge/Anime.js-Animations-FF4B4B?style=flat) **Animations** — Robust token movement and dice rolling animations
+- ![Zustand](https://img.shields.io/badge/Zustand-State-764ABC?style=flat) **State Management** — Global state for Map Builder Undo/Redo and Game Engine
+
+### Tooling & Environment
+- **Vite** — Lightning fast build tool and dev server
+- **ESLint & Prettier** — Strict code formatting and linting rules
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+graph TD
+    subgraph Frontend["🎨 DraftBoard Application"]
+        subgraph Core
+            UI["User Interface\nReact Components"]
+            ENGINE["Game Engine\nOOP & SOLID"]
+        end
+        subgraph Systems
+            BUILDER["Map Builder\nUndo/Redo State"]
+            ANIMATION["Animation Engine\nAnime.js"]
+            AUDIO["Audio Engine\nSound effects"]
+        end
+    end
+
+    UI --> BUILDER
+    UI --> ENGINE
+    BUILDER --> ENGINE
+    ENGINE --> ANIMATION
+    ENGINE --> AUDIO
+
+    style UI fill:#1a1a2e,stroke:#61DAFB,color:#fff
+    style ENGINE fill:#1a1a2e,stroke:#6366f1,color:#fff
+    style BUILDER fill:#1a1a2e,stroke:#f59e0b,color:#fff
+    style ANIMATION fill:#1a1a2e,stroke:#FF4B4B,color:#fff
+    style AUDIO fill:#1a1a2e,stroke:#22c55e,color:#fff
 ```
+
+---
+
+## 📖 Documentation
+
+All architecture docs, feature plans, and agent protocols live in [`docs/`](docs/).
+
+**→ Start with [`docs/architecture.md`](docs/architecture.md)**
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js** ≥ 20
+- **npm** or **pnpm** or **yarn**
+
+### Installation
+
+```bash
+# Clone the repo
+git clone https://github.com/your-org/draftboard-builder.git
+cd draftboard-builder
+
+# Install all dependencies
+npm install
+
+# Start in dev mode
+npm run dev
+```
+
+Open `http://localhost:5173` to see the app.
+
+### Useful Scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start development server |
+| `npm run build` | Production build |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
+
+## 📄 License
+
+See [LICENSE](LICENSE) for details.
+
+---
+
+<div align="center">
+
+Built with SOV. ✦ 2026
+
+</div>
