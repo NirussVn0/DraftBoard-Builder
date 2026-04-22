@@ -5,7 +5,7 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
   ['EUREKA', {
     id: 'EUREKA', tier: 'GREEN', icon: '💡',
     name: 'Eureka! Sáng Kiến',
-    description: 'Tiến lên ngẫu nhiên!',
+    description: 'Bộ óc bùng cháy! Tiến lên ngẫu nhiên từ 1 đến 6 bước!',
     resolve: (ctx) => {
       const [min, max] = ctx.deckConfig.eurekaRange;
       const steps = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -16,7 +16,7 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
   ['LIFEBUOY', {
     id: 'LIFEBUOY', tier: 'GREEN', icon: '🛟',
     name: 'Phao Cứu Sinh',
-    description: 'Miễn nhiễm 1 lần điểm kém/phạt. Bị phạt sẽ vỡ phao.',
+    description: 'Miễn nhiễm 1 lần bị tấn công hoặc phạt lùi. Phao vỡ sau 1 lần kích hoạt!',
     resolve: (ctx) => ({
       type: 'BUFF',
       targetPlayerIds: [ctx.activePlayer.id],
@@ -86,7 +86,7 @@ export const CARD_DEFINITIONS: Map<CardId, CardDefinition> = new Map([
   ['BLACKOUT', {
     id: 'BLACKOUT', tier: 'RED', icon: '🔌',
     name: 'Cúp Điện (Blackout)',
-    description: 'Bạn an toàn. Tất cả những đứa khác bị lùi lại!',
+    description: 'Bạn an toàn! Tất cả những đứa khác bị lùi 3 bước!',
     resolve: (ctx) => {
       const others = ctx.allPlayers.filter(p => p.id !== ctx.activePlayer.id).map(p => p.id);
       return { type: 'MOVE', targetPlayerIds: others, steps: -ctx.deckConfig.blackoutSteps };
