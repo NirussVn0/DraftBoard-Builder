@@ -92,6 +92,7 @@ export interface LocaleStrings {
     ninjaCopy: { name: string; desc: string };
     amenotejikara: { name: string; desc: string };
     zaWarudo: { name: string; desc: string };
+    mystery: { name: string; desc: string };
   };
   deckConfig: {
     title: string;
