@@ -89,7 +89,7 @@ Hệ thống thẻ sự kiện kích hoạt khi người chơi đáp vào ô MYS
 
 ---
 
-### 🔴 Red Tier — Nerf
+### 🔴 Red Tier — Nerf 
 
 > Các thẻ gây bất lợi — chủ yếu ảnh hưởng bản thân hoặc người khác.
 
