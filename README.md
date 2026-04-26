@@ -126,6 +126,6 @@ See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-Built by NirussVn0. ✦ 2026
+[Built by NirussVn0. ✦ 2026](https://github.com/NirussVn0)
 
 </div>
